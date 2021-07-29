@@ -1,0 +1,15 @@
+build
+data/*/*
+!data/.empty
+!data/main/.empty
+tools/data
+tools/out
+*.o
+*.elf
+*.exe
+*.iso
+*.psb
+*.bsp
+.vscode
+compile_flags.txt
+compile_commands.json

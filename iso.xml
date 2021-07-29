@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <iso_project image_name="doukutsu.iso">
+  <track type="data">
+    <identifiers
+      system      ="PLAYSTATION"
+      application ="PLAYSTATION"
+      volume      ="DOUKUTSU   "
+      volume_set  ="DOUKUTSU   "
+      publisher   ="FGSFDS     "
+    />
+    <directory_tree>
+      <file name="system.cnf" type="data" source="system.cnf"/>
+      <file name="doukutsu.exe" type="data" source="doukutsu.exe"/>
+      <dir name="main" srcdir="data/main">
+        <file name="main.sfx" type="data"/>
+        <file name="main.gfx" type="data"/>
+        <file name="npc.tbl" type="data"/>
+      </dir>
+      <dir name="0" srcdir="data/0">
+        <file name="stage01.stg" type="data"/>
+        <file name="stage02.stg" type="data"/>
+        <file name="stage03.stg" type="data"/>
+        <file name="stage04.stg" type="data"/>
+        <file name="stage05.stg" type="data"/>
+        <file name="stage06.stg" type="data"/>
+        <file name="stage07.stg" type="data"/>
+        <file name="stage08.stg" type="data"/>
+        <file name="stage09.stg" type="data"/>
+        <file name="stage0a.stg" type="data"/>
+        <file name="stage0b.stg" type="data"/>
+        <file name="stage0c.stg" type="data"/>
+        <file name="stage0d.stg" type="data"/>
+        <file name="stage0e.stg" type="data"/>
+        <file name="stage0f.stg" type="data"/>
+      </dir>
+      <dummy sectors="1024"/>
+    </directory_tree>
+  </track>
+  </iso_project>
+</xml>

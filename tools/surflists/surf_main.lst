@@ -1,0 +1,18 @@
+# surface bank that's loaded at the start of the game and kept permanently in memory
+# surfaces will be packed into VRAM in the order they appear in this list
+# `pad` > 0 adds black columns of pixels to the left of the image for alignment
+# `tex_x` field of the affected surface points to the beginning of the actual image
+
+#     id  path                  pad  comment
+
+SURF, 23, data/Npc/NpcRegu.pbm, 0,   SURFACE_ID_NPC_REGU (8bpp)
+SURF, 27, data/Face.pbm,        0,   SURFACE_ID_FACE (8bpp)
+SURF, 8,  data/ItemImage.pbm,   0,   SURFACE_ID_
+SURF, 11, data/Arms.pbm,        20,  SURFACE_ID_
+SURF, 12, data/ArmsImage.pbm,   0,   SURFACE_ID_
+SURF, 14, data/StageImage.pbm,  0,   SURFACE_ID_
+SURF, 16, data/MyChar.pbm,      0,   SURFACE_ID_
+SURF, 17, data/Bullet.pbm,      0,   SURFACE_ID_
+SURF, 19, data/Caret.pbm,       0,   SURFACE_ID_
+SURF, 26, data/TextBox.pbm,     0,   SURFACE_ID_
+SURF, 20, data/Npc/NpcSym.pbm,  0,   SURFACE_ID_
