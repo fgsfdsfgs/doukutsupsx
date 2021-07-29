@@ -116,7 +116,7 @@ int m_rand(const int min, const int max) {
   r1 = (214013 * rand_seed + 2531011);
   r1 = (r1 >> 16) & 0x7FFF;
   r2 = (214013 * r1 + 2531011);
-  r2 = (r1 >> 16) & 0x7FFF;
+  r2 = (r2 >> 16) & 0x7FFF;
   rand_seed = r2;
   return r2 % range;
 }
