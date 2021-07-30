@@ -111,12 +111,10 @@ void m_srand(const u32 seed) {
 }
 
 int m_rand(const int min, const int max) {
-  register int r1, r2, range;
+  register int r, range;
   range = max - min + 1;
-  r1 = (214013 * rand_seed + 2531011);
-  r1 = (r1 >> 16) & 0x7FFF;
-  r2 = (214013 * r1 + 2531011);
-  r2 = (r2 >> 16) & 0x7FFF;
-  rand_seed = r2;
-  return r2 % range;
+  r = (214013 * rand_seed + 2531011);
+  r = (r >> 16) & 0x7FFF;
+  rand_seed = r;
+  return (r % range) + min;
 }
