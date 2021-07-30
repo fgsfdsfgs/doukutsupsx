@@ -61,7 +61,7 @@ typedef struct npc {
   const rect_t *rect;
   const rect_t *rect_prev;
   const npc_class_t *info;
-  struct npc *other;
+  struct npc *parent;
 
   u32 flags;
   s32 x;
@@ -92,6 +92,7 @@ typedef struct npc {
   u8 snd_die;
   u8 snd_hit;
   u8 exp;
+  u8 surf;
 } npc_t;
 
 extern u8 npc_flags[NPC_MAX_FLAGS];

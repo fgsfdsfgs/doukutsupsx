@@ -33,6 +33,7 @@ static inline void npc_set_class(npc_t *npc, const u32 class_num) {
   npc->damage = nclass->damage;
   npc->snd_die = nclass->snd_die;
   npc->snd_hit = nclass->snd_hit;
+  npc->surf = nclass->surf_id;
   npc->hit.front = TO_FIX((int)nclass->hit.front);
   npc->hit.back = TO_FIX((int)nclass->hit.back);
   npc->hit.top = TO_FIX((int)nclass->hit.top);
@@ -116,7 +117,7 @@ npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *pa
   npc->xvel = xv;
   npc->yvel = yv;
   npc->dir = dir;
-  npc->other = parent;
+  npc->parent = parent;
 
   return npc;
 }
@@ -172,7 +173,7 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
       npc->texrect.r.y += npc->rect_delta.y;
       npc->texrect.r.w += npc->rect_delta.w;
       npc->texrect.r.h += npc->rect_delta.h;
-      gfx_set_texrect(&npc->texrect, npc->info->surf_id);
+      gfx_set_texrect(&npc->texrect, npc->surf);
     }
   }
 
