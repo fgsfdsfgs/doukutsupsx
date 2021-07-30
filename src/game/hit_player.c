@@ -4,6 +4,7 @@
 
 #include "game/stage.h"
 #include "game/game.h"
+#include "game/npc.h"
 #include "game/player.h"
 
 static inline void star_particle(void) {
@@ -504,7 +505,224 @@ static inline void hit_player_map(const u32 btns) {
     player.flags |= 0x100;
 }
 
+static inline int hit_check_player_npc_soft(const npc_t *npc) {
+  int hit = 0;
+
+  if (player.y - player.hit.top < npc->y + npc->hit.bottom - (3 * 0x200)
+    && player.y + player.hit.bottom > npc->y - npc->hit.top + (3 * 0x200)
+    && player.x - player.hit.back < npc->x + npc->hit.back
+    && player.x - player.hit.back > npc->x) {
+    if (player.xvel < 0x200)
+      player.xvel += 0x200;
+    hit |= 1;
+  }
+
+  if (player.y - player.hit.top < npc->y + npc->hit.bottom - (3 * 0x200)
+    && player.y + player.hit.bottom > npc->y - npc->hit.top + (3 * 0x200)
+    && player.x + player.hit.back - 0x200 > npc->x - npc->hit.back
+    && player.x + player.hit.back - 0x200 < npc->x) {
+    if (player.xvel > -0x200)
+      player.xvel -= 0x200;
+    hit |= 4;
+  }
+
+  if (player.x - player.hit.back < npc->x + npc->hit.back - (3 * 0x200)
+    && player.x + player.hit.back > npc->x - npc->hit.back + (3 * 0x200)
+    && player.y - player.hit.top < npc->y + npc->hit.bottom
+    && player.y - player.hit.top > npc->y) {
+    if (player.yvel < 0)
+      player.yvel = 0;
+    hit |= 2;
+  }
+
+  if (player.x - player.hit.back < npc->x + npc->hit.back - (3 * 0x200)
+    && player.x + player.hit.back > npc->x - npc->hit.back + (3 * 0x200)
+    && player.y + player.hit.bottom > npc->y - npc->hit.top
+    && player.hit.bottom + player.y < npc->y + (3 * 0x200)) {
+    if (npc->bits & NPC_BOUNCY) {
+      player.yvel = npc->yvel - 0x200;
+      hit |= 8;
+    } else if (!(player.flags & 8) && player.yvel > npc->yvel) {
+      player.y = npc->y - npc->hit.top - player.hit.bottom + 0x200;
+      player.yvel = npc->yvel;
+      player.x += npc->xvel;
+      hit |= 8;
+    }
+  }
+
+  return hit;
+}
+
+static inline u8 hit_check_player_npc_normal(const npc_t *npc) {
+  if (npc->dir == 0) {
+    if (player.x + (2 * 0x200) > npc->x - npc->hit.front
+      && player.x - (2 * 0x200) < npc->x + npc->hit.back
+      && player.y + (2 * 0x200) > npc->y - npc->hit.top
+      && player.y - (2 * 0x200) < npc->y + npc->hit.bottom)
+      return 1;
+  } else {
+    if (player.x + (2 * 0x200) > npc->x - npc->hit.back
+      && player.x - (2 * 0x200) < npc->x + npc->hit.front
+      && player.y + (2 * 0x200) > npc->y - npc->hit.top
+      && player.y - (2 * 0x200) < npc->y + npc->hit.bottom)
+      return 1;
+  }
+
+  return 0;
+}
+
+static inline int hit_check_player_npc_solid(const npc_t *npc) {
+  // TODO: comment this
+  int hit = 0;
+
+  // this used to use floats; replaced it with fixed division
+  int fy1, fx1;
+  int fx2, fy2;
+
+  if (npc->x > player.x)
+    fx1 = (npc->x - player.x);
+  else
+    fx1 = (player.x - npc->x);
+
+  if (npc->y > player.y)
+    fy1 = (npc->y - player.y);
+  else
+    fy1 = (player.y - npc->y);
+
+  fx2 = npc->hit.back;
+  fy2 = npc->hit.top;
+
+  if (fx1 == 0) fx1 = FIX_SCALE;
+  if (fx2 == 0) fx2 = FIX_SCALE;
+
+  if ((fy1 * FIX_SCALE) / fx1 > (fy2 * FIX_SCALE) / fx2) {
+    if (player.x - player.hit.back < npc->x + npc->hit.back && player.x + player.hit.back > npc->x - npc->hit.back) {
+      if (player.y - player.hit.top < npc->y + npc->hit.bottom && player.y - player.hit.top > npc->y) {
+        if (player.yvel < npc->yvel) {
+          player.y = npc->y + npc->hit.bottom + player.hit.top + FIX_SCALE;
+          player.yvel = npc->yvel;
+        } else {
+          if (player.yvel < 0) player.yvel = 0;
+        }
+
+        hit |= 2;
+      }
+
+      if (player.y + player.hit.bottom > npc->y - npc->hit.top && player.hit.bottom + player.y < npc->y + TO_FIX(3)) {
+        if (player.yvel - npc->yvel > TO_FIX(2))
+          snd_play_sound(-1, 23, SOUND_MODE_PLAY);
+
+        if (player.unit == 1) {
+          player.y = npc->y - npc->hit.top - player.hit.bottom + FIX_SCALE;
+          hit |= 8;
+        } else if (npc->bits & NPC_BOUNCY) {
+          player.yvel = npc->yvel - FIX_SCALE;
+          hit |= 8;
+        } else if (!(player.flags & 8) && player.yvel > npc->yvel) {
+          player.y = npc->y - npc->hit.top - player.hit.bottom + FIX_SCALE;
+          player.yvel = npc->yvel;
+          player.x += npc->xvel;
+          hit |= 8;
+        }
+      }
+    }
+  } else {
+    if (player.y - player.hit.top < npc->y + npc->hit.bottom && player.y + player.hit.bottom > npc->y - npc->hit.top) {
+      if (player.x - player.hit.back < npc->x + npc->hit.back && player.x - player.hit.back > npc->x) {
+        if (player.xvel < npc->xvel) player.xvel = npc->xvel;
+
+        player.x = npc->x + npc->hit.back + player.hit.back;
+
+        hit |= 1;
+      }
+
+      if (player.x + player.hit.back > npc->x - npc->hit.back && player.hit.back + player.x < npc->x) {
+        if (player.xvel > npc->xvel) player.xvel = npc->xvel;
+
+        player.x = npc->x - npc->hit.back - player.hit.back;
+
+        hit |= 4;
+      }
+    }
+  }
+
+  return hit;
+}
+
+static inline void hit_player_npc(void) {
+  int hit = 0;
+
+  if (!(player.cond & PLRCOND_ALIVE) || player.cond & PLRCOND_INVISIBLE)
+    return;
+
+  for (int i = 0; i < npc_list_max; ++i) {
+    npc_t *npc = &npc_list[i];
+
+    if (!(npc->cond & NPCCOND_ALIVE))
+      continue;
+
+    hit = 0;
+
+    if (npc->bits & NPC_SOLID_SOFT) {
+      hit = hit_check_player_npc_soft(npc);
+      player.flags |= hit;
+    } else if (npc->bits & NPC_SOLID_HARD) {
+      hit = hit_check_player_npc_solid(npc);
+      player.flags |= hit;
+    } else {
+      hit = hit_check_player_npc_normal(npc);
+    }
+
+    // Special NPCs (pickups)
+    if (hit != 0 && npc->class_num == 1) {
+      snd_play_sound(CHAN_ITEM, 14, SOUND_MODE_PLAY);
+      plr_add_exp(npc->exp);
+      npc->cond = 0;
+    }
+
+    if (hit != 0 && npc->class_num == 86) {
+      snd_play_sound(CHAN_ITEM, 42, SOUND_MODE_PLAY);
+      plr_add_ammo(npc->event_num, npc->exp);
+      npc->cond = 0;
+    }
+
+    if (hit != 0 && npc->class_num == 87) {
+      snd_play_sound(CHAN_ITEM, 20, SOUND_MODE_PLAY);
+      plr_add_life(npc->exp);
+      npc->cond = 0;
+    }
+
+    // Run event on contact
+    // if (!(game_flags & 4) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
+    //   StartTextScript(npc->event_num);
+
+    // NPC damage
+    if (game_flags & 2 && !(npc->bits & NPC_INTERACTABLE)) {
+      if (npc->bits & NPC_REAR_AND_TOP_DONT_HURT) {
+        if (hit & 4 && npc->xvel < 0) plr_damage(npc->damage);
+        if (hit & 1 && npc->xvel > 0) plr_damage(npc->damage);
+        if (hit & 8 && npc->yvel < 0) plr_damage(npc->damage);
+        if (hit & 2 && npc->yvel > 0) plr_damage(npc->damage);
+      } else if (hit != 0 && npc->damage && !(game_flags & 4)) {
+        plr_damage(npc->damage);
+      }
+    }
+
+    // Interaction
+    if (!(game_flags & 4) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
+      // StartTextScript(npc->event_num);
+      player.xvel = 0;
+      player.question = FALSE;
+    }
+  }
+
+  // Create question mark when NPC hasn't been interacted with
+  // if (player.question)
+  //   SetCaret(player.x, player.y, CARET_QUESTION_MARK, DIR_LEFT);
+}
+
 void hit_player(const u32 btns) {
   player.flags = 0;
   hit_player_map(btns);
+  hit_player_npc();
 }

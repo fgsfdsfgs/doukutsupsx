@@ -8,7 +8,7 @@
 #include "game/stage.h"
 #include "game/game.h"
 
-u32 game_flags = 0;
+u32 game_flags = 2;
 u32 game_tick = 0;
 
 void game_init(void) {

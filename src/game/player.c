@@ -6,6 +6,7 @@
 #include "engine/input.h"
 
 #include "game/player.h"
+#include "game/npc.h"
 #include "game/game.h"
 
 // also known as MyChar.cpp
@@ -22,6 +23,23 @@
 #define CHAR_FRAME_H 16
 
 player_t player;
+
+const s16 plr_arms_exptab[PLR_MAX_ARMS][3] = {
+  { 0,  0,  100 },
+  { 30, 40, 16  },
+  { 10, 20, 10  },
+  { 10, 20, 20  },
+  { 30, 40, 10  },
+  { 10, 20, 10  },
+  { 10, 20, 30  },
+  { 10, 20, 5   },
+  { 10, 20, 100 },
+  { 30, 60, 0   },
+  { 30, 60, 10  },
+  { 10, 20, 100 },
+  { 1,  1,  1   },
+  { 40, 60, 200 }
+};
 
 static gfx_texrect_t rc_left[] = {
   {{ 0, 0, 16, 16 }},
@@ -503,7 +521,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   if (!(player.flags & 0x100))
     player.splash = FALSE;
 
-  // Spike damage
+  // Spike val
   // if (player.flags & 0x400)
   //   plr_damage(10);
 
@@ -551,7 +569,127 @@ void plr_act(const u32 btns, const u32 trig) {
   if (!(player.cond & PLRCOND_ALIVE))
     return;
 
+  if (player.exp_wait) --player.exp_wait;
+  if (player.shock) --player.shock;
+
   plr_act_normal(btns, trig);
 
   player.cond &= ~PLRCOND_UNKNOWN20;
+}
+
+void plr_damage(int val) {
+  if (!(game_flags & 2))
+    return;
+
+  if (player.shock)
+    return;
+
+  // Damage player
+  snd_play_sound(CHAN_MISC, 16, SOUND_MODE_PLAY);
+  player.cond &= ~1;
+  player.shock = 128;
+
+  if (player.unit != 1)
+    player.yvel = -0x400;
+
+  player.life -= (s16)val;
+
+  // Lose a whimsical star
+  if (player.equip & EQUIP_WHIMSICAL_STAR && player.star > 0)
+    player.star = (s16)player.star - 1;
+
+  // Lose experience
+  if (player.equip & EQUIP_ARMS_BARRIER)
+    player.held_arms[player.arm].exp -= val;
+  else
+    player.held_arms[player.arm].exp -= val * 2;
+
+  while (player.held_arms[player.arm].exp < 0) {
+    if (player.held_arms[player.arm].level > 1) {
+      --player.held_arms[player.arm].level;
+
+      int lv = player.held_arms[player.arm].level - 1;
+      int arm_id = player.held_arms[player.arm].id;
+
+      player.held_arms[player.arm].exp = plr_arms_exptab[arm_id][lv] + player.held_arms[player.arm].exp;
+
+      // if (player.life > 0 && player.held_arms[player.arm].code != 13)
+      //   SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_RIGHT);
+    } else {
+      player.held_arms[player.arm].exp = 0;
+    }
+  }
+
+  // Tell player how much val was taken
+  // SetValueView(&player.x, &player.y, -val);
+
+  // Death
+  if (player.life <= 0) {
+    snd_play_sound(CHAN_MISC, 17, SOUND_MODE_PLAY);
+    player.cond = 0;
+    npc_death_fx(player.x, player.y, TO_FIX(10), 0x40);
+    // StartTextScript(40);
+  }
+}
+
+void plr_add_life(int val) {
+  player.life += val;
+  if (player.life > player.max_life)
+    player.life = player.max_life;
+  // player.life_br = player.life;
+}
+
+void plr_add_exp(int val) {
+  int lv = player.held_arms[player.arm].level - 1;
+  const int arm_id = player.held_arms[player.arm].id;
+
+  player.held_arms[player.arm].exp += val;
+
+  if (lv == 2) {
+    if (player.held_arms[player.arm].exp >= plr_arms_exptab[arm_id][lv]) {
+      player.held_arms[player.arm].exp = plr_arms_exptab[arm_id][lv];
+      if (player.equip & EQUIP_WHIMSICAL_STAR) {
+        if (player.star < 3)
+          ++player.star;
+      }
+    }
+  } else {
+    for (; lv < 2; ++lv) {
+      if (player.held_arms[player.arm].exp >= plr_arms_exptab[arm_id][lv]) {
+        ++player.held_arms[player.arm].level;
+        player.held_arms[player.arm].exp = 0;
+        if (arm_id != 13) {
+          snd_play_sound(CHAN_MISC, 27, SOUND_MODE_PLAY);
+          // SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
+        }
+      }
+    }
+  }
+
+  if (arm_id != 13) {
+    player.exp_count += val;
+    player.exp_wait = 30;
+  } else {
+    player.exp_wait = 10;
+  }
+}
+
+void plr_add_ammo(int arm, int val) {
+  // Missile Launcher
+  int a = 0;
+  while (a < PLR_MAX_HELD_ARMS && player.held_arms[a].id != 5)
+    ++a;
+
+  if (a == PLR_MAX_HELD_ARMS) {
+    // Super Missile Launcher
+    a = 0;
+    while (a < PLR_MAX_HELD_ARMS && player.held_arms[a].id != 10)
+      ++a;
+    if (a == PLR_MAX_HELD_ARMS)
+      return;
+  }
+
+  player.held_arms[a].ammo += val;
+  if (player.held_arms[a].ammo > player.held_arms[a].max_ammo)
+    player.held_arms[a].ammo = player.held_arms[a].max_ammo;
 }
