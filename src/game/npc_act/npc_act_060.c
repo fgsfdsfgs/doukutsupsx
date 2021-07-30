@@ -920,8 +920,10 @@ void npc_act_067(npc_t *npc) {
   else
     npc->rect = &rc_right[npc->anim];
 
-  if (npc->act == 1 && npc->anim_wait < 32)
+  if (npc->act == 1 && npc->anim_wait < 32) {
     npc->rect_delta.bottom = (++npc->anim_wait / 2) - 16;
+    npc->rect_prev = NULL; // force texrect update
+  }
 }
 
 // Balrog (running)
@@ -1340,6 +1342,7 @@ void npc_act_073(npc_t *npc) {
   if (npc->dir == 2) {
     npc->rect_delta.top = 2;
     npc->rect_delta.bottom = 2;
+    npc->rect_prev = NULL; // force texrect update
   }
 
   if (++npc->act_wait > 10) {

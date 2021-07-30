@@ -156,11 +156,13 @@ void npc_act_001(npc_t *npc) {
       case 5:
         npc->rect_delta.top = 16;
         npc->rect_delta.bottom = 16;
+        npc->rect_prev = NULL; // force texrect update
         break;
 
       case 20:
         npc->rect_delta.top = 32;
         npc->rect_delta.bottom = 32;
+        npc->rect_prev = NULL; // force texrect update
         break;
     }
 
@@ -655,7 +657,7 @@ void npc_act_008(npc_t *npc) {
         }
       } else {
         npc->bits &= ~NPC_SHOOTABLE;
-        npc->rect_delta.right = -npc->rect->right;
+        npc->rect = NULL;
         npc->damage = 0;
         npc->xvel = 0;
         npc->yvel = 0;
@@ -1211,9 +1213,9 @@ void npc_act_012(npc_t *npc) {
 
   if (npc->act == 71) {
     npc->rect_delta.bottom = npc->rect_delta.top + npc->act_wait / 2 - npc->rect->bottom;
-
     if (npc->act_wait % 2)
       npc->rect_delta.left = 1;
+    npc->rect_prev = NULL; // force texrect update
   }
 }
 

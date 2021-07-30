@@ -168,11 +168,14 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
   if (npc->rect_prev != npc->rect) {
     npc->rect_prev = npc->rect;
     if (npc->rect) {
-      npc->texrect.r = *npc->rect;
-      npc->texrect.r.x += npc->rect_delta.x;
-      npc->texrect.r.y += npc->rect_delta.y;
-      npc->texrect.r.w += npc->rect_delta.w;
-      npc->texrect.r.h += npc->rect_delta.h;
+      npc->texrect.r.x = npc->rect->x + npc->rect_delta.x;
+      npc->texrect.r.y = npc->rect->y + npc->rect_delta.y;
+      npc->texrect.r.w = npc->rect->w + npc->rect_delta.w;
+      npc->texrect.r.h = npc->rect->h + npc->rect_delta.h;
+      npc->rect_delta.x = 0;
+      npc->rect_delta.y = 0;
+      npc->rect_delta.w = 0;
+      npc->rect_delta.h = 0;
       gfx_set_texrect(&npc->texrect, npc->surf);
     }
   }
