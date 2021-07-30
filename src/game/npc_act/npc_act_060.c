@@ -1,7 +1,7 @@
 #include "game/npc_act/npc_act.h"
 
 // Toroko
-void act_npc_060(npc_t *npc) {
+void npc_act_060(npc_t *npc) {
   static const rect_t rc_left[8] = {
     {0, 64, 16, 80},  {16, 64, 32, 80}, {32, 64, 48, 80},   {16, 64, 32, 80},
     {48, 64, 64, 80}, {16, 64, 32, 80}, {112, 64, 128, 80}, {128, 64, 144, 80},
@@ -153,7 +153,7 @@ void act_npc_060(npc_t *npc) {
 }
 
 // King
-void act_npc_061(npc_t *npc) {
+void npc_act_061(npc_t *npc) {
   int i;
 
   static const rect_t rc_left[11] = {
@@ -372,7 +372,7 @@ void act_npc_061(npc_t *npc) {
 }
 
 // Kazuma at computer
-void act_npc_062(npc_t *npc) {
+void npc_act_062(npc_t *npc) {
   static const rect_t rc_left[3] = {
     {272, 192, 288, 216},
     {288, 192, 304, 216},
@@ -431,7 +431,7 @@ void act_npc_062(npc_t *npc) {
 }
 
 // Toroko with stick
-void act_npc_063(npc_t *npc) {
+void npc_act_063(npc_t *npc) {
   static const rect_t rc_left[6] = {
     {64, 64, 80, 80}, {80, 64, 96, 80}, {64, 64, 80, 80},
     {96, 64, 112, 80}, {112, 64, 128, 80}, {128, 64, 144, 80},
@@ -545,7 +545,7 @@ void act_npc_063(npc_t *npc) {
 }
 
 // First Cave Critter
-void act_npc_064(npc_t *npc) {
+void npc_act_064(npc_t *npc) {
   static const rect_t rc_left[3] = {
     {0, 0, 16, 16},
     {16, 0, 32, 16},
@@ -644,7 +644,7 @@ void act_npc_064(npc_t *npc) {
 }
 
 // First Cave Bat
-void act_npc_065(npc_t *npc) {
+void npc_act_065(npc_t *npc) {
   switch (npc->act) {
     case 0:
       npc->tgt_x = npc->x;
@@ -709,7 +709,7 @@ void act_npc_065(npc_t *npc) {
 }
 
 // Misery bubble
-void act_npc_066(npc_t *npc) {
+void npc_act_066(npc_t *npc) {
   static const rect_t rect[4] = {
     {32, 192, 56, 216},
     {56, 192, 80, 216},
@@ -780,7 +780,7 @@ void act_npc_066(npc_t *npc) {
 }
 
 // Misery (floating)
-void act_npc_067(npc_t *npc) {
+void npc_act_067(npc_t *npc) {
   switch (npc->act) {
     case 0:
       npc->act = 1;
@@ -925,7 +925,7 @@ void act_npc_067(npc_t *npc) {
 }
 
 // Balrog (running)
-void act_npc_068(npc_t *npc) {
+void npc_act_068(npc_t *npc) {
   switch (npc->act) {
     case 0:
       npc->act = 1;
@@ -1107,7 +1107,7 @@ void act_npc_068(npc_t *npc) {
 }
 
 // Pignon
-void act_npc_069(npc_t *npc) {
+void npc_act_069(npc_t *npc) {
   static const rect_t rc_left[6] = {
     {48, 0, 64, 16}, {64, 0, 80, 16}, {80, 0, 96, 16},
     {96, 0, 112, 16}, {48, 0, 64, 16}, {112, 0, 128, 16},
@@ -1221,7 +1221,7 @@ void act_npc_069(npc_t *npc) {
 }
 
 // Sparkle
-void act_npc_070(npc_t *npc) {
+void npc_act_070(npc_t *npc) {
   static const rect_t rect[4] = {
     {96, 48, 112, 64},
     {112, 48, 128, 64},
@@ -1240,7 +1240,7 @@ void act_npc_070(npc_t *npc) {
 }
 
 // Chinfish
-void act_npc_071(npc_t *npc) {
+void npc_act_071(npc_t *npc) {
   switch (npc->act) {
     case 0:
       npc->act = 1;
@@ -1289,7 +1289,7 @@ void act_npc_071(npc_t *npc) {
 }
 
 // Sprinkler
-void act_npc_072(npc_t *npc) {
+void npc_act_072(npc_t *npc) {
   if (npc->dir == 0) {
     if (++npc->anim_wait > 1) {
       npc->anim_wait = 0;
@@ -1321,7 +1321,7 @@ void act_npc_072(npc_t *npc) {
 }
 
 // Water droplet
-void act_npc_073(npc_t *npc) {
+void npc_act_073(npc_t *npc) {
   static const rect_t rect[5] = {
     {72, 16, 74, 18}, {74, 16, 76, 18}, {76, 16, 78, 18},
     {78, 16, 80, 18}, {80, 16, 82, 18},
@@ -1353,7 +1353,7 @@ void act_npc_073(npc_t *npc) {
 }
 
 // Jack
-void act_npc_074(npc_t *npc) {
+void npc_act_074(npc_t *npc) {
   static const rect_t rc_left[6] = {
     {64, 0, 80, 16}, {80, 0, 96, 16}, {96, 0, 112, 16},
     {64, 0, 80, 16}, {112, 0, 128, 16}, {64, 0, 80, 16},
@@ -1426,7 +1426,7 @@ void act_npc_074(npc_t *npc) {
 }
 
 // Kanpachi (fishing)
-void act_npc_075(npc_t *npc) {
+void npc_act_075(npc_t *npc) {
   static const rect_t rc_left[2] = {
     {272, 32, 296, 56},
     {296, 32, 320, 56},
@@ -1452,7 +1452,7 @@ void act_npc_075(npc_t *npc) {
 }
 
 // Flowers
-void act_npc_076(npc_t *npc) {
+void npc_act_076(npc_t *npc) {
   static const rect_t rect[8] = {
     {0, 0, 16, 16},  {16, 0, 32, 16}, {32, 0, 48, 16},  {48, 0, 64, 16},
     {64, 0, 80, 16}, {80, 0, 96, 16}, {96, 0, 112, 16}, {112, 0, 128, 16},
@@ -1461,7 +1461,7 @@ void act_npc_076(npc_t *npc) {
 }
 
 // Yamashita
-void act_npc_077(npc_t *npc) {
+void npc_act_077(npc_t *npc) {
   static const rect_t rc[3] = {
     {0, 16, 48, 48},
     {48, 16, 96, 48},
@@ -1499,7 +1499,7 @@ void act_npc_077(npc_t *npc) {
 }
 
 // Pot
-void act_npc_078(npc_t *npc) {
+void npc_act_078(npc_t *npc) {
   static const rect_t rc[2] = {
     {160, 48, 176, 64},
     {176, 48, 192, 64},
@@ -1512,7 +1512,7 @@ void act_npc_078(npc_t *npc) {
 }
 
 // Mahin
-void act_npc_079(npc_t *npc) {
+void npc_act_079(npc_t *npc) {
   static const rect_t rc_left[3] = {
     {0, 0, 16, 16},
     {16, 0, 32, 16},
