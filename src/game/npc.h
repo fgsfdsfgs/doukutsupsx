@@ -36,7 +36,6 @@ enum npc_bits {
   NPC_SHOW_DAMAGE              = 1 << 15, // Show the number of damage taken when harmed
 };
 
-
 enum npc_classnames {
   NPC_NULL = 0,
   NPC_EXP = 1,
@@ -92,6 +91,7 @@ typedef struct npc {
   u8 shock;
   u8 snd_die;
   u8 snd_hit;
+  u8 exp;
 } npc_t;
 
 extern u8 npc_flags[NPC_MAX_FLAGS];
@@ -99,21 +99,15 @@ extern npc_t npc_list[NPC_MAX];
 extern int npc_list_max;
 
 void npc_init(const char *tabpath);
-
 void npc_parse_event_list(const stage_event_t *ev, const int numev);
-
 npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *parent, int startidx);
-
 void npc_delete(npc_t *npc);
-
 void npc_delete_by_class(const int class_num, const int spawn_smoke);
-
 void npc_kill(npc_t *npc);
-
-void npc_death_smoke(int x, int y, int w, int num);
+void npc_death_fx(int x, int y, int w, int num);
+void npc_spawn_exp(int x, int y, int exp);
 
 void npc_draw(int cam_x, int cam_y);
-
 void npc_act(void);
 
 static inline u8 npc_get_flag(const u32 i) {

@@ -26,7 +26,7 @@ LIBDIRS		+=
 LIBS		= -lpsxgpu -lpsxspu -lpsxetc -lpsxapi -lpsxcd -lc
 
 # C compiler flags
-CFLAGS		= -g -O2 -fno-builtin -fdata-sections -ffunction-sections -I$(SRCDIR)
+CFLAGS		= -g -O3 -fno-builtin -fdata-sections -ffunction-sections -I$(SRCDIR)
 
 # C++ compiler flags
 CPPFLAGS	= $(CFLAGS) -fno-exceptions

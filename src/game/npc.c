@@ -24,7 +24,7 @@ void npc_init(const char *tabpath) {
   npc_load_classtab(tabpath);
 }
 
-static inline void npc_init_instance(npc_t *npc, const u32 class_num) {
+static inline void npc_set_class(npc_t *npc, const u32 class_num) {
   const npc_class_t *nclass = &npc_classtab[class_num];
   npc->info = nclass;
   npc->class_num = class_num;
@@ -50,7 +50,7 @@ void npc_kill(npc_t *npc) {
   npc->x = tx;
   npc->y = ty;
   npc->cond |= NPCCOND_ALIVE;
-  npc_init_instance(npc, 3);
+  npc_set_class(npc, 3);
 }
 
 void npc_death_fx(int x, int y, int w, int num) {
@@ -91,6 +91,14 @@ void npc_delete_by_class(const int class_num, const int spawn_smoke) {
   }
 }
 
+static inline void npc_init_instance(npc_t *npc, int class_num, int x, int y, int dir) {
+  npc_set_class(npc, class_num);
+  npc->cond |= NPCCOND_ALIVE;
+  npc->dir = dir;
+  npc->x = x;
+  npc->y = y;
+}
+
 npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *parent, int startidx) {
   int n = startidx;
   while (n < NPC_MAX && npc_list[n].cond)
@@ -104,30 +112,25 @@ npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *pa
 
   npc_t *npc = &npc_list[n];
   memset(npc, 0, sizeof(*npc));
-  npc_init_instance(npc, class_num);
-  npc->cond |= NPCCOND_ALIVE;
-  npc->dir = dir;
-  npc->x = x;
-  npc->y = y;
+  npc_init_instance(npc, class_num, x, y, dir);
   npc->xvel = xv;
   npc->yvel = yv;
+  npc->dir = dir;
   npc->other = parent;
 
   return npc;
 }
 
 void npc_parse_event_list(const stage_event_t *ev, const int numev) {
+  memset(npc_list, 0, sizeof(npc_list));
+
   for (int i = 0; i < numev; ++i) {
     const int dir = (ev[i].bits & NPC_SPAWN_IN_OTHER_DIRECTION) ? 2 : 0;
     const int x = TO_FIX(ev[i].x * TILE_SIZE);
     const int y = TO_FIX(ev[i].y * TILE_SIZE);
 
     npc_t *npc = &npc_list[i + NPC_STARTIDX_EVENT];
-    npc_init_instance(npc, ev[i].class_num);
-    npc->cond |= NPCCOND_ALIVE;
-    npc->dir = dir;
-    npc->x = x;
-    npc->y = y;
+    npc_init_instance(npc, ev[i].class_num, x, y, dir);
     npc->event_flag = ev[i].event_flag;
     npc->event_num = ev[i].event_num;
     npc->bits |= ev[i].bits;
@@ -144,6 +147,7 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
 
     printf("spawned a %03u at %04d, %04d\n", npc->class_num, ev[i].x << 4, ev[i].y << 4);
   }
+
   npc_list_max = NPC_STARTIDX_EVENT + numev - 1;
 }
 
@@ -200,5 +204,27 @@ void npc_draw(int cam_x, int cam_y) {
   for (int i = 0; i <= npc_list_max; ++i) {
     if (npc_list[i].cond & NPCCOND_ALIVE)
       npc_draw_instance(&npc_list[i], cam_x, cam_y);
+  }
+}
+
+void npc_spawn_exp(int x, int y, int exp) {
+  int n = NPC_STARTIDX_DYNAMIC;
+
+  while (exp) {
+    npc_t *npc = npc_spawn(NPC_EXP, x, y, 0, 0, 0, NULL, n++);
+  
+    int sub_exp;
+    if (exp >= 20) {
+      exp -= 20;
+      sub_exp = 20;
+    } else if (exp >= 5) {
+      exp -= 5;
+      sub_exp = 5;
+    } else if (exp >= 1) {
+      exp -= 1;
+      sub_exp = 1;
+    }
+
+    npc->exp = sub_exp;
   }
 }
