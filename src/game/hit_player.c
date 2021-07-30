@@ -499,6 +499,9 @@ static inline void hit_player_map(const u32 btns) {
         break;
     }
   }
+
+  if (player.y > stage_water_y + TO_FIX(4))
+    player.flags |= 0x100;
 }
 
 void hit_player(const u32 btns) {

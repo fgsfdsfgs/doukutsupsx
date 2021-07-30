@@ -6,9 +6,10 @@
 #include "game/stage.h"
 #include "game/npctab.h"
 
-#define NPC_MAX 0x200
+#define NPC_MAX 512
 #define NPC_MAX_FLAGS 1024
-#define NPC_RESERVE_DYNAMIC 170
+#define NPC_STARTIDX_DYNAMIC 256
+#define NPC_STARTIDX_EVENT 170
 #define NPC_MAIN_TABLE "\\MAIN\\NPC.TBL;1"
 
 enum npc_cond_flags {

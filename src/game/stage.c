@@ -14,6 +14,8 @@
 
 // pointer to current stage
 stage_t *stage_data;
+// water level
+int stage_water_y = TO_FIX(240 * 0x10);
 
 // currently loaded stage bank
 static stage_bank_t *stage_bank;

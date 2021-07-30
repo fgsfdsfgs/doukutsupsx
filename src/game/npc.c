@@ -79,7 +79,7 @@ void npc_delete(npc_t *npc) {
 }
 
 void npc_delete_by_class(const int class_num, const int spawn_smoke) {
-  for (int i = 0; i < npc_list_max; ++i) {
+  for (int i = 0; i <= npc_list_max; ++i) {
     npc_t *npc = &npc_list[i];
     if ((npc->cond & NPCCOND_ALIVE) && npc->class_num == class_num) {
       npc_delete(npc);
@@ -122,7 +122,12 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
     const int x = TO_FIX(ev[i].x * TILE_SIZE);
     const int y = TO_FIX(ev[i].y * TILE_SIZE);
 
-    npc_t *npc = npc_spawn(ev[i].class_num, x, y, 0, 0, dir, NULL, i + NPC_RESERVE_DYNAMIC);
+    npc_t *npc = &npc_list[i + NPC_STARTIDX_EVENT];
+    npc_init_instance(npc, ev[i].class_num);
+    npc->cond |= NPCCOND_ALIVE;
+    npc->dir = dir;
+    npc->x = x;
+    npc->y = y;
     npc->event_flag = ev[i].event_flag;
     npc->event_num = ev[i].event_num;
     npc->bits |= ev[i].bits;
@@ -139,6 +144,7 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
 
     printf("spawned a %03u at %04d, %04d\n", npc->class_num, ev[i].x << 4, ev[i].y << 4);
   }
+  npc_list_max = NPC_STARTIDX_EVENT + numev - 1;
 }
 
 void npc_act(void) {
@@ -191,7 +197,7 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
 void npc_draw(int cam_x, int cam_y) {
   cam_x = TO_INT(cam_x);
   cam_y = TO_INT(cam_y);
-  for (int i = 0; i < npc_list_max; ++i) {
+  for (int i = 0; i <= npc_list_max; ++i) {
     if (npc_list[i].cond & NPCCOND_ALIVE)
       npc_draw_instance(&npc_list[i], cam_x, cam_y);
   }

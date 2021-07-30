@@ -70,6 +70,7 @@ enum bktype {
 };
 
 extern stage_t *stage_data;
+extern int stage_water_y;
 
 void stage_init(void);
 

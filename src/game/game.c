@@ -29,7 +29,7 @@ void game_update(void) {
 
   // call `hit` on all entities
   hit_player(input_held);
-  // hit_npc();
+  hit_npc();
 
   // animate the player
   plr_animate(input_held);
