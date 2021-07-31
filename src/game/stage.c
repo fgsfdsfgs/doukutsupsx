@@ -25,8 +25,13 @@ static stage_t *stages[MAX_STAGES];
 // path to current bank
 static char bank_path[CD_MAX_PATH] = STAGE_PATH_PREFIX STAGE_PATH_FORMAT;
 
+// rect for that one stupid tile in NpcSym
+static gfx_texrect_t rc_snack_tile = { 256, 48, 272, 64 };
+
 void stage_init(void) {
-  // set something up here I dunno
+  // the surface should be already loaded by now
+  if (rc_snack_tile.tpage == 0)
+    gfx_set_texrect(&rc_snack_tile, SURFACE_ID_NPC_SYM);
 }
 
 int stage_load_stage_bank(const u32 id) {
@@ -126,7 +131,9 @@ void stage_draw(int cam_x, int cam_y) {
     for (tx = start_tx; tx <= end_tx; ++tx, ++ptr) {
       tile = *ptr;
       atrb = stage_data->atrb[tile];
-      if (atrb < 0x20 || (atrb >= 0x40 && atrb < 0x80))
+      if (atrb == 0x43)
+        gfx_draw_texrect_16x16(&rc_snack_tile, GFX_LAYER_FRONT, (tx << 4) - cam_x, (ty << 4) - cam_y);
+      else if (atrb < 0x20 || (atrb >= 0x40 && atrb < 0x80))
         gfx_draw_tile(tile & 0xF, tile >> 4, (atrb >= 0x40), (tx << 4) - cam_x, (ty << 4) - cam_y);
     }
   }

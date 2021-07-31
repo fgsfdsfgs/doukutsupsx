@@ -57,6 +57,7 @@ int gfx_load_gfx_bank(const char *path);
 
 void gfx_swap_buffers(void);
 void gfx_draw_texrect(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
+void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
 void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int y);
 
 // converts the `rect` field of `r` into tpage address, UVs and XYWH instead of LTRB
