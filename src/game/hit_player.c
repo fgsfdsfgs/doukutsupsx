@@ -655,7 +655,7 @@ static inline void hit_player_npc(void) {
   if (!(player.cond & PLRCOND_ALIVE) || player.cond & PLRCOND_INVISIBLE)
     return;
 
-  for (int i = 0; i < npc_list_max; ++i) {
+  for (int i = 0; i <= npc_list_max; ++i) {
     npc_t *npc = &npc_list[i];
 
     if (!(npc->cond & NPCCOND_ALIVE))
@@ -697,7 +697,7 @@ static inline void hit_player_npc(void) {
     //   StartTextScript(npc->event_num);
 
     // NPC damage
-    if (game_flags & 2 && !(npc->bits & NPC_INTERACTABLE)) {
+    if (game_flags & GFLAG_INPUT_ENABLED && !(npc->bits & NPC_INTERACTABLE)) {
       if (npc->bits & NPC_REAR_AND_TOP_DONT_HURT) {
         if (hit & 4 && npc->xvel < 0) plr_damage(npc->damage);
         if (hit & 1 && npc->xvel > 0) plr_damage(npc->damage);

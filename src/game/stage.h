@@ -86,8 +86,12 @@ void stage_draw(int cam_x, int cam_y);
 static inline u8 stage_get_atrb(const int x, const int y) {
   if (x < 0 || y < 0 || x >= stage_data->width || y >= stage_data->height)
     return 0;
-  const u8 t = stage_data->map_data[y *stage_data->width + x];
+  const u8 t = stage_data->map_data[y * stage_data->width + x];
   return stage_data->atrb[t];
+}
+
+static inline void stage_shift_tile(const int x, const int y) {
+  --stage_data->map_data[y * stage_data->width + x];
 }
 
 int stage_set_tile(const int x, const int y, const int t);

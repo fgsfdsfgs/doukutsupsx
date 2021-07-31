@@ -578,7 +578,7 @@ void plr_act(const u32 btns, const u32 trig) {
 }
 
 void plr_damage(int val) {
-  if (!(game_flags & 2))
+  if (!(game_flags & GFLAG_INPUT_ENABLED))
     return;
 
   if (player.shock)
@@ -620,14 +620,14 @@ void plr_damage(int val) {
     }
   }
 
-  // Tell player how much val was taken
+  // Tell player how much damage was taken
   // SetValueView(&player.x, &player.y, -val);
 
   // Death
   if (player.life <= 0) {
     snd_play_sound(CHAN_MISC, 17, SOUND_MODE_PLAY);
     player.cond = 0;
-    npc_death_fx(player.x, player.y, TO_FIX(10), 0x40);
+    npc_spawn_death_fx(player.x, player.y, TO_FIX(10), 0x40, 0);
     // StartTextScript(40);
   }
 }

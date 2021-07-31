@@ -1,9 +1,11 @@
 #include "engine/common.h"
 #include "engine/input.h"
 #include "engine/sound.h"
+
 #include "game/game.h"
 #include "game/hit.h"
 #include "game/npc.h"
+#include "game/bullet.h"
 #include "game/player.h"
 #include "game/stage.h"
 
@@ -237,7 +239,7 @@ static inline void hit_check_npc_water(npc_t *npc, int x, int y) {
   npc->flags |= hit;
 }
 
-static inline void hit_npc_map(void) {
+void hit_npc_map(void) {
   static const int ofsx[9] = { 0, 1, 0, 1, 2, 2, 2, 0, 1 };
   static const int ofsy[9] = { 0, 0, 1, 1, 0, 1, 2, 2, 2 };
 
@@ -406,6 +408,83 @@ static inline void hit_npc_map(void) {
   }
 }
 
-void hit_npc(void) {
-  hit_npc_map();
+void hit_npc_bullet(void) {
+  bool hit;
+
+  for (int n = 0; n <= npc_list_max; ++n) {
+    npc_t *npc = &npc_list[n];
+
+    if (!(npc->cond & NPCCOND_ALIVE))
+      continue;
+
+    if (npc->bits & NPC_SHOOTABLE && npc->bits & NPC_INTERACTABLE)
+      continue;
+
+    for (int b = 0; b <= bullet_list_max; ++b) {
+      bullet_t *bul = &bullet_list[b];
+
+      if (!(bul->cond & BULLETCOND_ALIVE))
+        continue;
+
+      if (bul->damage == -1)
+        continue;
+
+      // Check if bullet touches npc
+      hit = FALSE;
+      if (npc->bits & NPC_SHOOTABLE
+        && npc->x - npc->hit.back < bul->x + bul->enemy_xl
+        && npc->x + npc->hit.back > bul->x - bul->enemy_xl
+        && npc->y - npc->hit.top < bul->y + bul->enemy_yl
+        && npc->y + npc->hit.bottom > bul->y - bul->enemy_yl)
+        hit = TRUE;
+      else if (npc->bits & NPC_INVULNERABLE
+        && npc->x - npc->hit.back < bul->x + bul->block_xl
+        && npc->x + npc->hit.back > bul->x - bul->block_xl
+        && npc->y - npc->hit.top < bul->y + bul->block_yl
+        && npc->y + npc->hit.bottom > bul->y - bul->block_yl)
+        hit = TRUE;
+
+      if (hit) {
+        // Damage NPC
+        if (npc->bits & NPC_SHOOTABLE) {
+          npc->life -= bul->damage;
+
+          if (npc->life < 1) {
+            npc->life = 0;
+
+            if (npc->bits & NPC_SHOW_DAMAGE)
+              npc->damage_view -= bul->damage;
+
+            if ((player.cond & PLRCOND_ALIVE) && npc->bits & NPC_EVENT_WHEN_KILLED) {
+              // StartTextScript(npc->event_num);
+            } else {
+              npc->cond |= NPCCOND_KILLED;
+            }
+          } else {
+            if (npc->shock < 14) {
+              // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
+              // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
+              // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
+              snd_play_sound(-1, npc->snd_hit, SOUND_MODE_PLAY);
+              npc->shock = 16;
+            }
+
+            if (npc->bits & NPC_SHOW_DAMAGE)
+              npc->damage_view -= bul->damage;
+          }
+        } else if (!(bul->bits & 0x10)) {
+          // Hit invulnerable NPC
+          // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
+          snd_play_sound(-1, 31, SOUND_MODE_PLAY);
+          bul->life = 0;
+          continue;
+        }
+
+        --bul->life;
+      }
+    }
+
+    if (npc->cond & NPCCOND_KILLED)
+      npc_kill(npc, TRUE);
+  }
 }

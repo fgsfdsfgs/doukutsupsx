@@ -404,7 +404,7 @@ void npc_act_340(npc_t *npc) {
       npc->tgt_x = npc->x;
       npc->xvel = 0;
       npc->bits &= ~NPC_SHOOTABLE;
-      npc_death_fx(npc->x, npc->y, 0x10, 0x10);
+      npc_spawn_death_fx(npc->x, npc->y, 0x10, 0x10, 0);
       snd_play_sound(-1, 72, SOUND_MODE_PLAY);
       // Fallthrough
     case 1001:
@@ -519,7 +519,7 @@ void npc_act_342(npc_t *npc) {
     {280, 48, 320, 88},
   };
 
-  unsigned char deg;
+  u8 deg;
 
   if (npc->act < 1000 && npc->parent->act >= 1000) npc->act = 1000;
 
@@ -574,7 +574,7 @@ void npc_act_342(npc_t *npc) {
       if (npc->life < 900) {
         npc->act = 22;
         npc->bits &= ~NPC_SHOOTABLE;
-        npc_death_fx(npc->x, npc->y, 0x2000, 0x20);
+        npc_spawn_death_fx(npc->x, npc->y, 0x2000, 0x20, 0);
         snd_play_sound(-1, 71, SOUND_MODE_PLAY);
       }
 
@@ -643,7 +643,7 @@ void npc_act_342(npc_t *npc) {
       npc->anim = 2;
       npc->damage = 5;
       npc->bits &= ~(NPC_IGNORE_SOLIDITY | NPC_SHOOTABLE);
-      npc_death_fx(npc->x, npc->y, 0x2000, 0x20);
+      npc_spawn_death_fx(npc->x, npc->y, 0x2000, 0x20, 0);
       snd_play_sound(-1, 71, SOUND_MODE_PLAY);
       // Fallthrough
     case 41:
@@ -685,9 +685,9 @@ void npc_act_342(npc_t *npc) {
         else
           npc->anim = 0;
       } else {
-        npc_death_fx(npc->x, npc->y, 0x2000, 0x20);
+        npc_spawn_death_fx(npc->x, npc->y, 0x2000, 0x20, 0);
         snd_play_sound(-1, 71, SOUND_MODE_PLAY);
-        npc_kill(npc);
+        npc_show_death_damage(npc);
         return;
       }
 
@@ -843,7 +843,7 @@ void npc_act_345(npc_t *npc) {
 // Ballos 4 orbiting platform
 void npc_act_346(npc_t *npc) {
   static const rect_t rc = {240, 0, 272, 16};
-  unsigned char deg;
+  u8 deg;
 
   if (npc->act < 1000 && npc->parent->act >= 1000) npc->act = 1000;
 
@@ -1190,7 +1190,7 @@ void npc_act_350(npc_t *npc) {
         npc->xvel += 0x20;
 
       if (npc->x < 0 || npc->x > stage_data->width * 0x200 * 0x10) {
-        npc_kill(npc);
+        npc_show_death_damage(npc);
         return;
       }
 

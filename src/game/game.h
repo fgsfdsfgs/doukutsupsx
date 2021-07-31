@@ -6,8 +6,15 @@
 
 enum dir {
   DIR_LEFT = 0,
-  DIR_CENTER = 1,
+  DIR_UP = 1,
   DIR_RIGHT = 2,
+  DIR_DOWN = 3,
+  DIR_AUTO = 4,
+  DIR_OTHER = 5
+};
+
+enum game_flags {
+  GFLAG_INPUT_ENABLED = 1 << 1,
 };
 
 extern u32 game_tick;

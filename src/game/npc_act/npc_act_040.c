@@ -214,7 +214,7 @@ void npc_act_042(npc_t *npc) {
       npc->yvel = 0;
       npc->act = 14;
 
-      for (n = 0; n < npc_list_max; ++n)
+      for (n = 0; n <= npc_list_max; ++n)
         if (npc_list[n].event_num == 501)
           break;
 
@@ -478,7 +478,7 @@ void npc_act_044(npc_t *npc) {
 
     for (i = 0; i < 10; ++i) npc_spawn(45, npc->x, npc->y, 0, 0, 0, NULL, 0x100);
 
-    npc_death_fx(npc->x, npc->y, npc->view.back, 8);
+    npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
     snd_play_sound(-1, 25, SOUND_MODE_PLAY);
     npc->cond = 0;
   }
@@ -677,7 +677,7 @@ void npc_act_048(npc_t *npc) {
     npc->xvel *= -1;
   } else if (npc->flags & 8) {
     if (++npc->count1 > 2 || npc->dir == 2) {
-      npc_kill(npc);
+      npc_show_death_damage(npc);
       // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     } else {
       npc->yvel = -0x100;
@@ -1063,8 +1063,8 @@ void npc_act_053(npc_t *npc) {
   };
 
   if (npc->parent->class_num == 3) {
-    npc_kill(npc);
-    npc_death_fx(npc->x, npc->y, npc->view.back, 4);
+    npc_show_death_damage(npc);
+    npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 4, 0);
     return;
   }
 
@@ -1181,8 +1181,8 @@ void npc_act_054(npc_t *npc) {
       npc->shock += (u8)npc->act_wait;
 
       if (npc->act_wait > 50) {
-        npc_kill(npc);
-        npc_death_fx(npc->x, npc->y, npc->view.back, 8);
+        npc_show_death_damage(npc);
+        npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
         snd_play_sound(-1, 25, SOUND_MODE_PLAY);
       }
 

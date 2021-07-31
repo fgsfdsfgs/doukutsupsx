@@ -13,6 +13,7 @@
 #define NPC_MAIN_TABLE "\\MAIN\\NPC.TBL;1"
 
 enum npc_cond_flags {
+  NPCCOND_KILLED      = 0x08, // Hit by a bullet and died
   NPCCOND_DAMAGE_BOSS = 0x10, // (boss npc exclusive) When set, damage the main boss
   NPCCOND_ALIVE       = 0x80, // Whether the NPC is alive or not
 };
@@ -77,6 +78,7 @@ typedef struct npc {
   u16 bits;
   s16 life;
   s16 damage;
+  s16 damage_view;
   s16 event_flag;
   s16 event_num;
   s16 anim;
@@ -104,9 +106,12 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev);
 npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *parent, int startidx);
 void npc_delete(npc_t *npc);
 void npc_delete_by_class(const int class_num, const int spawn_smoke);
-void npc_kill(npc_t *npc);
-void npc_death_fx(int x, int y, int w, int num);
+void npc_show_death_damage(npc_t *npc);
+void npc_kill(npc_t *npc, bool show_damage);
+void npc_spawn_death_fx(int x, int y, int w, int num, int up);
 void npc_spawn_exp(int x, int y, int exp);
+npc_t *npc_spawn_life(int x, int y, int val);
+npc_t *npc_spawn_ammo(int x, int y, int val);
 
 void npc_draw(int cam_x, int cam_y);
 void npc_act(void);

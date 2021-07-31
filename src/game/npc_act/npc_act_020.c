@@ -848,7 +848,7 @@ void npc_act_034(npc_t *npc) {
 void npc_act_035(npc_t *npc) {
   if (npc->act < 3 && npc->life < 90) {
     snd_play_sound(-1, 71, SOUND_MODE_PLAY);
-    npc_death_fx(npc->x, npc->y, npc->view.back, 8);
+    npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
     npc_spawn_exp(npc->x, npc->y, npc->info->exp);
     npc->act = 3;
     npc->act_wait = 0;
@@ -1114,7 +1114,7 @@ void npc_act_038(npc_t *npc) {
 
     case 10:
       npc->act = 11;
-      npc_death_fx(npc->x, npc->y, npc->view.back, 8);
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
       // Fallthrough
     case 11:
       npc->rect = NULL;

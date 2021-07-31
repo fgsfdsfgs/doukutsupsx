@@ -8,6 +8,7 @@
 
 #include "game/stage.h"
 #include "game/npc.h"
+#include "game/player.h"
 #include "game/npctab.h"
 
 u8 npc_flags[NPC_MAX_FLAGS];
@@ -44,7 +45,8 @@ static inline void npc_set_class(npc_t *npc, const u32 class_num) {
   npc->view.bottom = TO_FIX((int)nclass->view.bottom);
 }
 
-void npc_kill(npc_t *npc) {
+// i.e. turn into the damage holder object
+void npc_show_death_damage(npc_t *npc) {
   const int tx = npc->x;
   const int ty = npc->y;
   memset(npc, 0, sizeof(npc));
@@ -54,7 +56,70 @@ void npc_kill(npc_t *npc) {
   npc_set_class(npc, 3);
 }
 
-void npc_death_fx(int x, int y, int w, int num) {
+void npc_kill(npc_t *npc, bool show_damage) {
+  int val;
+
+  // Play death sound
+  snd_play_sound(-1, npc->snd_die, SOUND_MODE_PLAY);
+
+  // Create smoke
+  switch (npc->info->size) {
+    case 1:
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 3, 0);
+      break;
+
+    case 2:
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 7, 0);
+      break;
+
+    case 3:
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 12, 0);
+      break;
+  }
+
+  // Create drop
+  if (npc->exp != 0) {
+    switch (m_rand(1, 5)) {
+      case 1:
+        // Spawn health
+        if (npc->exp > 6)
+          val = 6;
+        else
+          val = 2;
+        npc_spawn_life(npc->x, npc->y, val);
+        break;
+
+      case 2:
+        // Spawn missile launcher ammo
+        if (npc->exp > 6)
+          val = 3;
+        else
+          val = 1;
+        if (npc_spawn_ammo(npc->x, npc->y, val))
+          break;
+
+        // Fallthrough
+      default:
+        // Spawn weapon energy
+        npc_spawn_exp(npc->x, npc->y, npc->exp);
+        break;
+    }
+  }
+
+  // Set flag
+  npc_set_flag(npc->event_flag);
+
+  // Create value view
+  if (npc->bits & NPC_SHOW_DAMAGE) {
+    // SetValueView(&npc->x, &npc->y, npc->damage_view);
+    if (show_damage)
+      npc_show_death_damage(npc);
+  } else {
+    npc->cond = 0;
+  }
+}
+
+void npc_spawn_death_fx(int x, int y, int w, int num, int up) {
   w = TO_INT(w);
 
   // spawn smoke
@@ -62,7 +127,7 @@ void npc_death_fx(int x, int y, int w, int num) {
   for (int i = 0; i < num; ++i) {
     ofs_x = TO_FIX(m_rand(-w, w));
     ofs_y = TO_FIX(m_rand(-w, w));
-    npc_spawn(NPC_SMOKE, ofs_x, ofs_y, 0, 0, 0, NULL, 0x100);
+    npc_spawn(NPC_SMOKE, x + ofs_x, y + ofs_y, 0, 0, up, NULL, 0x100);
   }
 
   // flash
@@ -86,7 +151,7 @@ void npc_delete_by_class(const int class_num, const int spawn_smoke) {
       npc_delete(npc);
       if (spawn_smoke) {
         snd_play_sound(-1, npc->snd_die, SOUND_MODE_PLAY);
-        npc_death_fx(npc->x, npc->y, npc->view.back, 1 << (1 + npc->info->size));
+        npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 1 << (1 + npc->info->size), 0);
       }
     }
   }
@@ -153,7 +218,7 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
 }
 
 void npc_act(void) {
-  for (int i = 0; i < npc_list_max; ++i) {
+  for (int i = 0; i <= npc_list_max; ++i) {
     if (npc_list[i].cond & NPCCOND_ALIVE) {
       npc_func_t actfunc = npc_functab[npc_list[i].class_num];
       actfunc(&npc_list[i]);
@@ -216,6 +281,7 @@ void npc_spawn_exp(int x, int y, int exp) {
 
   while (exp) {
     npc_t *npc = npc_spawn(NPC_EXP, x, y, 0, 0, 0, NULL, n++);
+    if (!npc) break;
   
     int sub_exp;
     if (exp >= 20) {
@@ -231,4 +297,28 @@ void npc_spawn_exp(int x, int y, int exp) {
 
     npc->exp = sub_exp;
   }
+}
+
+npc_t *npc_spawn_life(int x, int y, int val) {
+  npc_t *npc = npc_spawn(87, x, y, 0, 0, 0, NULL, NPC_STARTIDX_DYNAMIC);
+  if (!npc) return NULL;;
+  npc->exp = val;
+  return npc;
+}
+
+npc_t *npc_spawn_ammo(int x, int y, int val) {
+  // check if player has missile launcher or super missile launcher
+  int i;
+  for (i = 0; i < PLR_MAX_HELD_ARMS; ++i) {
+    if (player.held_arms[i].id == 5 || player.held_arms[i].id == 10)
+      break;
+  }
+
+  if (i == PLR_MAX_HELD_ARMS)
+    return NULL;
+
+  npc_t *npc = npc_spawn(86, x, y, 0, 0, 0, NULL, NPC_STARTIDX_DYNAMIC);
+  if (!npc) return NULL;
+  npc->exp = val;
+  return npc;
 }

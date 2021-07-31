@@ -305,7 +305,7 @@ void npc_act_061(npc_t *npc) {
         npc->yvel = -0x400;
         npc->xvel = 0x200;
         snd_play_sound(-1, 71, SOUND_MODE_PLAY);
-        npc_death_fx(npc->x, npc->y, 0x800, 4);
+        npc_spawn_death_fx(npc->x, npc->y, 0x800, 4, 0);
       }
 
       break;
@@ -720,7 +720,7 @@ void npc_act_066(npc_t *npc) {
   switch (npc->act) {
     case 0:
       int a;
-      for (a = 0; a < npc_list_max; ++a)
+      for (a = 0; a <= npc_list_max; ++a)
         if (npc_list[a].event_num == 1000) break;
 
       if (a == NPC_MAX) break;
