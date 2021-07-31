@@ -195,7 +195,7 @@ static inline void plr_draw_arm(int plr_vx, int plr_vy, int cam_vx, int cam_vy) 
     ++player.rect_arms.v;
 
   int tx = plr_vx - cam_vx;
-  int ty = plr_vy - cam_vy - arm_ofs_y;
+  int ty = plr_vy - cam_vy + arm_ofs_y;
   if (player.dir == DIR_LEFT) tx -= 8;
   gfx_draw_texrect(&player.rect_arms, GFX_LAYER_BACK, tx, ty);
 }
