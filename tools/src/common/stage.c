@@ -538,6 +538,8 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   uint32_t num_surf = 0;
   const char *surf_list[(1 + root->numlinks) * 4]; // (npc, boss, tile, bk) * num
   uint32_t surf_id_list[(1 + root->numlinks) * 4];
+  int bg_width = 0;
+  int bg_height = 0;
 
   stage_list[0] = root;
   for (int i = 0; i < root->numlinks && num_stages < MAX_STAGE_LINKS; ++i) {
@@ -602,6 +604,12 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
       goto _end;
     }
 
+    // save background size
+    if (surf_id_list[i] == SURFACE_ID_LEVEL_BACKGROUND) {
+      bg_width = bmp.width;
+      bg_height = bmp.height;
+    }
+
     free(bmp.data);
     bmp.data = NULL;
   }
@@ -611,6 +619,8 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   assert(hdr);
   hdr->numsongs = num_songs;
   hdr->numstages = num_stages;
+  hdr->bk_width = bg_width;
+  hdr->bk_height = bg_height;
 
   // write temporary header
   fwrite(hdr, hdr_size, 1, f);

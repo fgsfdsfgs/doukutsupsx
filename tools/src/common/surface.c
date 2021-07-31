@@ -108,7 +108,11 @@ int convert_surface(const uint32_t id, const struct bitmap *img) {
     return -1;
   }
 
-  vram_surf_t *vsurf = vram_fit_surf(img, clut, (id == SURFACE_ID_LEVEL_TILESET));
+  // tilesets need to be aligned to address them more easily
+  // backgrounds are just sometimes fuckhuge
+  const bool align_to_page = (id == SURFACE_ID_LEVEL_TILESET) ||
+    (id == SURFACE_ID_LEVEL_BACKGROUND);
+  vram_surf_t *vsurf = vram_fit_surf(img, clut, align_to_page);
   if (!vsurf) {
     fprintf(stderr, "error: could not fit #%u in VRAM!\n", id);
     return -2;

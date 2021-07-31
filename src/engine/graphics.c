@@ -84,6 +84,7 @@ int gfx_init(void) {
   fb[1].gpubuf_end = fb[1].gpubuf + sizeof(fb[1].gpubuf);
 
   fb[0].draw.isbg = fb[1].draw.isbg = 1;
+  fb[0].draw.b0 = fb[1].draw.b0 = 0x20;
 
   // clear screen ASAP
   // need two FILL primitives because h=512 doesn't work correctly

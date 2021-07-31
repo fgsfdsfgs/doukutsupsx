@@ -20,7 +20,7 @@ void game_init(void) {
   cam_set_target(&player.x, &player.y, 16);
 
   // load start cave
-  stage_transition(12, 200, 37, 11);
+  stage_transition(2, 200, 5, 6);
 }
 
 void game_frame(void) {
@@ -38,6 +38,7 @@ void game_frame(void) {
   plr_act(btns_held, btns_trig);
   npc_act();
   // boss_act();
+  stage_update();
 
   // call `hit` on all entities
   hit_player();

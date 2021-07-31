@@ -15,7 +15,7 @@
 // pointer to current stage
 stage_t *stage_data;
 // water level
-int stage_water_y = TO_FIX(240 * 0x10);
+int stage_water_y;
 
 // currently loaded stage bank
 static stage_bank_t *stage_bank;
@@ -27,6 +27,12 @@ static char bank_path[CD_MAX_PATH] = STAGE_PATH_PREFIX STAGE_PATH_FORMAT;
 
 // rect for that one stupid tile in NpcSym
 static gfx_texrect_t rc_snack_tile = { 256, 48, 272, 64 };
+
+// rect for the background
+static gfx_texrect_t rc_back;
+// background position
+static int bg_x;
+static int bg_y;
 
 void stage_init(void) {
   // the surface should be already loaded by now
@@ -69,6 +75,13 @@ int stage_load_stage_bank(const u32 id) {
 
   stage_bank = bank;
 
+  // set background texrect
+  rc_back.r.left = 0;
+  rc_back.r.top = 0;
+  rc_back.r.right = stage_bank->bk_width;
+  rc_back.r.bottom = stage_bank->bk_height;
+  gfx_set_texrect(&rc_back, SURFACE_ID_LEVEL_BACKGROUND);
+
   return TRUE;
 }
 
@@ -102,6 +115,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   plr_set_pos(TO_FIX(plr_x) * TILE_SIZE, TO_FIX(plr_y) * TILE_SIZE);
   cam_center_on_player();
 
+  stage_water_y = TO_FIX(240 * TILE_SIZE);
   game_tick = 0;
 
   printf("set stage %u (%p %p): %ux%u ofs %u %u\n", stage_data->id, stage_data, stage_data->map_data,
@@ -111,12 +125,60 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   return true;
 }
 
-void stage_draw(int cam_x, int cam_y) {
-  cam_x = TO_INT(cam_x);
-  cam_y = TO_INT(cam_y);
+void stage_update(void) {
+  switch (stage_data->bk_type) {
+    case BACKGROUND_TYPE_AUTOSCROLL:
+      bg_x += TO_FIX(6);
+      break;
+    case BACKGROUND_TYPE_CLOUDS:
+    case BACKGROUND_TYPE_CLOUDS_WINDY:
+      ++bg_x;
+      bg_x %= 640;
+      break;
+  }
+}
 
-  const int start_tx = cam_x >> TILE_SHIFT;
-  const int start_ty = cam_y >> TILE_SHIFT;
+static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
+  for (int y = start_y; y < VID_HEIGHT; y += rc_back.r.h) {
+    for (int x = start_x; x < VID_WIDTH; x += rc_back.r.w)
+      gfx_draw_texrect(&rc_back, GFX_LAYER_BACK, x, y);
+  }
+}
+
+static inline void stage_draw_bg(const int cam_vx, const int cam_vy) {
+  int start_y, start_x;
+
+  switch (stage_data->bk_type) {
+    case BACKGROUND_TYPE_STATIONARY:
+      stage_draw_bg_grid(0, 0);
+      break;
+
+    case BACKGROUND_TYPE_MOVE_DISTANT:
+      stage_draw_bg_grid(-((cam_vx / 2) % rc_back.r.w), -((cam_vy / 2) % rc_back.r.h));
+      break;
+
+    case BACKGROUND_TYPE_MOVE_NEAR:
+      stage_draw_bg_grid(-(cam_vx % rc_back.r.w), -(cam_vy % rc_back.r.h));
+      break;
+
+    case BACKGROUND_TYPE_AUTOSCROLL:
+      stage_draw_bg_grid(-(TO_FIX(bg_x) % rc_back.r.w), -rc_back.r.h);
+      break;
+
+    case BACKGROUND_TYPE_CLOUDS:
+    case BACKGROUND_TYPE_CLOUDS_WINDY:
+      // TODO
+      break;
+  }
+}
+
+static inline void stage_draw_fg(const int cam_vx, const int cam_vy) {
+  // TODO
+}
+
+static inline void stage_draw_map(const int cam_vx, const int cam_vy) {
+  const int start_tx = cam_vx >> TILE_SHIFT;
+  const int start_ty = cam_vy >> TILE_SHIFT;
   const int end_tx = start_tx + (VID_WIDTH >> TILE_SHIFT);
   const int end_ty = start_ty + (VID_HEIGHT >> TILE_SHIFT);
 
@@ -132,11 +194,19 @@ void stage_draw(int cam_x, int cam_y) {
       tile = *ptr;
       atrb = stage_data->atrb[tile];
       if (atrb == 0x43)
-        gfx_draw_texrect_16x16(&rc_snack_tile, GFX_LAYER_FRONT, (tx << 4) - cam_x, (ty << 4) - cam_y);
+        gfx_draw_texrect_16x16(&rc_snack_tile, GFX_LAYER_FRONT, (tx << 4) - cam_vx, (ty << 4) - cam_vy);
       else if (atrb < 0x20 || (atrb >= 0x40 && atrb < 0x80))
-        gfx_draw_tile(tile & 0xF, tile >> 4, (atrb >= 0x40), (tx << 4) - cam_x, (ty << 4) - cam_y);
+        gfx_draw_tile(tile & 0xF, tile >> 4, (atrb >= 0x40), (tx << 4) - cam_vx, (ty << 4) - cam_vy);
     }
   }
+}
+
+void stage_draw(int cam_x, int cam_y) {
+  cam_x = TO_INT(cam_x);
+  cam_y = TO_INT(cam_y);
+  stage_draw_bg(cam_x, cam_y);
+  stage_draw_map(cam_x, cam_y);
+  stage_draw_fg(cam_x, cam_y);
 }
 
 int stage_set_tile(const int x, const int y, const int t) {

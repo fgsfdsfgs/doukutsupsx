@@ -56,6 +56,8 @@ typedef struct {
 typedef struct {
   uint16_t numstages;   // number of stages in bank (up to MAX_STAGE_LINKS)
   uint16_t numsongs;    // number of sfx_bank + ORG combos (up to MAX_STAGE_LINKS)
+  int16_t bk_width;     // background surface width
+  int16_t bk_height;    // background surface height
   uint32_t surfofs;     // offset to surface bank at the end
   uint32_t stageofs[MAX_STAGE_LINKS]; // offsets to each stage_t and its data (or 0 if unused)
   stage_song_t songs[]; // [numsongs] offsets to each sfx_bank + ORG combo
