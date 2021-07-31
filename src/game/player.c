@@ -204,7 +204,7 @@ static inline void plr_draw_char(int plr_vx, int plr_vy, int cam_vx, int cam_vy)
   gfx_texrect_t rect = player.rect;
   if (player.equip & EQUIP_MIMIGA_MASK)
     rect.r.y += CHAR_FRAME_H * 2;
-  gfx_draw_texrect(&rect, GFX_LAYER_BACK, plr_vx - cam_vx, plr_vy - cam_vy);
+  gfx_draw_texrect_16x16(&rect, GFX_LAYER_BACK, plr_vx - cam_vx + 8, plr_vy - cam_vy + 8);
 }
 
 void plr_draw(int cam_x, int cam_y) {
