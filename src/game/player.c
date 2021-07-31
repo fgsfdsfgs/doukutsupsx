@@ -109,6 +109,9 @@ void plr_init(void) {
   // give some weapons for testing
 
   plr_arm_give(2, 0);
+  plr_arm_give(3, 0);
+  plr_arm_give(5, 100);
+  plr_arm_give(7, 100);
   player.arm = 2;
 }
 

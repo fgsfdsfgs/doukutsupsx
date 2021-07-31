@@ -349,8 +349,6 @@ static void bullet_act_polarstar(bullet_t *bul) {
     return;
   }
 
-  printf("my dir = %d my level = %d\n", bul->dir, level);
-
   if (bul->act == 0) {
     bul->act = 1;
 

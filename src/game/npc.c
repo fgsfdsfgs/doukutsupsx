@@ -181,8 +181,8 @@ npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *pa
   npc_init_instance(npc, class_num, x, y, dir);
   npc->xvel = xv;
   npc->yvel = yv;
-  npc->dir = dir;
   npc->parent = parent;
+  npc->exp = npc->info->exp;
 
   return npc;
 }
@@ -200,6 +200,7 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
     npc->event_flag = ev[i].event_flag;
     npc->event_num = ev[i].event_num;
     npc->bits |= ev[i].bits;
+    npc->exp = npc->info->exp;
 
     if (npc->bits & NPC_APPEAR_WHEN_FLAG_SET) {
       if (npc_get_flag(npc->event_flag))
@@ -210,8 +211,6 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
     } else {
       npc->cond |= NPCCOND_ALIVE;
     }
-
-    printf("spawned a %03u at %04d, %04d\n", npc->class_num, ev[i].x << 4, ev[i].y << 4);
   }
 
   npc_list_max = NPC_STARTIDX_EVENT + numev - 1;
@@ -301,7 +300,7 @@ void npc_spawn_exp(int x, int y, int exp) {
 
 npc_t *npc_spawn_life(int x, int y, int val) {
   npc_t *npc = npc_spawn(87, x, y, 0, 0, 0, NULL, NPC_STARTIDX_DYNAMIC);
-  if (!npc) return NULL;;
+  if (!npc) return NULL;
   npc->exp = val;
   return npc;
 }
