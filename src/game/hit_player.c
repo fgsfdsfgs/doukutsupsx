@@ -15,7 +15,7 @@ static inline void star_particle(void) {
   }
 }
 
-static inline int hit_check_player_block(const u32 btns, int x, int y) {
+static inline int hit_check_player_block(int x, int y) {
   int hit = 0;
 
   // left wall
@@ -28,7 +28,7 @@ static inline int hit_check_player_block(const u32 btns, int x, int y) {
 
     // halt momentum
     if (player.xvel < -0x180) player.xvel = -0x180;
-    if (!(btns & IN_LEFT) && player.xvel < 0) player.xvel = 0;
+    if (!(input_held & IN_LEFT) && player.xvel < 0) player.xvel = 0;
 
     // set that a left wall was hit
     hit |= 1;
@@ -44,7 +44,7 @@ static inline int hit_check_player_block(const u32 btns, int x, int y) {
 
     // halt momentum
     if (player.xvel > 0x180) player.xvel = 0x180;
-    if (!(btns & IN_RIGHT) && player.xvel > 0) player.xvel = 0;
+    if (!(input_held & IN_RIGHT) && player.xvel > 0) player.xvel = 0;
 
     // set that a right wall was hit
     hit |= 4;
@@ -85,7 +85,7 @@ static inline int hit_check_player_block(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_a(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_a(int x, int y) {
   int hit = 0;
 
   if (player.x < (x * 0x10 + 8) * 0x200 && player.x > (x * 0x10 - 8) * 0x200 &&
@@ -106,7 +106,7 @@ static inline int hit_check_player_slope_a(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_b(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_b(int x, int y) {
   int hit = 0;
 
   if (player.x < (x * 0x10 + 8) * 0x200 && player.x > (x * 0x10 - 8) * 0x200 &&
@@ -127,7 +127,7 @@ static inline int hit_check_player_slope_b(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_c(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_c(int x, int y) {
   int hit = 0;
 
   if (player.x < (x * 0x10 + 8) * 0x200 && player.x > (x * 0x10 - 8) * 0x200 &&
@@ -148,7 +148,7 @@ static inline int hit_check_player_slope_c(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_d(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_d(int x, int y) {
   int hit = 0;
 
   if (player.x < (x * 0x10 + 8) * 0x200 && player.x > (x * 0x10 - 8) * 0x200 &&
@@ -169,7 +169,7 @@ static inline int hit_check_player_slope_d(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_e(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_e(int x, int y) {
   int hit = 0;
 
   hit |= 0x10000;
@@ -192,7 +192,7 @@ static inline int hit_check_player_slope_e(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_f(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_f(int x, int y) {
   int hit = 0;
 
   hit |= 0x20000;
@@ -215,7 +215,7 @@ static inline int hit_check_player_slope_f(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_g(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_g(int x, int y) {
   int hit = 0;
 
   hit |= 0x40000;
@@ -238,7 +238,7 @@ static inline int hit_check_player_slope_g(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_slope_h(const u32 btns, int x, int y) {
+static inline int hit_check_player_slope_h(int x, int y) {
   int hit = 0;
 
   hit |= 0x80000;
@@ -261,7 +261,7 @@ static inline int hit_check_player_slope_h(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_water(const u32 btns, int x, int y) {
+static inline int hit_check_player_water(int x, int y) {
   int hit = 0;
 
   if (player.x - player.hit.back < (x * 0x10 + 5) * 0x200 &&
@@ -273,7 +273,7 @@ static inline int hit_check_player_water(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_damage(const u32 btns, int x, int y) {
+static inline int hit_check_player_damage(int x, int y) {
   int hit = 0;
 
   if (player.x - 0x800 < (x * 0x10 + 4) * 0x200 &&
@@ -285,7 +285,7 @@ static inline int hit_check_player_damage(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_damage_w(const u32 btns, int x, int y) {
+static inline int hit_check_player_damage_w(int x, int y) {
   int hit = 0;
 
   if (player.x - 0x800 < (x * 0x10 + 4) * 0x200 &&
@@ -297,7 +297,7 @@ static inline int hit_check_player_damage_w(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_wind_left(const u32 btns, int x, int y) {
+static inline int hit_check_player_wind_left(int x, int y) {
   int hit = 0;
   if (player.x - player.hit.back < (x * 0x10 + 6) * 0x200 &&
       player.x + player.hit.back > (x * 0x10 - 6) * 0x200 &&
@@ -308,7 +308,7 @@ static inline int hit_check_player_wind_left(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_wind_up(const u32 btns, int x, int y) {
+static inline int hit_check_player_wind_up(int x, int y) {
   int hit = 0;
   if (player.x - player.hit.back < (x * 0x10 + 6) * 0x200 &&
       player.x + player.hit.back > (x * 0x10 - 6) * 0x200 &&
@@ -319,7 +319,7 @@ static inline int hit_check_player_wind_up(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_wind_right(const u32 btns, int x, int y) {
+static inline int hit_check_player_wind_right(int x, int y) {
   int hit = 0;
   if (player.x - player.hit.back < (x * 0x10 + 6) * 0x200 &&
       player.x + player.hit.back > (x * 0x10 - 6) * 0x200 &&
@@ -330,7 +330,7 @@ static inline int hit_check_player_wind_right(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline int hit_check_player_wind_down(const u32 btns, int x, int y) {
+static inline int hit_check_player_wind_down(int x, int y) {
   int hit = 0;
   if (player.x - player.hit.back < (x * 0x10 + 6) * 0x200 &&
       player.x + player.hit.back > (x * 0x10 - 6) * 0x200 &&
@@ -341,7 +341,7 @@ static inline int hit_check_player_wind_down(const u32 btns, int x, int y) {
   return hit;
 }
 
-static inline void hit_player_map(const u32 btns) {
+static inline void hit_player_map(const u32 input_held) {
   static const int ofsx[4] = { 0, 1, 0, 1 };
   static const int ofsy[4] = { 0, 0, 1, 1 };
 
@@ -359,144 +359,144 @@ static inline void hit_player_map(const u32 btns) {
       case 0x41:
       case 0x43:
       case 0x46:
-        player.flags |= hit_check_player_block(btns, x, y);
+        player.flags |= hit_check_player_block(x, y);
         break;
 
       // slopes
       case 0x50:
-        player.flags |= hit_check_player_slope_a(btns, x, y);
+        player.flags |= hit_check_player_slope_a(x, y);
         break;
 
       case 0x51:
-        player.flags |= hit_check_player_slope_b(btns, x, y);
+        player.flags |= hit_check_player_slope_b(x, y);
         break;
 
       case 0x52:
-        player.flags |= hit_check_player_slope_c(btns, x, y);
+        player.flags |= hit_check_player_slope_c(x, y);
         break;
 
       case 0x53:
-        player.flags |= hit_check_player_slope_d(btns, x, y);
+        player.flags |= hit_check_player_slope_d(x, y);
         break;
 
       case 0x54:
-        player.flags |= hit_check_player_slope_e(btns, x, y);
+        player.flags |= hit_check_player_slope_e(x, y);
         break;
 
       case 0x55:
-        player.flags |= hit_check_player_slope_f(btns, x, y);
+        player.flags |= hit_check_player_slope_f(x, y);
         break;
 
       case 0x56:
-        player.flags |= hit_check_player_slope_g(btns, x, y);
+        player.flags |= hit_check_player_slope_g(x, y);
         break;
 
       case 0x57:
-        player.flags |= hit_check_player_slope_h(btns, x, y);
+        player.flags |= hit_check_player_slope_h(x, y);
         break;
 
       // spikes
       case 0x42:
-        player.flags |= hit_check_player_damage(btns, x, y);
+        player.flags |= hit_check_player_damage(x, y);
         break;
 
       // water spikes
       case 0x62:
-        player.flags |= hit_check_player_damage_w(btns, x, y);
+        player.flags |= hit_check_player_damage_w(x, y);
         break;
 
       // wind
       case 0x80:
-        player.flags |= hit_check_player_wind_left(btns, x, y);
+        player.flags |= hit_check_player_wind_left(x, y);
         break;
 
       case 0x81:
-        player.flags |= hit_check_player_wind_up(btns, x, y);
+        player.flags |= hit_check_player_wind_up(x, y);
         break;
 
       case 0x82:
-        player.flags |= hit_check_player_wind_right(btns, x, y);
+        player.flags |= hit_check_player_wind_right(x, y);
         break;
 
       case 0x83:
-        player.flags |= hit_check_player_wind_down(btns, x, y);
+        player.flags |= hit_check_player_wind_down(x, y);
         break;
 
       // water
       case 0x02:
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       // water and water blocks (same as the previous case)
       case 0x60:
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x61:
-        player.flags |= hit_check_player_block(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_block(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       // water slopes
       case 0x70:
-        player.flags |= hit_check_player_slope_a(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_a(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x71:
-        player.flags |= hit_check_player_slope_b(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_b(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x72:
-        player.flags |= hit_check_player_slope_c(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_c(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x73:
-        player.flags |= hit_check_player_slope_d(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_d(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x74:
-        player.flags |= hit_check_player_slope_e(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_e(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x75:
-        player.flags |= hit_check_player_slope_f(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_f(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x76:
-        player.flags |= hit_check_player_slope_g(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_g(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0x77:
-        player.flags |= hit_check_player_slope_h(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_slope_h(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       // water current
       case 0xA0:
-        player.flags |= hit_check_player_wind_left(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_wind_left(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0xA1:
-        player.flags |= hit_check_player_wind_up(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_wind_up(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0xA2:
-        player.flags |= hit_check_player_wind_right(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_wind_right(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
 
       case 0xA3:
-        player.flags |= hit_check_player_wind_down(btns, x, y);
-        player.flags |= hit_check_player_water(btns, x, y);
+        player.flags |= hit_check_player_wind_down(x, y);
+        player.flags |= hit_check_player_water(x, y);
         break;
     }
   }
@@ -721,8 +721,8 @@ static inline void hit_player_npc(void) {
   //   SetCaret(player.x, player.y, CARET_QUESTION_MARK, DIR_LEFT);
 }
 
-void hit_player(const u32 btns) {
+void hit_player(const u32 input_held) {
   player.flags = 0;
-  hit_player_map(btns);
+  hit_player_map(input_held);
   hit_player_npc();
 }

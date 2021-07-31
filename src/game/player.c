@@ -24,23 +24,6 @@
 
 player_t player;
 
-const s16 plr_arms_exptab[PLR_MAX_ARMS][3] = {
-  { 0,  0,  100 },
-  { 30, 40, 16  },
-  { 10, 20, 10  },
-  { 10, 20, 20  },
-  { 30, 40, 10  },
-  { 10, 20, 10  },
-  { 10, 20, 30  },
-  { 10, 20, 5   },
-  { 10, 20, 100 },
-  { 30, 60, 0   },
-  { 30, 60, 10  },
-  { 10, 20, 100 },
-  { 1,  1,  1   },
-  { 40, 60, 200 }
-};
-
 static gfx_texrect_t rc_left[] = {
   {{ 0, 0, 16, 16 }},
   {{ 16, 0, 32, 16 }},
@@ -122,6 +105,11 @@ void plr_init(void) {
     rc_arms[i].r.bottom = rc_arms[i].r.top + ARMS_FRAME_H;
     gfx_set_texrect(&rc_arms[i], SURFACE_ID_ARMS);
   }
+
+  // give some weapons for testing
+
+  plr_arm_give(2, 0);
+  player.arm = 2;
 }
 
 void plr_animate(const u32 btns) {
@@ -600,23 +588,21 @@ void plr_damage(int val) {
 
   // Lose experience
   if (player.equip & EQUIP_ARMS_BARRIER)
-    player.held_arms[player.arm].exp -= val;
+    player.arms[player.arm].exp -= val;
   else
-    player.held_arms[player.arm].exp -= val * 2;
+    player.arms[player.arm].exp -= val * 2;
 
-  while (player.held_arms[player.arm].exp < 0) {
-    if (player.held_arms[player.arm].level > 1) {
-      --player.held_arms[player.arm].level;
+  while (player.arms[player.arm].exp < 0) {
+    if (player.arms[player.arm].level > 1) {
+      --player.arms[player.arm].level;
 
-      int lv = player.held_arms[player.arm].level - 1;
-      int arm_id = player.held_arms[player.arm].id;
+      const int lv = player.arms[player.arm].level - 1;
+      player.arms[player.arm].exp = plr_arms_exptab[player.arm][lv] + player.arms[player.arm].exp;
 
-      player.held_arms[player.arm].exp = plr_arms_exptab[arm_id][lv] + player.held_arms[player.arm].exp;
-
-      // if (player.life > 0 && player.held_arms[player.arm].code != 13)
+      // if (player.life > 0 && player.arms[player.arm].code != 13)
       //   SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_RIGHT);
     } else {
-      player.held_arms[player.arm].exp = 0;
+      player.arms[player.arm].exp = 0;
     }
   }
 
@@ -640,14 +626,13 @@ void plr_add_life(int val) {
 }
 
 void plr_add_exp(int val) {
-  int lv = player.held_arms[player.arm].level - 1;
-  const int arm_id = player.held_arms[player.arm].id;
+  int lv = player.arms[player.arm].level - 1;
 
-  player.held_arms[player.arm].exp += val;
+  player.arms[player.arm].exp += val;
 
   if (lv == 2) {
-    if (player.held_arms[player.arm].exp >= plr_arms_exptab[arm_id][lv]) {
-      player.held_arms[player.arm].exp = plr_arms_exptab[arm_id][lv];
+    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][lv]) {
+      player.arms[player.arm].exp = plr_arms_exptab[player.arm][lv];
       if (player.equip & EQUIP_WHIMSICAL_STAR) {
         if (player.star < 3)
           ++player.star;
@@ -655,10 +640,10 @@ void plr_add_exp(int val) {
     }
   } else {
     for (; lv < 2; ++lv) {
-      if (player.held_arms[player.arm].exp >= plr_arms_exptab[arm_id][lv]) {
-        ++player.held_arms[player.arm].level;
-        player.held_arms[player.arm].exp = 0;
-        if (arm_id != 13) {
+      if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][lv]) {
+        ++player.arms[player.arm].level;
+        player.arms[player.arm].exp = 0;
+        if (player.arm != 13) {
           snd_play_sound(CHAN_MISC, 27, SOUND_MODE_PLAY);
           // SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
         }
@@ -666,7 +651,7 @@ void plr_add_exp(int val) {
     }
   }
 
-  if (arm_id != 13) {
+  if (player.arm != 13) {
     player.exp_count += val;
     player.exp_wait = 30;
   } else {
@@ -675,21 +660,16 @@ void plr_add_exp(int val) {
 }
 
 void plr_add_ammo(int arm, int val) {
-  // Missile Launcher
-  int a = 0;
-  while (a < PLR_MAX_HELD_ARMS && player.held_arms[a].id != 5)
-    ++a;
-
-  if (a == PLR_MAX_HELD_ARMS) {
-    // Super Missile Launcher
-    a = 0;
-    while (a < PLR_MAX_HELD_ARMS && player.held_arms[a].id != 10)
-      ++a;
-    if (a == PLR_MAX_HELD_ARMS)
-      return;
-  }
-
-  player.held_arms[a].ammo += val;
-  if (player.held_arms[a].ammo > player.held_arms[a].max_ammo)
-    player.held_arms[a].ammo = player.held_arms[a].max_ammo;
+  // if player has missile launcher, give missile launcher ammo;
+  // otherwise give super missile launcher ammo (if player has one)
+  int a;
+  if (player.arms[5].owned)
+    a = 5;
+  else if (player.arms[10].owned)
+    a = 10;
+  else
+    return;
+  player.arms[a].ammo += val;
+  if (player.arms[a].ammo > player.arms[a].max_ammo)
+    player.arms[a].ammo = player.arms[a].max_ammo;
 }

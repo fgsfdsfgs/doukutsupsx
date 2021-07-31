@@ -62,3 +62,5 @@ bullet_t *bullet_spawn(int class_num, int x, int y, int dir);
 void bullet_act(void);
 void bullet_draw(int cam_x, int cam_y);
 void bullet_destroy(bullet_t *bul);
+int bullet_count_by_arm(const int arm_id);
+int bullet_count_by_class(const int class_num);

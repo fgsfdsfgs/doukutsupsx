@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "engine/common.h"
 #include "engine/math.h"
 #include "engine/graphics.h"
@@ -100,6 +102,8 @@ bullet_t *bullet_spawn(int class_num, int x, int y, int dir) {
 
   bullet_t *bullet = &bullet_list[i];
   bullet_class_t *bclass = &bullet_classtab[class_num];
+  memset(bullet, 0, sizeof(*bullet));
+  bullet->cond = BULLETCOND_ALIVE;
   bullet->class_num = class_num;
   bullet->life = bclass->life;
   bullet->life_count = bclass->life_count;
@@ -116,8 +120,6 @@ bullet_t *bullet_spawn(int class_num, int x, int y, int dir) {
   bullet->x = x;
   bullet->y = y;
   bullet->dir = dir;
-  bullet->count1 = 0;
-  bullet->count2 = 0;
 
   return bullet;
 }
@@ -203,17 +205,17 @@ static void bullet_act_snake1(bullet_t *bul) {
   if (bul->anim > 3) bul->anim = 0;
 
   static const rect_t rc_left[4] = {
-      {136, 80, 152, 80},
-      {120, 80, 136, 96},
-      {136, 64, 152, 80},
-      {120, 64, 136, 80},
+    {136, 80, 152, 80},
+    {120, 80, 136, 96},
+    {136, 64, 152, 80},
+    {120, 64, 136, 80},
   };
 
   static const rect_t rc_right[4] = {
-      {120, 64, 136, 80},
-      {136, 64, 152, 80},
-      {120, 80, 136, 96},
-      {136, 80, 152, 80},
+    {120, 64, 136, 80},
+    {136, 64, 152, 80},
+    {120, 80, 136, 96},
+    {136, 80, 152, 80},
   };
 
   if (bul->dir == DIR_LEFT)
@@ -325,9 +327,9 @@ static void bullet_act_snake2(bullet_t *bul) {
   if (bul->anim > 2) bul->anim = 0;
 
   static const rect_t rect[3] = {
-      {192, 16, 208, 32},
-      {208, 16, 224, 32},
-      {224, 16, 240, 32},
+    {192, 16, 208, 32},
+    {208, 16, 224, 32},
+    {224, 16, 240, 32},
   };
 
   bul->texrect.r = rect[bul->anim];
@@ -346,6 +348,8 @@ static void bullet_act_polarstar(bullet_t *bul) {
     // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
+
+  printf("my dir = %d my level = %d\n", bul->dir, level);
 
   if (bul->act == 0) {
     bul->act = 1;
@@ -408,18 +412,18 @@ static void bullet_act_polarstar(bullet_t *bul) {
   }
 
   static const rect_t rect1[2] = {
-      {128, 32, 144, 48},
-      {144, 32, 160, 48},
+    {128, 32, 144, 48},
+    {144, 32, 160, 48},
   };
 
   static const rect_t rect2[2] = {
-      {160, 32, 176, 48},
-      {176, 32, 192, 48},
+    {160, 32, 176, 48},
+    {176, 32, 192, 48},
   };
 
   static const rect_t rect3[2] = {
-      {128, 48, 144, 64},
-      {144, 48, 160, 64},
+    {128, 48, 144, 64},
+    {144, 48, 160, 64},
   };
 
   // Set framerect
@@ -533,29 +537,29 @@ static void bullet_act_fireball(bullet_t *bul) {
   }
 
   static const rect_t rect_left1[4] = {
-      {128, 0, 144, 16},
-      {144, 0, 160, 16},
-      {160, 0, 176, 16},
-      {176, 0, 192, 16},
+    {128, 0, 144, 16},
+    {144, 0, 160, 16},
+    {160, 0, 176, 16},
+    {176, 0, 192, 16},
   };
 
   static const rect_t rect_right1[4] = {
-      {128, 16, 144, 32},
-      {144, 16, 160, 32},
-      {160, 16, 176, 32},
-      {176, 16, 192, 32},
+    {128, 16, 144, 32},
+    {144, 16, 160, 32},
+    {160, 16, 176, 32},
+    {176, 16, 192, 32},
   };
 
   static const rect_t rect_left2[3] = {
-      {192, 16, 208, 32},
-      {208, 16, 224, 32},
-      {224, 16, 240, 32},
+    {192, 16, 208, 32},
+    {208, 16, 224, 32},
+    {224, 16, 240, 32},
   };
 
   static const rect_t rect_right2[3] = {
-      {224, 16, 240, 32},
-      {208, 16, 224, 32},
-      {192, 16, 208, 32},
+    {224, 16, 240, 32},
+    {208, 16, 224, 32},
+    {192, 16, 208, 32},
   };
 
   ++bul->anim;
@@ -587,24 +591,24 @@ static void bullet_act_machinegun(bullet_t *bul) {
   int move;
 
   static const rect_t rect1[4] = {
-      {64, 0, 80, 16},
-      {80, 0, 96, 16},
-      {96, 0, 112, 16},
-      {112, 0, 128, 16},
+    {64, 0, 80, 16},
+    {80, 0, 96, 16},
+    {96, 0, 112, 16},
+    {112, 0, 128, 16},
   };
 
   static const rect_t rect2[4] = {
-      {64, 16, 80, 32},
-      {80, 16, 96, 32},
-      {96, 16, 112, 32},
-      {112, 16, 128, 32},
+    {64, 16, 80, 32},
+    {80, 16, 96, 32},
+    {96, 16, 112, 32},
+    {112, 16, 128, 32},
   };
 
   static const rect_t rect3[4] = {
-      {64, 32, 80, 48},
-      {80, 32, 96, 48},
-      {96, 32, 112, 48},
-      {112, 32, 128, 48},
+    {64, 32, 80, 48},
+    {80, 32, 96, 48},
+    {96, 32, 112, 48},
+    {112, 32, 128, 48},
   };
 
   if (++bul->count1 > bul->life_count) {
@@ -823,24 +827,24 @@ static void bullet_act_missile(bullet_t *bul) {
   }
 
   static const rect_t rect1[4] = {
-      {0, 0, 16, 16},
-      {16, 0, 32, 16},
-      {32, 0, 48, 16},
-      {48, 0, 64, 16},
+    {0, 0, 16, 16},
+    {16, 0, 32, 16},
+    {32, 0, 48, 16},
+    {48, 0, 64, 16},
   };
 
   static const rect_t rect2[4] = {
-      {0, 16, 16, 32},
-      {16, 16, 32, 32},
-      {32, 16, 48, 32},
-      {48, 16, 64, 32},
+    {0, 16, 16, 32},
+    {16, 16, 32, 32},
+    {32, 16, 48, 32},
+    {48, 16, 64, 32},
   };
 
   static const rect_t rect3[4] = {
-      {0, 32, 16, 48},
-      {16, 32, 32, 48},
-      {32, 32, 48, 48},
-      {48, 32, 64, 48},
+    {0, 32, 16, 48},
+    {16, 32, 32, 48},
+    {32, 32, 48, 48},
+    {48, 32, 64, 48},
   };
 
   switch (level) {
@@ -1057,17 +1061,17 @@ static void bullet_act_supermissile(bullet_t *bul) {
   }
 
   static const rect_t rect1[4] = {
-      {120, 96, 136, 112},
-      {136, 96, 152, 112},
-      {152, 96, 168, 112},
-      {168, 96, 184, 112},
+    {120, 96, 136, 112},
+    {136, 96, 152, 112},
+    {152, 96, 168, 112},
+    {168, 96, 184, 112},
   };
 
   static const rect_t rect2[4] = {
-      {184, 96, 200, 112},
-      {200, 96, 216, 112},
-      {216, 96, 232, 112},
-      {232, 96, 248, 112},
+    {184, 96, 200, 112},
+    {200, 96, 216, 112},
+    {216, 96, 232, 112},
+    {232, 96, 248, 112},
   };
 
   switch (level) {
@@ -1179,10 +1183,10 @@ static void bullet_act_bubble1(bullet_t *bul) {
   }
 
   static const rect_t rect[4] = {
-      {192, 0, 200, 8},
-      {200, 0, 208, 8},
-      {208, 0, 216, 8},
-      {216, 0, 224, 8},
+    {192, 0, 200, 8},
+    {200, 0, 208, 8},
+    {208, 0, 216, 8},
+    {216, 0, 224, 8},
   };
 
   if (++bul->anim_wait > 3) {
@@ -1259,10 +1263,10 @@ static void bullet_act_bubble2(bullet_t *bul) {
   }
 
   static const rect_t rect[4] = {
-      {192, 8, 200, 16},
-      {200, 8, 208, 16},
-      {208, 8, 216, 16},
-      {216, 8, 224, 16},
+    {192, 8, 200, 16},
+    {200, 8, 208, 16},
+    {208, 8, 216, 16},
+    {216, 8, 224, 16},
   };
 
   if (++bul->anim_wait > 3) {
@@ -1334,10 +1338,10 @@ static void bullet_act_bubble3(bullet_t *bul) {
   bul->y += bul->yvel;
 
   static const rect_t rect[4] = {
-      {240, 16, 248, 24},
-      {248, 16, 256, 24},
-      {240, 24, 248, 32},
-      {248, 24, 256, 32},
+    {240, 16, 248, 24},
+    {248, 16, 256, 24},
+    {240, 24, 248, 32},
+    {248, 24, 256, 32},
   };
 
   if (++bul->anim_wait > 3) {
@@ -1387,18 +1391,18 @@ static void bullet_act_bubblespine(bullet_t *bul) {
   if (bul->anim > 1) bul->anim = 0;
 
   static const rect_t rc_left[2] = {
-      {224, 0, 232, 8},
-      {232, 0, 240, 8},
+    {224, 0, 232, 8},
+    {232, 0, 240, 8},
   };
 
   static const rect_t rc_right[2] = {
-      {224, 0, 232, 8},
-      {232, 0, 240, 8},
+    {224, 0, 232, 8},
+    {232, 0, 240, 8},
   };
 
   static const rect_t rc_down[2] = {
-      {224, 8, 232, 16},
-      {232, 8, 240, 16},
+    {224, 8, 232, 16},
+    {232, 8, 240, 16},
   };
 
   switch (bul->dir) {
@@ -1455,11 +1459,13 @@ static void bullet_act_bladeslash(bullet_t *bul) {
   }
 
   static const rect_t rc_left[5] = {
-      {0, 64, 24, 88}, {24, 64, 48, 88}, {48, 64, 72, 88}, {72, 64, 96, 88}, {96, 64, 120, 88},
+    {0, 64, 24, 88}, {24, 64, 48, 88}, {48, 64, 72, 88},
+    {72, 64, 96, 88}, {96, 64, 120, 88},
   };
 
   static const rect_t rc_right[5] = {
-      {0, 88, 24, 112}, {24, 88, 48, 112}, {48, 88, 72, 112}, {72, 88, 96, 112}, {96, 88, 120, 112},
+    {0, 88, 24, 112}, {24, 88, 48, 112}, {48, 88, 72, 112},
+    {72, 88, 96, 112}, {96, 88, 120, 112},
   };
 
   if (bul->dir == DIR_LEFT)
@@ -1510,17 +1516,17 @@ static void bullet_act_sword1(bullet_t *bul) {
   }
 
   static const rect_t rc_left[4] = {
-      {0, 48, 16, 64},
-      {16, 48, 32, 64},
-      {32, 48, 48, 64},
-      {48, 48, 64, 64},
+    {0, 48, 16, 64},
+    {16, 48, 32, 64},
+    {32, 48, 48, 64},
+    {48, 48, 64, 64},
   };
 
   static const rect_t rc_right[4] = {
-      {64, 48, 80, 64},
-      {80, 48, 96, 64},
-      {96, 48, 112, 64},
-      {112, 48, 128, 64},
+    {64, 48, 80, 64},
+    {80, 48, 96, 64},
+    {96, 48, 112, 64},
+    {112, 48, 128, 64},
   };
 
   if (++bul->anim_wait > 1) {
@@ -1570,17 +1576,17 @@ static void bullet_act_sword2(bullet_t *bul) {
   }
 
   static const rect_t rc_left[4] = {
-      {160, 48, 184, 72},
-      {184, 48, 208, 72},
-      {208, 48, 232, 72},
-      {232, 48, 256, 72},
+    {160, 48, 184, 72},
+    {184, 48, 208, 72},
+    {208, 48, 232, 72},
+    {232, 48, 256, 72},
   };
 
   static const rect_t rc_right[4] = {
-      {160, 72, 184, 96},
-      {184, 72, 208, 96},
-      {208, 72, 232, 96},
-      {232, 72, 256, 96},
+    {160, 72, 184, 96},
+    {184, 72, 208, 96},
+    {208, 72, 232, 96},
+    {232, 72, 256, 96},
   };
 
   if (++bul->anim_wait > 1) {
@@ -1598,23 +1604,23 @@ static void bullet_act_sword2(bullet_t *bul) {
 
 static void bullet_act_sword3(bullet_t *bul) {
   static const rect_t rc_left[2] = {
-      {272, 0, 296, 24},
-      {296, 0, 320, 24},
+    {272, 0, 296, 24},
+    {296, 0, 320, 24},
   };
 
   static const rect_t rc_up[2] = {
-      {272, 48, 296, 72},
-      {296, 0, 320, 24},
+    {272, 48, 296, 72},
+    {296, 0, 320, 24},
   };
 
   static const rect_t rc_right[2] = {
-      {272, 24, 296, 48},
-      {296, 24, 320, 48},
+    {272, 24, 296, 48},
+    {296, 24, 320, 48},
   };
 
   static const rect_t rc_down[2] = {
-      {296, 48, 320, 72},
-      {296, 24, 320, 48},
+    {296, 48, 320, 72},
+    {296, 24, 320, 48},
   };
 
   switch (bul->act) {
@@ -1761,38 +1767,38 @@ static void bullet_act_nemesis(bullet_t *bul) {
 
   if (++bul->anim > 1) bul->anim = 0;
 
-  static const rect_t rcL[2] = {
-      {0, 112, 32, 128},
-      {0, 128, 32, 144},
+  static const rect_t rc_left[2] = {
+    {0, 112, 32, 128},
+    {0, 128, 32, 144},
   };
 
-  static const rect_t rcU[2] = {
-      {32, 112, 48, 144},
-      {48, 112, 64, 144},
+  static const rect_t rc_up[2] = {
+    {32, 112, 48, 144},
+    {48, 112, 64, 144},
   };
 
-  static const rect_t rcR[2] = {
-      {64, 112, 96, 128},
-      {64, 128, 96, 144},
+  static const rect_t rc_right[2] = {
+    {64, 112, 96, 128},
+    {64, 128, 96, 144},
   };
 
-  static const rect_t rcD[2] = {
-      {96, 112, 112, 144},
-      {112, 112, 128, 144},
+  static const rect_t rc_down[2] = {
+    {96, 112, 112, 144},
+    {112, 112, 128, 144},
   };
 
   switch (bul->dir) {
     case DIR_LEFT:
-      bul->texrect.r = rcL[bul->anim];
+      bul->texrect.r = rc_left[bul->anim];
       break;
     case DIR_UP:
-      bul->texrect.r = rcU[bul->anim];
+      bul->texrect.r = rc_up[bul->anim];
       break;
     case DIR_RIGHT:
-      bul->texrect.r = rcR[bul->anim];
+      bul->texrect.r = rc_right[bul->anim];
       break;
     case DIR_DOWN:
-      bul->texrect.r = rcD[bul->anim];
+      bul->texrect.r = rc_down[bul->anim];
       break;
   }
 
@@ -1874,18 +1880,18 @@ static void bullet_act_spur(bullet_t *bul) {
   }
 
   static const rect_t rect1[2] = {
-      {128, 32, 144, 48},
-      {144, 32, 160, 48},
+    {128, 32, 144, 48},
+    {144, 32, 160, 48},
   };
 
   static const rect_t rect2[2] = {
-      {160, 32, 176, 48},
-      {176, 32, 192, 48},
+    {160, 32, 176, 48},
+    {176, 32, 192, 48},
   };
 
   static const rect_t rect3[2] = {
-      {128, 48, 144, 64},
-      {144, 48, 160, 64},
+    {128, 48, 144, 64},
+    {144, 48, 160, 64},
   };
 
   bul->damage = bul->life;
@@ -1926,47 +1932,45 @@ static void bullet_act_spurtrail(bullet_t *bul) {
 
   if (bul->anim > 2) {
     bul->cond = 0;
-#ifdef FIX_MAJOR_BUGS
-    return;  // Avoid accessing the static const rect_t arrays with an out-of-bounds index
-#endif
+    return;
   }
 
   if (bul->damage && bul->life != 100) bul->damage = 0;
 
   static const rect_t rc_h_lv1[3] = {
-      {192, 32, 200, 40},
-      {200, 32, 208, 40},
-      {208, 32, 216, 40},
+    {192, 32, 200, 40},
+    {200, 32, 208, 40},
+    {208, 32, 216, 40},
   };
 
   static const rect_t rc_v_lv1[3] = {
-      {192, 40, 200, 48},
-      {200, 40, 208, 48},
-      {208, 40, 216, 48},
+  {192, 40, 200, 48},
+  {200, 40, 208, 48},
+  {208, 40, 216, 48},
   };
 
   static const rect_t rc_h_lv2[3] = {
-      {216, 32, 224, 40},
-      {224, 32, 232, 40},
-      {232, 32, 240, 40},
+    {216, 32, 224, 40},
+    {224, 32, 232, 40},
+    {232, 32, 240, 40},
   };
 
   static const rect_t rc_v_lv2[3] = {
-      {216, 40, 224, 48},
-      {224, 40, 232, 48},
-      {232, 40, 240, 48},
+    {216, 40, 224, 48},
+    {224, 40, 232, 48},
+    {232, 40, 240, 48},
   };
 
   static const rect_t rc_h_lv3[3] = {
-      {240, 32, 248, 40},
-      {248, 32, 256, 40},
-      {256, 32, 264, 40},
+    {240, 32, 248, 40},
+    {248, 32, 256, 40},
+    {256, 32, 264, 40},
   };
 
   static const rect_t rc_v_lv3[3] = {
-      {240, 32, 248, 40},
-      {248, 32, 256, 40},
-      {256, 32, 264, 40},
+    {240, 32, 248, 40},
+    {248, 32, 256, 40},
+    {256, 32, 264, 40},
   };
 
   switch (level) {
@@ -2107,4 +2111,22 @@ void bullet_destroy(bullet_t *bul) {
 
   bul->cond = 0;
   // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
+}
+
+int bullet_count_by_arm(const int arm_id) {
+  int count = 0;
+  for (int i = 0; i <= bullet_list_max; ++i) {
+    if (bullet_list[i].cond & BULLETCOND_ALIVE && (bullet_list[i].class_num + 2) / 3 == arm_id)
+      ++count;
+  }
+  return count;
+}
+
+int bullet_count_by_class(const int class_num) {
+  int count = 0;
+  for (int i = 0; i <= bullet_list_max; ++i) {
+    if (bullet_list[i].cond & BULLETCOND_ALIVE && bullet_list[i].class_num == class_num)
+      ++count;
+  }
+  return count;
 }

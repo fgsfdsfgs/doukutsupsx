@@ -88,7 +88,8 @@ int snd_play_sound(int ch, const int no, const sound_mode_t mode) {
   if (mode != SOUND_MODE_STOP) {
     // play or loop
     ASSERT(snd_main_bank);
-    ASSERT(no > 0 && no < snd_main_bank->num_sfx);
+    if (no < 0 || no >= snd_main_bank->num_sfx)
+      panic("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
     if (ch < 0) {
       ch = chan_next;
       if (++chan_next == CHAN_MUSIC)

@@ -307,16 +307,9 @@ npc_t *npc_spawn_life(int x, int y, int val) {
 }
 
 npc_t *npc_spawn_ammo(int x, int y, int val) {
-  // check if player has missile launcher or super missile launcher
-  int i;
-  for (i = 0; i < PLR_MAX_HELD_ARMS; ++i) {
-    if (player.held_arms[i].id == 5 || player.held_arms[i].id == 10)
-      break;
-  }
-
-  if (i == PLR_MAX_HELD_ARMS)
+  // don't spawn anything if the player has no missile launchers
+  if (!player.arms[5].owned && !player.arms[10].owned)
     return NULL;
-
   npc_t *npc = npc_spawn(86, x, y, 0, 0, 0, NULL, NPC_STARTIDX_DYNAMIC);
   if (!npc) return NULL;
   npc->exp = val;

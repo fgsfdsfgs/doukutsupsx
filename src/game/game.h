@@ -21,5 +21,4 @@ extern u32 game_tick;
 extern u32 game_flags;
 
 void game_init(void);
-void game_update(void);
-void game_draw(void);
+void game_frame(void);

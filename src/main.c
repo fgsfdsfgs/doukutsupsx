@@ -34,8 +34,7 @@ int main(int argc, char **argv) {
     now = timer_ticks;
     if (now >= next_frame) {
       in_update();
-      game_update();
-      game_draw();
+      game_frame();
       gfx_swap_buffers();
       next_frame = now + 2; 
     }

@@ -6,7 +6,6 @@
 // also known as MyChar.h
 
 #define PLR_MAX_ARMS 14
-#define PLR_MAX_HELD_ARMS 8
 #define PLR_MAX_LIFE 232
 
 enum equip_flags {
@@ -31,9 +30,9 @@ enum plr_cond_flags {
 };
 
 typedef struct {
-  s16 id;
+  u8 owned;
   u8 level;
-  u8 exp;
+  s16 exp;
   s16 ammo;
   s16 max_ammo;
 } plr_arm_data_t;
@@ -41,7 +40,7 @@ typedef struct {
 // fuckton of fields
 // sorted them in order of size/alignment and renamed some
 typedef struct {
-  plr_arm_data_t held_arms[PLR_MAX_HELD_ARMS];
+  plr_arm_data_t arms[PLR_MAX_ARMS];
 
   gfx_texrect_t rect;
   gfx_texrect_t rect_arms;
@@ -71,6 +70,7 @@ typedef struct {
   s16 exp_count;
   s16 exp_wait;
   s16 star;
+  s16 cooldown;
 
   u8 cond;
   s8 dir;
@@ -95,3 +95,16 @@ void plr_damage(int val);
 void plr_add_life(int val);
 void plr_add_exp(int val);
 void plr_add_ammo(int arm, int val);
+
+void plr_arm_reset_exp(void);
+void plr_arm_add_exp(int val);
+bool plr_arm_at_max_exp(void);
+void plr_arm_reset_spur_charge(void);
+bool plr_arm_charge_ammo(const int val);
+bool plr_arm_use_ammo(const int val);
+void plr_arm_swap_to_first(void);
+int plr_arm_swap_to_next(void);
+int plr_arm_swap_to_prev(void);
+void plr_arm_shoot(void);
+bool plr_arm_give(const int id, const int max_ammo);
+bool plr_arm_take(const int id);
