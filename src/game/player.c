@@ -7,6 +7,7 @@
 
 #include "game/player.h"
 #include "game/npc.h"
+#include "game/tsc.h"
 #include "game/game.h"
 
 // also known as MyChar.cpp
@@ -230,11 +231,49 @@ void plr_set_pos(int x, int y) {
   player.y = y;
   player.xvel = 0;
   player.yvel = 0;
-  player.tgt_x = player.x;
-  player.tgt_y = player.y;
+  player.tgt_x = x;
+  player.tgt_y = y;
   player.index_x = 0;
   player.index_y = 0;
   player.cond &= ~PLRCOND_UNKNOWN01;
+}
+
+void plr_jump_back(int from) {
+  player.cond &= ~PLRCOND_UNKNOWN01;
+  player.yvel = -FIX_SCALE;
+  if (from == DIR_LEFT) {
+    player.dir = DIR_LEFT;
+    player.xvel = FIX_SCALE;
+  } else if (from == DIR_RIGHT) {
+    player.dir = DIR_RIGHT;
+    player.xvel = -FIX_SCALE;
+  } else {
+    npc_t *npc = npc_find_by_event_num(from);
+    if (npc) {
+      if (player.x < npc->x) {
+        player.dir = DIR_LEFT;
+        player.xvel = FIX_SCALE;
+      } else {
+        player.dir = DIR_RIGHT;
+        player.xvel = -FIX_SCALE;
+      }
+    }
+  }
+}
+
+void plr_face_towards(int what) {
+  if (what == 3) {
+    player.cond |= PLRCOND_UNKNOWN01;
+  } else {
+    player.cond &= ~PLRCOND_UNKNOWN01;
+    if (what < 10) {
+      player.dir = what;
+    } else {
+      npc_t *npc = npc_find_by_event_num(what);
+      if (npc)
+        player.dir = (player.x < npc->x) ? DIR_LEFT : DIR_RIGHT;
+    }
+  }
 }
 
 // jesus h christ
@@ -617,7 +656,7 @@ void plr_damage(int val) {
     snd_play_sound(CHAN_MISC, 17, SOUND_MODE_PLAY);
     player.cond = 0;
     npc_spawn_death_fx(player.x, player.y, TO_FIX(10), 0x40, 0);
-    // StartTextScript(40);
+    tsc_start_event(40);
   }
 }
 

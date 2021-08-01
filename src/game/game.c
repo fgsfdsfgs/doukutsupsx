@@ -7,6 +7,7 @@
 #include "game/hit.h"
 #include "game/camera.h"
 #include "game/stage.h"
+#include "game/tsc.h"
 #include "game/game.h"
 
 u32 game_flags = GFLAG_INPUT_ENABLED;
@@ -14,13 +15,14 @@ u32 game_tick = 0;
 
 void game_init(void) {
   stage_init();
+  tsc_init();
   npc_init(NPC_MAIN_TABLE);
   plr_init();
   bullet_init();
   cam_set_target(&player.x, &player.y, 16);
 
-  // load start cave
-  stage_transition(2, 200, 5, 6);
+  // load first cave
+  stage_transition(12, 91, 37, 11);
 }
 
 void game_frame(void) {
@@ -76,7 +78,7 @@ void game_frame(void) {
       plr_arm_swap_to_next();
   }
 
-  // TODO: text script here
+  tsc_update();
 
   // TODO: hud drawing here
 

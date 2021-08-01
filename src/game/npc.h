@@ -106,6 +106,8 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev);
 npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *parent, int startidx);
 void npc_delete(npc_t *npc);
 void npc_delete_by_class(const int class_num, const int spawn_smoke);
+npc_t *npc_find_by_class(const int class_num);
+npc_t *npc_find_by_event_num(const int event_num);
 void npc_show_death_damage(npc_t *npc);
 void npc_kill(npc_t *npc, bool show_damage);
 void npc_spawn_death_fx(int x, int y, int w, int num, int up);

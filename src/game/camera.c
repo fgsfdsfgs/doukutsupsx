@@ -2,6 +2,7 @@
 
 #include "game/stage.h"
 #include "game/player.h"
+#include "game/npc.h"
 #include "game/camera.h"
 
 cam_t camera;
@@ -46,8 +47,22 @@ void cam_update(void) {
 void cam_center_on_player(void) {
   camera.x = player.x - TO_FIX(VID_WIDTH / 2);
   camera.y = player.y - TO_FIX(VID_HEIGHT / 2);
-
   cam_bound();
+}
+
+void cam_target_player(const int delay) {
+  camera.tgt_x = &player.tgt_x;
+  camera.tgt_y = &player.tgt_y;
+  camera.wait = delay;
+}
+
+void cam_target_npc(const int event_num, const int delay) {
+  npc_t *npc = npc_find_by_event_num(event_num);
+  if (npc) {
+    camera.tgt_x = &npc->tgt_x;
+    camera.tgt_y = &npc->tgt_y;
+    camera.wait = delay;
+  }
 }
 
 void cam_set_pos(const int fx, const int fy) {

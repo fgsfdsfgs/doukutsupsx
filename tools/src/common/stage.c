@@ -11,6 +11,7 @@
 #include "surface.h"
 #include "stage.h"
 #include "musiclist.h"
+#include "tsc.h"
 
 #define MAX_TOKEN 256
 #define NUM_LIST_ARGS 10
@@ -21,7 +22,7 @@
 #define PXM_MAGIC "PXM\x10"
 #define PXE_MAGIC "PXE\x00"
 
-static uint8_t tsc_head[MAX_TSC_SIZE + 1]; // space for a NUL just in case
+static uint8_t tsc_head[TSC_MAX_SIZE + 1]; // space for a NUL just in case
 static int tsc_head_size = 0;
 
 static const struct { const char *name; int id; } bklist[] = {
@@ -288,53 +289,49 @@ static stage_event_t *stage_load_pxe(const char *path, int *out_count) {
   return pxe;
 }
 
-static void tsc_decode(uint8_t *data, const int size) {
-  // replicating arithmetics without change in case of compatibility problems
-  const int half = size / 2;
-  const int cdec = (data[half] == 0) ? -7 : (data[half] % 0x100) * -1;
-  for (int i = 0; i < size; ++i) {
-    int tmp = data[i];
-    tmp += cdec;
-    if (i != half)
-      data[i] = tmp % 0x100;
-  }
-}
-
-static uint8_t *stage_load_tsc(const char *path, uint32_t *out_size) {
+static uint8_t *stage_load_tsc(const char *path, int *out_size, char **out_tscsrc) {
   FILE *f = fopen(path, "rb");
-  if (!f) return NULL;
+  if (!f) {
+    *out_size = 0; // no tsc
+    return NULL;
+  }
 
   fseek(f, 0, SEEK_END);
-  const intptr_t filelen = ftell(f);
+  const int filelen = ftell(f);
   fseek(f, 0, SEEK_SET);
 
-  uint8_t *tsc = NULL;
+  char *tscdata = NULL;
+  tsc_script_t *tsc = NULL;
 
-  if (filelen > MAX_TSC_SIZE) {
+  if (filelen > TSC_MAX_SIZE) {
     fprintf(stderr, "warning: TSC '%s' is too large (%d), ignoring\n", path, (int)filelen);
   } else if (filelen > 0) {
-    const intptr_t total = tsc_head_size + filelen + 1; // +terminating NUL
-    tsc = calloc(1, total);
-    assert(tsc);
+    int total = tsc_head_size + filelen + 1; // +terminating NUL
+    tscdata = calloc(1, total);
+    assert(tscdata);
     // copy in head.tsc
-    memcpy(tsc, tsc_head, tsc_head_size);
+    memcpy(tscdata, tsc_head, tsc_head_size);
     // read the rest
-    if (fread(tsc + tsc_head_size, filelen, 1, f) != 1) {
-      free(tsc);
-      tsc = NULL;
-    } else {
-      *out_size = total;
+    if (fread(tscdata + tsc_head_size, filelen, 1, f) == 1) {
       // head is already decoded
-      tsc_decode(tsc + tsc_head_size, filelen);
+      tsc_decode(tscdata + tsc_head_size, filelen);
+      // compile it
+      tsc = tsc_compile(tscdata, total, &total);
+      if (tsc) *out_size = total;
     }
   }
 
+  if (tsc)
+    *out_tscsrc = tscdata;
+  else
+    free(tscdata);
+
   fclose(f);
 
-  return tsc;
+  return (uint8_t *)tsc;
 }
 
-stage_t *stage_load(const uint32_t id, const char *prefix, const char *tileprefix) {
+stage_t *stage_load(const uint32_t id, const char *prefix, const char *tileprefix, char **out_tscsrc) {
   const char *sname = strrchr(prefix, '/') + 1;
   if ((uintptr_t)sname == 1)
     sname = strrchr(prefix, '\\') + 1;
@@ -382,9 +379,14 @@ stage_t *stage_load(const uint32_t id, const char *prefix, const char *tileprefi
   }
 
   // load TSC
-  uint32_t tsc_size = 0;
+  int tsc_size = -1;
+  char *tsc_src = NULL;
   snprintf(path, sizeof(path), "%s.tsc", prefix);
-  tsc = stage_load_tsc(path, &tsc_size);
+  tsc = stage_load_tsc(path, &tsc_size, &tsc_src);
+  if (tsc_size < 0) {
+    fprintf(stderr, "error: malformed tsc '%s'\n", path);
+    goto _end;
+  }
 
   const uint32_t ev_size = num_ev * sizeof(stage_event_t);
   // align the start of event data block to 4 bytes to avoid unaligned access
@@ -407,6 +409,7 @@ stage_t *stage_load(const uint32_t id, const char *prefix, const char *tileprefi
   memcpy(&stage->map_data[0], pxm, stage_w * stage_h);
   if (num_ev) memcpy(&stage->map_data[ev_offset], pxe, sizeof(stage_event_t) * num_ev);
   if (tsc_size) memcpy(&stage->map_data[tsc_offset], tsc, tsc_size);
+  if (out_tscsrc) *out_tscsrc = tsc_src;
 
 _end:
   free(pxa);
@@ -414,76 +417,6 @@ _end:
   free(pxe);
   free(tsc);
   return stage;
-}
-
-static inline int find_id(const uint32_t what, const uint32_t *list, const int count) {
-  for (int i = 0; i < count; ++i) {
-    if (what == list[i])
-      return i;
-  }
-  return -1;
-}
-
-static inline int find_string(const char *what, const char **list, const int count) {
-  for (int i = 0; i < count; ++i) {
-    if (!strcasecmp(what, list[i]))
-      return i;
-  }
-  return -1;
-}
-
-int stage_scan_music(const stage_t *stage, uint32_t *songlist) {
-  if (!stage || !stage->tsc_size || !stage->tsc_offset)
-    return 0;
-
-  int count = 0;
-
-  // very shitty and slow but who cares
-  const char *tsc = (const char *)&stage->map_data[stage->tsc_offset];
-  const char *cmd = strstr(tsc, "<CMU");
-  while (cmd) {
-    const char *num = cmd + 4;
-    // skip the leading zeroes, god knows what atoi() will do with that
-    while (*num && *num == '0') ++num;
-    if (!*num) break;
-    const uint32_t musnum = atoi(num);
-    if (musnum > 0 && musnum < MUSIC_COUNT && find_id(musnum, songlist, count) < 0) {
-      if (count < MAX_STAGE_SONGS)
-        songlist[count++] = musnum;
-      else
-        printf("warning: too many songs for stage %02x\n", stage->id);
-    }
-    cmd = strstr(num, "<CMU");
-  }
-
-  return count;
-}
-
-int stage_scan_transitions(const stage_t *stage, uint32_t *linklist) {
-  if (!stage || !stage->tsc_size || !stage->tsc_offset)
-    return 0;
-
-  int count = 0;
-
-  // very shitty and slow but who cares
-  const char *tsc = (const char *)&stage->map_data[stage->tsc_offset];
-  const char *cmd = strstr(tsc, "<TRA");
-  while (cmd) {
-    const char *num = cmd + 4;
-    // skip the leading zeroes, god knows what atoi() will do with that
-    while (*num && *num == '0') ++num;
-    if (!*num) break;
-    const uint32_t linknum = atoi(num);
-    if (linknum && stage->id != linknum && find_id(linknum, linklist, count) < 0) {
-      if (count < MAX_STAGELIST_LINKS)
-        linklist[count++] = linknum;
-      // if (count > MAX_STAGE_LINKS)
-      //   printf("warning: too many potential links from stage %02x\n", stage->id);
-    }
-    cmd = strstr(num, "<TRA");
-  }
-
-  return count;
 }
 
 bool stage_load_tsc_head(const char *path) {
@@ -629,7 +562,7 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   uint32_t ofs = ftell(f);
   for (uint32_t i = 0; i < num_stages; ++i) {
     hdr->stageofs[i] = ofs;
-    stage_sizes[i] = stage_list[i]->stage->tsc_offset + stage_list[i]->stage->tsc_size + sizeof(stage_t);
+    stage_sizes[i] = (uint32_t)stage_list[i]->stage->tsc_offset + (uint32_t)stage_list[i]->stage->tsc_size + sizeof(stage_t);
     ofs += ALIGN(stage_sizes[i], 4);
   }
 

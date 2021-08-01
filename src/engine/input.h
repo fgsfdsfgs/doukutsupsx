@@ -15,6 +15,11 @@ enum input_flags {
   IN_MAP = 512,
   IN_PAUSE = 1024,
 
+  // to allow switching fire/jump cancel
+  IN_OK = 2048,
+  IN_CANCEL = 4096,
+
+  // real actions, not counting OK/CANCEL
   IN_NUM_ACTIONS = 11
 };
 

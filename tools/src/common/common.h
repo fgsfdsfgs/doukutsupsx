@@ -86,3 +86,19 @@ static inline uint8_t *read_file(const char *fname, uint32_t *out_size) {
 
   return buf;
 }
+
+static inline int find_id(const uint32_t what, const uint32_t *list, const int count) {
+  for (int i = 0; i < count; ++i) {
+    if (what == list[i])
+      return i;
+  }
+  return -1;
+}
+
+static inline int find_string(const char *what, const char **list, const int count) {
+  for (int i = 0; i < count; ++i) {
+    if (!strcasecmp(what, list[i]))
+      return i;
+  }
+  return -1;
+}

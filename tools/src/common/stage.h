@@ -15,7 +15,6 @@
 #define MAX_STAGELIST_LINKS 32
 #define MAX_RES_NAME 16
 #define MAX_TILESET_SIZE 16
-#define MAX_TSC_SIZE 0x5000 // in-game limitation
 
 #define MIN_STAGE_WIDTH 21
 #define MIN_STAGE_HEIGHT 16
@@ -39,13 +38,13 @@ typedef struct {
   int16_t boss_type;   // boss type
   uint16_t ev_count;   // number of "event" structs in pxe contents
   uint16_t ev_offset;  // offset from map_data[] to pxe contents
-  uint16_t tsc_offset; // offset from map_data[] to decoded tsc data
+  uint16_t tsc_offset; // offset from map_data[] to compiled tsc data
   uint16_t tsc_size;   // size of the tsc data in bytes
   char title[MAX_STAGE_TITLE]; // title that displays on the automap and/or when you enter
   uint8_t atrb[MAX_TILESET_SIZE][MAX_TILESET_SIZE]; // pxa contents
   uint8_t map_data[]; // [width * height] pxm data
   // [pxe data follows]
-  // [decoded tsc data follows]
+  // [compiled tsc data follows]
 } stage_t;
 
 typedef struct {
@@ -102,13 +101,7 @@ typedef struct {
 
 int read_stagelist(stage_list_t *list, FILE *f);
 
-stage_t *stage_load(const uint32_t id, const char *prefix, const char *tileprefix);
-
-// scan the stage's tsc for music changes
-int stage_scan_music(const stage_t *stage, uint32_t *songlist);
-
-// scan the stage's tsc for level transitions
-int stage_scan_transitions(const stage_t *stage, uint32_t *linklist);
+stage_t *stage_load(const uint32_t id, const char *prefix, const char *tileprefix, char **out_tscsrc);
 
 uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, const char *datapath, FILE *f);
 

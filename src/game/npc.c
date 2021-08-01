@@ -314,3 +314,19 @@ npc_t *npc_spawn_ammo(int x, int y, int val) {
   npc->exp = val;
   return npc;
 }
+
+npc_t *npc_find_by_class(const int class_num) {
+  for (int i = 0; i <= npc_list_max; ++i) {
+    if (npc_list[i].class_num = class_num && (npc_list[i].cond & NPCCOND_ALIVE))
+      return &npc_list[i];
+  }
+  return NULL;
+}
+
+npc_t *npc_find_by_event_num(const int event_num) {
+  for (int i = 0; i <= npc_list_max; ++i) {
+    if (npc_list[i].event_num = event_num && (npc_list[i].cond & NPCCOND_ALIVE))
+      return &npc_list[i];
+  }
+  return NULL;
+}

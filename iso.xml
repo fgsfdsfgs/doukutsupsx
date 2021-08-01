@@ -15,6 +15,9 @@
         <file name="main.sfx" type="data"/>
         <file name="main.gfx" type="data"/>
         <file name="npc.tbl" type="data"/>
+        <file name="armsitem.bsc" type="data"/>
+        <file name="credit.bsc" type="data"/>
+        <file name="stagesel.bsc" type="data"/>
       </dir>
       <dir name="0" srcdir="data/0">
         <file name="stage01.stg" type="data"/>

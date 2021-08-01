@@ -4,6 +4,7 @@
 
 #include "common/common.h"
 #include "common/stage.h"
+#include "common/tsc.h"
 
 static stage_list_t stages[MAX_STAGES];
 static int numstages = 0;
@@ -61,7 +62,8 @@ int main(int argc, char **argv) {
       tpath[0] = '\0';
 
     // load the map data and tsc
-    stage_t *stage = stage_load(i, path, tpath);
+    char *tsc_src = NULL;
+    stage_t *stage = stage_load(i, path, tpath, &tsc_src);
     stages[i].stage = stage;
     if (!stages[i].stage) {
       fprintf(stderr, "error: could not load stage '%s'\n", path);
@@ -76,11 +78,13 @@ int main(int argc, char **argv) {
     strncpy(stage->title, stages[i].title, sizeof(stage->title) - 1);
 
     //scan for songs used by the stage
-    stages[i].numsongs = stage_scan_music(stage, stages[i].songs);
+    stages[i].numsongs = tsc_scan_music(tsc_src, stages[i].songs, MAX_STAGE_SONGS);
 
     // scan for transitions if they weren't specified manually with a BANK directive
     if (stages[i].numlinks < 0)
-      stages[i].numlinks = stage_scan_transitions(stage, stages[i].links);
+      stages[i].numlinks = tsc_scan_transitions(tsc_src, stages[i].links, stage->id, MAX_STAGE_LINKS);
+  
+    free(tsc_src);
   }
 
   puts("");

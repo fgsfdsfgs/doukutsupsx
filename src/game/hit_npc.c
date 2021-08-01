@@ -8,6 +8,7 @@
 #include "game/bullet.h"
 #include "game/player.h"
 #include "game/stage.h"
+#include "game/tsc.h"
 
 static inline void hit_check_npc_block(npc_t *npc, int x, int y) {
   int hit = 0;
@@ -455,11 +456,10 @@ void hit_npc_bullet(void) {
             if (npc->bits & NPC_SHOW_DAMAGE)
               npc->damage_view -= bul->damage;
 
-            if ((player.cond & PLRCOND_ALIVE) && npc->bits & NPC_EVENT_WHEN_KILLED) {
-              // StartTextScript(npc->event_num);
-            } else {
+            if ((player.cond & PLRCOND_ALIVE) && npc->bits & NPC_EVENT_WHEN_KILLED)
+              tsc_start_event(npc->event_num);
+            else
               npc->cond |= NPCCOND_KILLED;
-            }
           } else {
             if (npc->shock < 14) {
               // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);

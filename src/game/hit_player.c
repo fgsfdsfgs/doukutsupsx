@@ -6,6 +6,7 @@
 #include "game/game.h"
 #include "game/npc.h"
 #include "game/player.h"
+#include "game/tsc.h"
 
 static inline void star_particle(void) {
   if (!(player.cond & 2) && player.yvel < -0x200) {
@@ -693,8 +694,8 @@ static inline void hit_player_npc(void) {
     }
 
     // Run event on contact
-    // if (!(game_flags & 4) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
-    //   StartTextScript(npc->event_num);
+    if (!(game_flags & 4) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
+      tsc_start_event(npc->event_num);
 
     // NPC damage
     if (game_flags & GFLAG_INPUT_ENABLED && !(npc->bits & NPC_INTERACTABLE)) {
@@ -710,7 +711,7 @@ static inline void hit_player_npc(void) {
 
     // Interaction
     if (!(game_flags & 4) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
-      // StartTextScript(npc->event_num);
+      tsc_start_event(npc->event_num);
       player.xvel = 0;
       player.question = FALSE;
     }

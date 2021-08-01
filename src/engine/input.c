@@ -45,6 +45,11 @@ static inline u32 in_remap(const u32 held) {
     if (held & binds[i])
       in |= 1 << i;
   }
+  // TODO: ok/cancel switcheroo
+  if (in & IN_FIRE)
+    in |= IN_OK;
+  else if (in & IN_JUMP)
+    in |= IN_CANCEL;
   return in;
 }
 

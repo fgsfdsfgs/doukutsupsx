@@ -6,6 +6,7 @@
 // also known as MyChar.h
 
 #define PLR_MAX_ARMS 14
+#define PLR_MAX_ITEMS 48
 #define PLR_MAX_LIFE 232
 
 enum equip_flags {
@@ -41,6 +42,7 @@ typedef struct {
 // sorted them in order of size/alignment and renamed some
 typedef struct {
   plr_arm_data_t arms[PLR_MAX_ARMS];
+  u8 items[PLR_MAX_ITEMS];
 
   gfx_texrect_t rect;
   gfx_texrect_t rect_arms;
@@ -92,6 +94,8 @@ void plr_set_pos(int x, int y);
 void plr_animate(const u32 btns);
 void plr_act(const u32 btns, const u32 trig);
 void plr_damage(int val);
+void plr_jump_back(int from);
+void plr_face_towards(int what);
 void plr_add_life(int val);
 void plr_add_exp(int val);
 void plr_add_ammo(int arm, int val);

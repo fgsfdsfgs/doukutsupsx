@@ -7,8 +7,9 @@
 
 #include "game/game.h"
 #include "game/player.h"
+#include "game/bullet.h"
 #include "game/camera.h"
-#include "game/textscript.h"
+#include "game/tsc.h"
 #include "game/npc.h"
 #include "game/stage.h"
 
@@ -108,18 +109,24 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   ASSERT(stages[id]);
 
   stage_data = stages[id];
-  tsc_data = (char *)stage_data->map_data + stage_data->tsc_offset;
+
+  tsc_script_t *script = (tsc_script_t *)&stage_data->map_data[stage_data->tsc_offset];
+  tsc_set_stage_script(script, stage_data->tsc_size);
+  tsc_switch_script(TSC_SCRIPT_STAGE);
 
   npc_parse_event_list((stage_event_t *)&stage_data->map_data[stage_data->ev_offset], stage_data->ev_count);
 
   plr_set_pos(TO_FIX(plr_x) * TILE_SIZE, TO_FIX(plr_y) * TILE_SIZE);
+
+  tsc_start_event(event);
   cam_center_on_player();
+  bullet_init();
 
   stage_water_y = TO_FIX(240 * TILE_SIZE);
   game_tick = 0;
 
-  printf("set stage %u (%p %p): %ux%u ofs %u %u\n", stage_data->id, stage_data, stage_data->map_data,
-    stage_data->width, stage_data->height, stage_data->ev_offset, stage_data->tsc_offset);
+  printf("set stage %u: %ux%u ofs %u %u %u\n", stage_data->id, stage_data->width, stage_data->height,
+    stage_data->ev_offset, stage_data->tsc_offset, (u8 *)&stage_data->map_data[stage_data->tsc_offset] - (u8 *)stage_bank);
   printf("tileset (%d, %d, %02x, %04x)\n", gfx_surf[2].tex_x, gfx_surf[2].tex_y, gfx_surf[2].mode, gfx_surf[2].clut);
 
   return true;
