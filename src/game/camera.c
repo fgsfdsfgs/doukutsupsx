@@ -59,8 +59,8 @@ void cam_target_player(const int delay) {
 void cam_target_npc(const int event_num, const int delay) {
   npc_t *npc = npc_find_by_event_num(event_num);
   if (npc) {
-    camera.tgt_x = &npc->tgt_x;
-    camera.tgt_y = &npc->tgt_y;
+    camera.tgt_x = &npc->x;
+    camera.tgt_y = &npc->y;
     camera.wait = delay;
   }
 }

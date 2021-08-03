@@ -27,6 +27,8 @@ void game_init(void) {
 }
 
 void game_start(void) {
+  // skip intro cutscene
+  game_set_skipflag(5);
   // load start point
   stage_transition(13, 200, 10, 8);
 }
