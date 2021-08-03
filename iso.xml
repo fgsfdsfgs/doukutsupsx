@@ -36,6 +36,41 @@
         <file name="stage0e.stg" type="data"/>
         <file name="stage0f.stg" type="data"/>
       </dir>
+      <dir name="1" srcdir="data/1">
+        <file name="stage10.stg" type="data"/>
+        <file name="stage11.stg" type="data"/>
+        <file name="stage12.stg" type="data"/>
+        <file name="stage13.stg" type="data"/>
+        <file name="stage14.stg" type="data"/>
+        <file name="stage15.stg" type="data"/>
+        <file name="stage16.stg" type="data"/>
+        <file name="stage17.stg" type="data"/>
+        <file name="stage18.stg" type="data"/>
+        <file name="stage19.stg" type="data"/>
+        <file name="stage1a.stg" type="data"/>
+        <file name="stage1b.stg" type="data"/>
+        <file name="stage1c.stg" type="data"/>
+        <file name="stage1d.stg" type="data"/>
+        <file name="stage1e.stg" type="data"/>
+        <file name="stage1f.stg" type="data"/>
+      </dir>
+      <dir name="5" srcdir="data/5">
+        <file name="stage50.stg" type="data"/>
+        <file name="stage51.stg" type="data"/>
+        <file name="stage52.stg" type="data"/>
+        <file name="stage53.stg" type="data"/>
+        <file name="stage54.stg" type="data"/>
+        <file name="stage55.stg" type="data"/>
+        <file name="stage56.stg" type="data"/>
+        <file name="stage57.stg" type="data"/>
+        <file name="stage58.stg" type="data"/>
+        <file name="stage59.stg" type="data"/>
+        <file name="stage5a.stg" type="data"/>
+        <file name="stage5b.stg" type="data"/>
+        <file name="stage5c.stg" type="data"/>
+        <file name="stage5d.stg" type="data"/>
+        <file name="stage5e.stg" type="data"/>
+      </dir>
       <dummy sectors="1024"/>
     </directory_tree>
   </track>

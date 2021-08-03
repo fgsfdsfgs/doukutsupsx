@@ -232,6 +232,20 @@ void gfx_draw_fillrect(const u8 *rgba, const int layer, const int x, const int y
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
+void gfx_push_cliprect(const int layer, const int x, const int y, const int w, const int h) {
+  DR_AREA *prim = (DR_AREA *)primptr;
+  const RECT *curclip = &fb[!cur_fb_num].draw.clip;
+  const RECT tmprect = { x + curclip->x, y + curclip->y, w, h };
+  setDrawArea(prim, &tmprect);
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
+void gfx_pop_cliprect(const int layer) {
+  DR_AREA *prim = (DR_AREA *)primptr;
+  setDrawArea(prim, &fb[!cur_fb_num].draw.clip);
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
 int gfx_upload_gfx_bank(gfx_bank_t *bank, u8 *bank_data) {
   if (!bank_data)
     bank_data = (u8 *)bank + sizeof(*bank) + sizeof(gfx_surf_t) * bank->numsurf;

@@ -67,6 +67,9 @@ void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int
 void gfx_draw_string(const char *str, const int layer, int x, int y);
 void gfx_draw_fillrect(const u8 *rgba, const int layer, const int x, const int y, const int w, const int h);
 
+void gfx_push_cliprect(const int layer, const int x, const int y, const int w, const int h);
+void gfx_pop_cliprect(const int layer);
+
 // converts the `rect` field of `r` into tpage address, UVs and XYWH instead of LTRB
 static inline void gfx_set_texrect(gfx_texrect_t *tr, const int s) {
   const int mode = gfx_surf[s].mode;

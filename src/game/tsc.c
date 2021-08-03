@@ -205,7 +205,7 @@ void tsc_check_newline(void) {
   if (tsc_state.line_y[line] == 48) {
     tsc_state.mode = TSC_MODE_NEWLINE;
     game_flags |= 4;
-    memset(text[line], 0, sizeof(text[line]));
+    text[line][0] = 0;
   }
 }
 
@@ -260,18 +260,19 @@ static inline bool tsc_parse_string(const char in_ch) {
 
   if (tsc_state.flags & 0x10) {
     // SAT/CAT/TUR printing
-    char *end = (char *)tsc_state.readptr;
+    char *start = (char *)tsc_state.readptr - 1;
+    char *end = start;
     while (*end && *end != '\r') {
       // skip shift-jis
       if (*end & 0x80) ++end;
       ++end;
     }
 
-    const int len = end - (char *)tsc_state.readptr;
+    const int len = end - start;
     tsc_state.writepos = len;
   
     const int line = tsc_state.line % TSC_MAX_LINES;
-    memcpy(text[line], tsc_state.readptr, len);
+    memcpy(text[line], start, len);
     text[line][len] = 0;
 
     tsc_state.readptr = end;
@@ -292,6 +293,7 @@ static inline bool tsc_parse_string(const char in_ch) {
     const int line = tsc_state.line % TSC_MAX_LINES;
     text[line][tsc_state.writepos++] = ch[0];
     if (ch[1]) text[line][tsc_state.writepos++] = ch[1];
+    text[line][tsc_state.writepos] = 0; // terminate for now
 
     snd_play_sound(CHAN_MISC, 2, SOUND_MODE_PLAY);
     tsc_state.blink = 0;
@@ -782,10 +784,12 @@ void tsc_draw(void) {
   }
 
   // draw text
+  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y + 8, 244, 48);
   for (int i = 0; i < TSC_MAX_LINES; ++i) {
     if (text[i][0])
       gfx_draw_string(text[i], GFX_LAYER_FRONT, TEXT_LEFT + 8 + text_ofs_x, text_y + tsc_state.line_y[i] + 8);
   }
+  gfx_pop_cliprect(GFX_LAYER_FRONT);
 
   // draw NOD cursor
   if (tsc_state.mode == TSC_MODE_NOD && (tsc_state.blink++ % 20 > 12)) {
