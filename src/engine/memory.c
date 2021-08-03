@@ -19,7 +19,13 @@ static int mem_left;
 
 static u32 mem_allocs[MEM_MAX_ALLOCS];
 static u32 mem_numallocs;
-static u32 mem_mark;
+
+static struct {
+  u8 *mem_ptr;
+  u8 *mem_lastptr;
+  s32 mem_left;
+  u32 mem_numallocs;
+} mem_mark;
 
 void mem_init(void) {
   // fuck the heap, but we'll leave some in case libc needs it
@@ -31,7 +37,6 @@ void mem_init(void) {
   mem_size = mem_left = (u8 *)RAM_END - mem_base - STACK_SIZE;
   mem_ptr = mem_lastptr = mem_base;
   mem_numallocs = 0;
-  mem_mark = 0;
 
   printf("mem_init: mem_base=%08x mem_size=%u\n", (u32)mem_base, mem_size);
 }
@@ -89,17 +94,19 @@ void mem_free(void *ptr) {
 }
 
 void mem_set_mark(void) {
-  if (mem_numallocs)
-    mem_mark = mem_numallocs - 1;
+  mem_mark.mem_numallocs = mem_numallocs;
+  mem_mark.mem_left = mem_left;
+  mem_mark.mem_lastptr = mem_lastptr;
+  mem_mark.mem_ptr = mem_ptr;
+  printf("mem_set_mark: set at %p/%p, %d left\n", mem_lastptr, mem_ptr, mem_left);
 }
 
 void mem_free_to_mark(void) {
-  for (; mem_numallocs > mem_mark;) {
-    const u32 size = mem_allocs[--mem_numallocs];
-    mem_left += size;
-    mem_ptr = mem_lastptr;
-    mem_lastptr -= size;
-  }
+  mem_numallocs = mem_mark.mem_numallocs;
+  mem_left = mem_mark.mem_left;
+  mem_lastptr = mem_mark.mem_lastptr;
+  mem_ptr = mem_mark.mem_ptr;
+  printf("mem_free_to_mark: reset to %p/%p, %d left\n", mem_lastptr, mem_ptr, mem_left);
 }
 
 u32 mem_get_free_space(void) {

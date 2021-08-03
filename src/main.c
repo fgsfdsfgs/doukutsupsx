@@ -25,11 +25,16 @@ int main(int argc, char **argv) {
   timer_start();
   game_init();
 
+  // from now on, allocations are per stage
+  mem_set_mark();
+
   printf("free mem after everything: %u bytes\n", mem_get_free_space());
 
   u32 now = timer_ticks;
   u32 next_frame = now;
   u32 next_orgtick = now;
+
+  game_start();
 
   while (1) {
     now = timer_ticks;

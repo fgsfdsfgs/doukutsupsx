@@ -96,7 +96,7 @@ void stage_free_stage_bank(void) {
     stages[stage->id] = NULL;
   }
 
-  mem_free(stage_bank);
+  mem_free_to_mark();
   stage_bank = NULL;
 }
 

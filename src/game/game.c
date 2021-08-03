@@ -24,7 +24,9 @@ void game_init(void) {
   plr_init();
   bullet_init();
   cam_set_target(&player.x, &player.y, 16);
+}
 
+void game_start(void) {
   // load start point
   stage_transition(13, 200, 10, 8);
 }
