@@ -504,10 +504,10 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       npc_spawn(args[0], TO_FIX(args[1]) * TILE_SIZE, TO_FIX(args[2]) * TILE_SIZE, 0, 0, args[3], NULL, NPC_STARTIDX_DYNAMIC);
       return FALSE;
     case 0x30: // DNA
-      npc_delete_by_event_num(args[0]);
+      npc_delete_by_class(args[0], TRUE);
       return FALSE;
     case 0x31: // DNP
-      npc_delete_by_class(args[0], TRUE);
+      npc_delete_by_event_num(args[0]);
       return FALSE;
     case 0x32: // BOA
       // boss_change_action(args[0]);
