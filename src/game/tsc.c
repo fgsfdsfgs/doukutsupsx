@@ -774,6 +774,8 @@ void tsc_draw(void) {
     gfx_draw_texrect(&rc_textbox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10 + 7 * 8);
   }
 
+  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y + 8, 244, 48);
+
   // draw face
   int text_ofs_x = 0;
   if (tsc_state.face) {
@@ -784,11 +786,11 @@ void tsc_draw(void) {
   }
 
   // draw text
-  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y + 8, 244, 48);
   for (int i = 0; i < TSC_MAX_LINES; ++i) {
     if (text[i][0])
       gfx_draw_string(text[i], GFX_LAYER_FRONT, TEXT_LEFT + 8 + text_ofs_x, text_y + tsc_state.line_y[i] + 8);
   }
+
   gfx_pop_cliprect(GFX_LAYER_FRONT);
 
   // draw NOD cursor
