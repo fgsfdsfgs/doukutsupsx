@@ -2,8 +2,8 @@ build
 data/*/*
 !data/.empty
 !data/main/.empty
-tools/data
-tools/out
+tools/data/*
+tools/out/*
 !tools/data/FontAscii.pbm
 *.o
 *.elf
