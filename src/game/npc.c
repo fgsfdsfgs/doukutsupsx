@@ -214,6 +214,7 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
     npc->event_num = ev[i].event_num;
     npc->bits |= ev[i].bits;
     npc->exp = npc->info->exp;
+    npc->cond = 0;
 
     if (npc->bits & NPC_APPEAR_WHEN_FLAG_SET) {
       if (npc_get_flag(npc->event_flag))
