@@ -784,7 +784,7 @@ void tsc_draw(void) {
   // draw text
   for (int i = 0; i < TSC_MAX_LINES; ++i) {
     if (text[i][0])
-      gfx_draw_string_fnt8(text[i], GFX_LAYER_FRONT, TEXT_LEFT + 8 + text_ofs_x, text_y + tsc_state.line_y[i] + 8);
+      gfx_draw_string(text[i], GFX_LAYER_FRONT, TEXT_LEFT + 8 + text_ofs_x, text_y + tsc_state.line_y[i] + 8);
   }
 
   // draw NOD cursor

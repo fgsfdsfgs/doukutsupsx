@@ -205,17 +205,18 @@ void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
-void gfx_draw_string_fnt8(const char *str, const int layer, int x, int y) {
+void gfx_draw_string(const char *str, const int layer, int x, int y) {
   // SPRTs have no tpage field, so we have to make do
   gfx_update_tpage(layer, fnt8_rect.tpage);
-  for (const char *ch = str; *ch; ++ch, x += 8) {
+  for (const char *ch = str; *ch; ++ch, x += GFX_FONT_WIDTH) {
     const int n = *ch - ' ';
-    SPRT_8 *prim = (SPRT_8 *)primptr;
-    setSprt8(prim);
+    SPRT *prim = (SPRT *)primptr;
+    setSprt(prim);
     setRGB0(prim, 0x80, 0x80, 0x80);
     setSemiTrans(prim, 0);
     setXY0(prim, x, y);
-    setUV0(prim, fnt8_rect.u + (n & 0x0F) * 8, fnt8_rect.v + (n >> 4) * 8);
+    setUV0(prim, fnt8_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt8_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
+    setWH(prim, GFX_FONT_WIDTH, GFX_FONT_HEIGHT);
     prim->clut = gfx_surf[SURFACE_ID_FONT1].clut;
     plist_append(&primlist[layer], sizeof(*prim));
   }
@@ -325,7 +326,7 @@ int gfx_load_gfx_bank(const char *path) {
 void gfx_init_fonts(void) {
   fnt8_rect.r.x = 0;
   fnt8_rect.r.y = 0;
-  fnt8_rect.r.w = 8;
-  fnt8_rect.r.h = 8;
+  fnt8_rect.r.w = GFX_FONT_WIDTH;
+  fnt8_rect.r.h = GFX_FONT_HEIGHT;
   gfx_set_texrect(&fnt8_rect, SURFACE_ID_FONT1);
 }

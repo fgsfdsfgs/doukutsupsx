@@ -25,8 +25,8 @@ void game_init(void) {
   bullet_init();
   cam_set_target(&player.x, &player.y, 16);
 
-  // load first cave
-  stage_transition(12, 91, 37, 11);
+  // load start point
+  stage_transition(13, 200, 10, 8);
 }
 
 void game_frame(void) {

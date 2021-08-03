@@ -8,6 +8,8 @@
 
 #define GFX_MAX_SURFACES 40
 #define GFX_MAIN_BANK "\\MAIN\\MAIN.GFX;1"
+#define GFX_FONT_WIDTH 6
+#define GFX_FONT_HEIGHT 12
 
 #define GFX_RGB(r, g, b) ((((b) >> 3) << 10) | (((g) >> 3) << 5) | ((r) >> 3))
 
@@ -62,7 +64,7 @@ void gfx_swap_buffers(void);
 void gfx_draw_texrect(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
 void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
 void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int y);
-void gfx_draw_string_fnt8(const char *str, const int layer, int x, int y);
+void gfx_draw_string(const char *str, const int layer, int x, int y);
 void gfx_draw_fillrect(const u8 *rgba, const int layer, const int x, const int y, const int w, const int h);
 
 // converts the `rect` field of `r` into tpage address, UVs and XYWH instead of LTRB
