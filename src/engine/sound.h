@@ -19,6 +19,8 @@ typedef enum {
   CHAN_ITEM  = 2, // item pickups
   CHAN_MISC  = 3, // other player-related sounds
   CHAN_ALLOC = 4, // channels from this to CHAN_MUSIC are allocated dynamically
+  CHAN_LOOP1 = 6, // channel for special looping noises, normally used by other sounds too
+  CHAN_LOOP2 = 7, // channel for special looping noises, normally used by other sounds too
   CHAN_MUSIC = 8, // music channels from this to CHAN_COUNT
   CHAN_COUNT = 24
 } sound_channel_t;
@@ -46,3 +48,7 @@ void snd_free_sfx_bank(sfx_bank_t *bank);
 // plays/stops a sample from the main sample bank
 // if ch is -1, plays on next available channel
 int snd_play_sound(int ch, const int no, const sound_mode_t mode);
+
+// plays/stops a sample from the main sample bank with specified frequency
+// if ch is -1, plays on next available channel
+int snd_play_sound_freq(int ch, const int no, const int freq, const sound_mode_t mode);

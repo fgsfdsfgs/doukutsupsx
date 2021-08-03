@@ -16,3 +16,4 @@ SURF, 17, data/Bullet.pbm,      0,   SURFACE_ID_
 SURF, 19, data/Caret.pbm,       0,   SURFACE_ID_
 SURF, 26, data/TextBox.pbm,     0,   SURFACE_ID_
 SURF, 20, data/Npc/NpcSym.pbm,  0,   SURFACE_ID_
+SURF, 38, data/FontAscii.pbm,   0,   SURFACE_ID_FONT1

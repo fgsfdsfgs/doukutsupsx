@@ -6,6 +6,7 @@
 #include "engine/graphics.h"
 #include "engine/sound.h"
 
+#include "game/game.h"
 #include "game/stage.h"
 #include "game/npc.h"
 #include "game/player.h"
@@ -30,7 +31,7 @@ static inline void npc_set_class(npc_t *npc, const u32 class_num) {
   npc->info = nclass;
   npc->class_num = class_num;
   npc->life = nclass->life;
-  npc->bits = nclass->bits;
+  npc->bits |= nclass->bits;
   npc->damage = nclass->damage;
   npc->snd_die = nclass->snd_die;
   npc->snd_hit = nclass->snd_hit;
@@ -53,6 +54,7 @@ void npc_show_death_damage(npc_t *npc) {
   npc->x = tx;
   npc->y = ty;
   npc->cond |= NPCCOND_ALIVE;
+  npc->bits = 0;
   npc_set_class(npc, 3);
 }
 
@@ -157,7 +159,18 @@ void npc_delete_by_class(const int class_num, const int spawn_smoke) {
   }
 }
 
+void npc_delete_by_event_num(const int event_num) {
+  for (int i = 0; i <= npc_list_max; ++i) {
+    npc_t *npc = &npc_list[i];
+    if ((npc->cond & NPCCOND_ALIVE) && npc->event_num == event_num) {
+      npc->cond = 0;
+      npc_set_flag(npc->event_flag);
+    }
+  }
+}
+
 static inline void npc_init_instance(npc_t *npc, int class_num, int x, int y, int dir) {
+  npc->bits = 0;
   npc_set_class(npc, class_num);
   npc->cond |= NPCCOND_ALIVE;
   npc->dir = dir;
@@ -329,4 +342,67 @@ npc_t *npc_find_by_event_num(const int event_num) {
       return &npc_list[i];
   }
   return NULL;
+}
+
+static inline void npc_set_dir(npc_t *npc, const int dir) {
+  if (dir == DIR_AUTO) {
+    // face player
+    if (player.x > npc->x)
+      npc->dir = DIR_RIGHT;
+    else
+      npc->dir = DIR_LEFT;
+  } else if (dir != DIR_OTHER) {
+    npc->dir = dir;
+  }
+}
+
+void npc_change_action(npc_t *npc, const int act, const int dir) {
+  npc->act = act;
+  npc_set_dir(npc, dir);
+}
+
+void npc_change_class(npc_t *npc, const int class_num, const int dir, const u16 addbits) {
+  npc->bits &= ~(
+    NPC_SOLID_SOFT |
+    NPC_IGNORE_TILE_44 |
+    NPC_INVULNERABLE |
+    NPC_IGNORE_SOLIDITY |
+    NPC_BOUNCY |
+    NPC_SHOOTABLE |
+    NPC_SOLID_HARD |
+    NPC_REAR_AND_TOP_DONT_HURT |
+    NPC_SHOW_DAMAGE
+  );
+  npc_set_class(npc, class_num);
+  npc->bits |= addbits;
+  npc->exp = npc->info->exp;
+  npc->cond |= NPCCOND_ALIVE;
+  npc->act = 0;
+  npc->act_wait = 0;
+  npc->anim = 0;
+  npc->anim_wait = 0;
+  npc->count1 = 0;
+  npc->count2 = 0;
+  npc->rect = NULL;
+  npc->rect_prev = NULL;
+  npc->xvel = 0;
+  npc->yvel = 0;
+
+  npc_set_dir(npc, dir);
+
+  // tick once
+  npc_functab[class_num](npc);
+}
+
+void npc_change_class_by_event_num(const int event_num, const int class_num, const int dir, const u16 addbits) {
+  for (int i = 0; i <= npc_list_max; ++i) {
+    if (npc_list[i].event_num = event_num && (npc_list[i].cond & NPCCOND_ALIVE))
+      npc_change_class(&npc_list[i], class_num, dir, addbits);
+  }
+}
+
+void npc_set_pos(npc_t *npc, const int x, const int y, const int dir) {
+  npc->x = x;
+  npc->y = y;
+  npc_set_dir(npc, dir);
 }

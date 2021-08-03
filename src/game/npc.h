@@ -106,8 +106,13 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev);
 npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *parent, int startidx);
 void npc_delete(npc_t *npc);
 void npc_delete_by_class(const int class_num, const int spawn_smoke);
+void npc_delete_by_event_num(const int event_num);
 npc_t *npc_find_by_class(const int class_num);
 npc_t *npc_find_by_event_num(const int event_num);
+void npc_change_action(npc_t *npc, const int act, const int dir);
+void npc_change_class(npc_t *npc, const int class_num, const int dir, const u16 addbits);
+void npc_change_class_by_event_num(const int event_num, const int class_num, const int dir, const u16 addbits);
+void npc_set_pos(npc_t *npc, const int x, const int y, const int dir);
 void npc_show_death_damage(npc_t *npc);
 void npc_kill(npc_t *npc, bool show_damage);
 void npc_spawn_death_fx(int x, int y, int w, int num, int up);
@@ -118,7 +123,7 @@ npc_t *npc_spawn_ammo(int x, int y, int val);
 void npc_draw(int cam_x, int cam_y);
 void npc_act(void);
 
-static inline u8 npc_get_flag(const u32 i) {
+static inline u32 npc_get_flag(const u32 i) {
   return npc_flags[i >> 3] & (1 << (i & 7));
 }
 

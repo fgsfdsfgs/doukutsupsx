@@ -128,7 +128,7 @@ vram_surf_t *vram_fit_surf(const struct bitmap *bmp, const uint16_t clut, const 
   // available VRAM is organized in two pages: first 256 lines and second 256 lines
   // try fitting into the first one, if that doesn't work, try the second one
   const uint32_t xalignment = (align) ? VRAM_TEXPAGE_WIDTH : 4;
-  const uint32_t yalignment = (align) ? VRAM_TEXPAGE_HEIGHT : 2;
+  const uint32_t yalignment = (align) ? 32 : 2;
   for (int i = 0; i < VRAM_NUM_PAGES; ++i) {
     if (vram_page_fit(surf, i, w, h, xalignment, yalignment) == 0) {
       ++numsurfaces;

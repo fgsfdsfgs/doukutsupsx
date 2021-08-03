@@ -48,6 +48,10 @@ static u8 *primptr;
 static plist_t *primlist;
 static u16 cur_tpage[GFX_NUM_LAYERS];
 
+// texrects for fonts
+static gfx_texrect_t fnt8_rect;
+static gfx_texrect_t fnt16_rect;
+
 // texrect for the currently loaded tileset
 static gfx_texrect_t tiles_rect;
 
@@ -196,8 +200,34 @@ void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int
   setRGB0(prim, 0x80, 0x80, 0x80);
   setSemiTrans(prim, 0);
   setXY0(prim, x, y);
-  setUV0(prim, tile_x << 4, (tile_y << 4));
+  setUV0(prim, tile_x << 4, tiles_rect.v + (tile_y << 4));
   prim->clut = gfx_surf[SURFACE_ID_LEVEL_TILESET].clut;
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
+void gfx_draw_string_fnt8(const char *str, const int layer, int x, int y) {
+  // SPRTs have no tpage field, so we have to make do
+  gfx_update_tpage(layer, fnt8_rect.tpage);
+  for (const char *ch = str; *ch; ++ch, x += 8) {
+    const int n = *ch - ' ';
+    SPRT_8 *prim = (SPRT_8 *)primptr;
+    setSprt8(prim);
+    setRGB0(prim, 0x80, 0x80, 0x80);
+    setSemiTrans(prim, 0);
+    setXY0(prim, x, y);
+    setUV0(prim, fnt8_rect.u + (n & 0x0F) * 8, fnt8_rect.v + (n >> 4) * 8);
+    prim->clut = gfx_surf[SURFACE_ID_FONT1].clut;
+    plist_append(&primlist[layer], sizeof(*prim));
+  }
+}
+
+void gfx_draw_fillrect(const u8 *rgba, const int layer, const int x, const int y, const int w, const int h) {
+  FILL *prim = (FILL *)primptr;
+  setFill(prim);
+  setRGB0(prim, rgba[0], rgba[1], rgba[2]);
+  setSemiTrans(prim, rgba[3]);
+  setXY0(prim, x, y);
+  setWH(prim, w, h);
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
@@ -290,4 +320,12 @@ int gfx_load_gfx_bank(const char *path) {
   const int ret = gfx_read_gfx_bank(f);
   fs_fclose(f);
   return ret;
+}
+
+void gfx_init_fonts(void) {
+  fnt8_rect.r.x = 0;
+  fnt8_rect.r.y = 0;
+  fnt8_rect.r.w = 8;
+  fnt8_rect.r.h = 8;
+  gfx_set_texrect(&fnt8_rect, SURFACE_ID_FONT1);
 }

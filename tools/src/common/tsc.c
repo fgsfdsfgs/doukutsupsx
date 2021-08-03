@@ -58,10 +58,9 @@ static opcode_t op_table[] = {
   { "<SOU", 1  }, { "<SSS", 1  }, { "<CSS", 0  }, { "<SPS", 0  },
   { "<CPS", 0  }, { "<CMU", 1  }, { "<FMU", 0  }, { "<RMU", 0, },
   // other
-  { "<SVP", 0  }, { "<LDP", 0  }, { "<SVT", 0  }, { "<CRE", 0  },
+  { "<SVP", 0  }, { "<LDP", 0  }, { "<STC", 0  }, { "<CRE", 0  },
   { "<XX1", 1  }, { "<SIL", 1  }, { "<CIL", 0  }, { "<ESC", 0  },
   { "<INI", 0  }, { "<PS+", 2  }, { "<SLP", 0  }, { "<ZAM", 0  },
-  { "<STC", 0  },
 };
 
 static const int num_opcodes = sizeof(op_table) / sizeof(*op_table);

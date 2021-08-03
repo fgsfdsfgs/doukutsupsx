@@ -9,6 +9,7 @@
 #define TSC_LINE_LEN 35
 
 #define TEXT_LEFT (VID_WIDTH / 2 - 108)
+#define TEXT_BOX_LEFT (VID_WIDTH / 2 - 122)
 #define TEXT_TOP (VID_HEIGHT - 56)
 
 enum tsc_script_id {
@@ -27,6 +28,10 @@ enum tsc_mode {
   TSC_MODE_FADE = 5,
   TSC_MODE_YESNO = 6,
   TSC_MODE_WAIT_PLAYER = 7,
+};
+
+enum tsc_flags {
+  TSCFLAG_IN_STRING = 2048,
 };
 
 #pragma pack(push, 1)
@@ -50,6 +55,7 @@ typedef struct {
 
   u8 *readptr;          // read position in script
 
+  s16 flags;
   s16 writepos;         // x position in line
   s16 line;             // current line
   s16 line_y[TSC_MAX_LINES];
@@ -66,7 +72,6 @@ typedef struct {
   s16 next_event;
 
   s8 mode;              // current mode (e.g. NOD, WAI)
-  s8 flags;
   s8 yesno;             // selection in yes/no prompt
   u8 blink;             // cursor blink
 } tsc_state_t;
@@ -75,6 +80,7 @@ extern tsc_state_t tsc_state;
 
 void tsc_init(void);
 bool tsc_update(void);
+void tsc_draw(void);
 void tsc_set_stage_script(tsc_script_t *data, const u32 size);
 void tsc_switch_script(const int idx);
 void tsc_start_event(const int num);

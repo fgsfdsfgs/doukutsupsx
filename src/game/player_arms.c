@@ -1029,3 +1029,41 @@ bool plr_arm_take(const int id) {
   plr_arm_swap_to_first();
   return TRUE;
 }
+
+bool plr_arm_trade(const int id, const int new_id, const int new_max_ammo) {
+  if (!player.arms[id].owned)
+    return TRUE;
+
+  player.arms[new_id].owned = TRUE;
+  player.arms[new_id].level = 1;
+  player.arms[new_id].max_ammo = new_max_ammo;
+  player.arms[new_id].ammo = new_max_ammo;
+
+  player.arms[id].owned = FALSE;
+  player.arms[id].ammo = 0;
+  player.arms[id].exp = 0;
+  player.arms[id].level = 1;
+
+  // make sure player isn't stuck on unowned weapon
+  if (id == player.arm)
+    player.arm = new_id;
+
+  return TRUE;
+}
+
+void plr_arms_refill_all(void) {
+  for (int i = 0; i < PLR_MAX_ARMS; ++i) {
+    if (player.arms[i].owned)
+      player.arms[i].ammo = player.arms[i].max_ammo;
+  }
+}
+
+void plr_arms_empty_all(void) {
+  for (int i = 0; i < PLR_MAX_ARMS; ++i) {
+    if (player.arms[i].owned) {
+      player.arms[i].ammo = 0;
+      player.arms[i].exp = 0;
+      player.arms[i].level = 1;
+    }
+  }
+}

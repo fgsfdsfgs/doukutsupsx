@@ -13,11 +13,13 @@
 sfx_bank_t *snd_main_bank;
 
 // channel each sample last played on
-static short sample_chan[MAX_SFX];
+static s16 sample_chan[MAX_SFX];
 // sample playing (or last played) on each SFX channel
-static short chan_sample[SFX_NUM_CHANNELS];
+static s16 chan_sample[SFX_NUM_CHANNELS];
+// whether each SFX channel is looping
+static u8 chan_looping[SFX_NUM_CHANNELS];
 // channel to play next sample on
-static short chan_next = CHAN_ALLOC;
+static s16 chan_next = CHAN_ALLOC;
 
 int snd_init(const char *mainbankpath) {
   spu_init();
@@ -84,7 +86,7 @@ void snd_free_sfx_bank(sfx_bank_t *bank) {
   mem_free(bank);
 }
 
-int snd_play_sound(int ch, const int no, const sound_mode_t mode) {
+int snd_play_sound_freq(int ch, const int no, const int freq, const sound_mode_t mode) {
   if (mode != SOUND_MODE_STOP) {
     // play or loop
     ASSERT(snd_main_bank);
@@ -92,20 +94,28 @@ int snd_play_sound(int ch, const int no, const sound_mode_t mode) {
       panic("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
     if (ch < 0) {
       ch = chan_next;
-      if (++chan_next == CHAN_MUSIC)
+      if (++chan_next == CHAN_MUSIC || chan_looping[chan_next])
         chan_next = CHAN_ALLOC;
     }
-    spu_play_sample(ch, snd_main_bank->sfx_addr[no], SFX_FREQ);
+    spu_play_sample(ch, snd_main_bank->sfx_addr[no], freq);
     sample_chan[no] = ch;
     chan_sample[ch] = no;
+    if (mode == SOUND_MODE_PLAY_LOOP)
+      chan_looping[ch] = TRUE;
   } else {
     // stop
     if (ch < 0) {
       ASSERT(no > 0 && no < MAX_SFX);
       spu_key_off(SPU_VOICECH(sample_chan[no]));
+      chan_looping[sample_chan[no]] = FALSE;
     } else {
       spu_key_off(SPU_VOICECH(ch));
+      chan_looping[ch] = FALSE;
     }
   }
   return ch;
+}
+
+int snd_play_sound(int ch, const int no, const sound_mode_t mode) {
+  return snd_play_sound_freq(ch, no, SFX_FREQ, mode);
 }

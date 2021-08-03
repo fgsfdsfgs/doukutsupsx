@@ -667,6 +667,13 @@ void plr_add_life(int val) {
   // player.life_br = player.life;
 }
 
+void plr_add_max_life(int val) {
+  player.max_life += val;
+  if (player.max_life > PLR_MAX_LIFE)
+    player.max_life = PLR_MAX_LIFE;
+  plr_add_life(val);
+}
+
 void plr_add_exp(int val) {
   int lv = player.arms[player.arm].level - 1;
 
@@ -714,4 +721,19 @@ void plr_add_ammo(int arm, int val) {
   player.arms[a].ammo += val;
   if (player.arms[a].ammo > player.arms[a].max_ammo)
     player.arms[a].ammo = player.arms[a].max_ammo;
+}
+
+void plr_item_equip(const u32 item, const bool equip) {
+  if (equip)
+    player.equip |= item;
+  else
+    player.equip &= ~item;
+}
+
+void plr_item_give(const u32 item) {
+  player.items[item] = TRUE;
+}
+
+void plr_item_take(const u32 item) {
+  player.items[item] = FALSE;
 }

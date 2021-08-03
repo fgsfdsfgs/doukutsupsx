@@ -13,6 +13,10 @@
 u32 game_flags = GFLAG_INPUT_ENABLED;
 u32 game_tick = 0;
 
+u8 skip_flags[GAME_MAX_SKIPFLAGS];
+u8 map_flags[GAME_MAX_MAPFLAGS];
+u8 tele_flags[GAME_MAX_MAPFLAGS];
+
 void game_init(void) {
   stage_init();
   tsc_init();
@@ -81,6 +85,7 @@ void game_frame(void) {
   tsc_update();
 
   // TODO: hud drawing here
+  tsc_draw();
 
   ++game_tick;
 }

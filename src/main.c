@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 
   // load main graphics bank
   gfx_load_gfx_bank(GFX_MAIN_BANK);
+  gfx_init_fonts();
 
   // now we can init game-related stuff
   timer_start();

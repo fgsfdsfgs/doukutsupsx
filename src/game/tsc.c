@@ -15,6 +15,9 @@
 #include "game/npc.h"
 #include "game/tsc.h"
 
+#define FACE_SIZE 48
+#define ITEM_SIZE 16
+
 #define OP_STR_START 0xFF
 #define MAX_OP_ARGS 6
 
@@ -73,13 +76,31 @@ static const tsc_opcode_t tsc_optab[] = {
   { "SOU", 1 }, { "SSS", 1 }, { "CSS", 0 }, { "SPS", 0 },
   { "CPS", 0 }, { "CMU", 1 }, { "FMU", 0 }, { "RMU", 0, },
   // other
-  { "SVP", 0 }, { "LDP", 0 }, { "SVT", 0 }, { "CRE", 0 },
+  { "SVP", 0 }, { "LDP", 0 }, { "STC", 0 }, { "CRE", 0 },
   { "XX1", 1 }, { "SIL", 1 }, { "CIL", 0 }, { "ESC", 0 },
   { "INI", 0 }, { "PS+", 2 }, { "SLP", 0 }, { "ZAM", 0 },
-  { "STC", 0 },
 };
 
 #define NUM_OPCODES (sizeof(tsc_optab) / sizeof(*tsc_optab))
+
+static gfx_texrect_t rc_face;
+static gfx_texrect_t rc_item;
+
+// the textbox texture sheet is aligned to page X, so we can draw them normally
+static gfx_texrect_t rc_textbox[3] = {
+  {{ 0, 0,  244, 8  }},
+  {{ 0, 8,  244, 16 }},
+  {{ 0, 16, 244, 24 }},
+};
+static gfx_texrect_t rc_itembox[5] = {
+  {{ 0,   0,  72,  16 }},
+  {{ 0,   8,  72,  24 }},
+  {{ 240, 0,  244, 8  }},
+  {{ 240, 8,  244, 16 }},
+  {{ 240, 16, 244, 24 }},
+};
+static gfx_texrect_t rc_yesno = {{ 152, 48, 244, 80 }};
+static gfx_texrect_t rc_yesno_cur = {{ 112, 88, 128, 104 }};
 
 void tsc_init(void) {
   memset(text, 0, sizeof(text));
@@ -104,6 +125,13 @@ void tsc_init(void) {
     scripts[i].script = data;
     scripts[i].size = size;
   }
+
+  for (int i = 0; i < 3; ++i)
+    gfx_set_texrect(&rc_textbox[i], SURFACE_ID_TEXT_BOX);
+  for (int i = 0; i < 5; ++i)
+    gfx_set_texrect(&rc_itembox[i], SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&rc_yesno, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&rc_yesno_cur, SURFACE_ID_TEXT_BOX);
 }
 
 void tsc_set_stage_script(tsc_script_t *data, const u32 size) {
@@ -184,13 +212,21 @@ void tsc_check_newline(void) {
 void tsc_set_face(const int face) {
   tsc_state.face = face;
   tsc_state.face_x = TO_FIX(VID_WIDTH / 2 - 156);
-  // TODO: face texrect
+  rc_face.r.left = FACE_SIZE * (face % 6);
+  rc_face.r.top = FACE_SIZE * (face / 6);
+  rc_face.r.right = rc_face.r.left + FACE_SIZE;
+  rc_face.r.bottom = rc_face.r.top + FACE_SIZE;
+  gfx_set_texrect(&rc_face, SURFACE_ID_FACE);
 }
 
 void tsc_set_item(const int item) {
   tsc_state.item = item;
   tsc_state.item_y = VID_HEIGHT - 112;
-  // TODO: item texrect
+  rc_item.r.left = ITEM_SIZE * (item % 16);
+  rc_item.r.top = ITEM_SIZE * (item / 16);
+  rc_item.r.right = rc_item.r.left + ITEM_SIZE;
+  rc_item.r.bottom = rc_item.r.top + ITEM_SIZE;
+  gfx_set_texrect(&rc_item, SURFACE_ID_ITEM_IMAGE);
 }
 
 void tsc_print_number(const int id) {
@@ -211,13 +247,9 @@ void tsc_print_number(const int id) {
   }
 }
 
-static inline bool tsc_parse_string(void) {
-  if (*tsc_state.readptr == '\r') {
+static inline bool tsc_parse_string(const char in_ch) {
+  if (in_ch == '\r') {
     // newline
-    ++tsc_state.readptr;
-    // skip end of string too
-    if (!*tsc_state.readptr)
-      ++tsc_state.readptr;
     tsc_state.writepos = 0;
     if (tsc_state.flags & 1) {
       ++tsc_state.line;
@@ -242,21 +274,20 @@ static inline bool tsc_parse_string(void) {
     memcpy(text[line], tsc_state.readptr, len);
     text[line][len] = 0;
 
-    tsc_state.readptr = *end ? end : end + 1;
+    tsc_state.readptr = end;
     if (len >= TSC_LINE_LEN)
       tsc_check_newline();
   } else {
     // normal printing
-    char ch[2];
+    char ch[3];
+    ch[2] = 0;
 
-    ch[0] = *tsc_state.readptr++;
+    ch[0] = in_ch;
     // shift-jis
     if (ch[0] & 0x80)
       ch[1] = *tsc_state.readptr++;
     else
       ch[1] = 0;
-
-    // TODO: print chars
 
     const int line = tsc_state.line % TSC_MAX_LINES;
     text[line][tsc_state.writepos++] = ch[0];
@@ -271,10 +302,6 @@ static inline bool tsc_parse_string(void) {
       ++tsc_state.line;
       tsc_check_newline();
     }
-
-    // skip end of string
-    if (!*tsc_state.readptr)
-      ++tsc_state.readptr;
   }
 
   return TRUE;
@@ -289,6 +316,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
   if (opcode > NUM_OPCODES)
     panic("unknown TSC opcode %02x", opcode);
 
+  npc_t *npc;
   u16 args[MAX_OP_ARGS];
   const tsc_opcode_t *op = &tsc_optab[opcode];
   for (u32 i = 0; i < op->num_args; ++i) {
@@ -336,7 +364,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
     case 0x05: // UNJ
       return tsc_op_condjmp((player.unit == args[0]), args[1]);
     case 0x06: // MPJ
-      return tsc_op_condjmp(0 /*map_active()*/, args[0]);
+      return tsc_op_condjmp(game_get_mapflag(stage_data->id), args[0]);
     case 0x07: // YNJ
       tsc_state.next_event = args[0];
       tsc_state.mode = TSC_MODE_YESNO;
@@ -353,7 +381,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
     case 0x0B: // ITJ
       return tsc_op_condjmp(player.items[args[0]], args[1]);
     case 0x0C: // SKJ
-      return tsc_op_condjmp(0 /*get_skipflag()*/, args[1]);
+      return tsc_op_condjmp(game_get_skipflag(args[0]), args[1]);
     case 0x0D: // AMJ
       return tsc_op_condjmp(player.arms[args[0]].owned, args[1]);
     /* common opcodes */
@@ -453,16 +481,162 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
     case 0x2A: // QUA
       // SetQuake(args[0]);
       return FALSE;
+    // npcs
+    case 0x2B: // ANP
+      npc = npc_find_by_event_num(args[0]);
+      if (npc)
+        npc_change_action(npc, args[1], args[2]);
+      return FALSE;
+    case 0x2C: // CNP
+      npc_change_class_by_event_num(args[0], args[1], args[2], 0);
+      return FALSE;
+    case 0x2D: // INP
+      npc_change_class_by_event_num(args[0], args[1], args[2], NPC_INTERACTABLE);
+      return FALSE;
+    case 0x2E: // MNP
+      npc = npc_find_by_event_num(args[0]);
+      if (npc)
+        npc_set_pos(npc, TO_FIX(args[1]) * TILE_SIZE, TO_FIX(args[2]) * TILE_SIZE, args[3]);
+      return FALSE;
+    case 0x2F: // SNP
+      npc_spawn(args[0], TO_FIX(args[1]) * TILE_SIZE, TO_FIX(args[2]) * TILE_SIZE, 0, 0, args[3], NULL, NPC_STARTIDX_DYNAMIC);
+      return FALSE;
+    case 0x30: // DNA
+      npc_delete_by_event_num(args[0]);
+      return FALSE;
+    case 0x31: // DNP
+      npc_delete_by_class(args[0], TRUE);
+      return FALSE;
+    case 0x32: // BOA
+      // boss_change_action(args[0]);
+      return FALSE;
+    case 0x33: // BSL
+      // boss_start_fight(args[0]);
+      return FALSE;
+    // item
+    case 0x34: // EQ+
+    case 0x35: // EQ-
+      plr_item_equip(args[0], (opcode == 0x34));
+      return FALSE;
+    case 0x36: // IT+
+      snd_play_sound(CHAN_ITEM, 38, SOUND_MODE_PLAY);
+      plr_item_give(args[0]);
+      return FALSE;
+    case 0x37: // IT-
+      plr_item_take(args[0]);
+      return FALSE;
+    case 0x38: // AM+
+      tsc_state.num[0] = args[0];
+      tsc_state.num[1] = args[1];
+      snd_play_sound(CHAN_ITEM, 38, SOUND_MODE_PLAY);
+      plr_arm_give(args[0], args[1]);
+      return FALSE;
+    case 0x39: // AM-
+      plr_arm_take(args[0]);
+      return FALSE;
+    case 0x3A: // TAM
+      plr_arm_trade(args[0], args[1], args[2]);
+      return FALSE;
+    case 0x3B: // AE+
+      plr_arms_refill_all();
+      return FALSE;
+    case 0x3C: // ML+
+      plr_add_max_life(args[0]);
+      return FALSE;
+    case 0x3D: // LI+
+      plr_add_life(args[0]);
+      return FALSE;
     // map
+    case 0x3E: // MLP
+      // TODO: minimap
+      return TRUE;
     case 0x3F: // MNA
-      printf("map name: %s\n", stage_data->title);
+      printf("TODO: map name: %s\n", stage_data->title);
+      return FALSE;
+    case 0x40: // CMP
+      stage_set_tile(args[0], args[1], args[2]);
+      return FALSE;
+    case 0x41: // SMP
+      stage_shift_tile(args[0], args[1]);
+      return FALSE;
+    // flags
+    case 0x42: // FL+
+      npc_set_flag(args[0]);
+      return FALSE;
+    case 0x43: // FL-
+      npc_clear_flag(args[0]);
+      return FALSE;
+    case 0x44: // MP+
+      game_set_mapflag(args[0]);
+      return FALSE;
+    case 0x45: // SK+
+      game_set_skipflag(args[0]);
+      return FALSE;
+    case 0x46: // SK-
+      game_clear_skipflag(args[0]);
       return FALSE;
     // sound and music
     case 0x47: // SOU
       snd_play_sound(-1, args[0], SOUND_MODE_PLAY);
       return FALSE;
+    case 0x48: // SSS
+      snd_play_sound_freq(CHAN_LOOP1, 40, args[0], SOUND_MODE_PLAY_LOOP);
+      snd_play_sound_freq(CHAN_LOOP2, 41, args[0] + 100, SOUND_MODE_PLAY_LOOP);
+      return FALSE;
+    case 0x49: // CSS
+      snd_play_sound(CHAN_LOOP1, 40, SOUND_MODE_STOP);
+      snd_play_sound(CHAN_LOOP2, 41, SOUND_MODE_STOP);
+      return FALSE;
+    case 0x4A: // SPS
+      snd_play_sound(CHAN_LOOP2, 58, SOUND_MODE_PLAY_LOOP);
+      return FALSE;
+    case 0x4B: // CPS
+      snd_play_sound(CHAN_LOOP2, 58, SOUND_MODE_STOP);
+      return FALSE;
     case 0x4C: // CMU
-      printf("change music %02x\n", args[0]);
+      printf("TODO: change music %02x\n", args[0]);
+      return FALSE;
+    case 0x4D: // FMU
+      printf("TODO: fade out music\n");
+      return FALSE;
+    case 0x4E: // RMU
+      printf("TODO: restart music\n");
+      return FALSE;
+    // other
+    case 0x4F: // SVP
+      printf("TODO: save game\n");
+      return FALSE;
+    case 0x50: // LDP
+      printf("TODO: load game\n");
+      return FALSE;
+    case 0x51: // STC
+      printf("TODO: save time\n");
+      return FALSE;
+    case 0x52: // CRE
+      printf("TODO: credits\n");
+      game_flags |= 8;
+      return FALSE;
+    case 0x53: // XX1
+      printf("TODO: falling island\n");
+      return TRUE;
+    case 0x54: // SIL
+      printf("TODO: credits show illust\n");
+      return FALSE;
+    case 0x55: // CIL
+      printf("TODO: credits hide illust\n");
+      return FALSE;
+    case 0x56: // ESC
+      return TRUE; // exit
+    case 0x57: // INI:
+      return TRUE; // restart
+    case 0x58: // PS+
+      game_set_teleflag(args[0]);
+      return FALSE;
+    case 0x59: // SLP
+      printf("TODO: stage select\n");
+      return TRUE;
+    case 0x5A: // ZAM
+      plr_arms_empty_all();
       return FALSE;
     /* catch-all in case I forgot to implement something */
     default:
@@ -515,10 +689,20 @@ bool tsc_update(void) {
       while (!stop) {
         const u8 opcode = *tsc_state.readptr++;
         // check if this is a string start or a real opcode
-        if (opcode == OP_STR_START)
-          stop = tsc_parse_string();
-        else
+        if (opcode == OP_STR_START) {
+          // start parsing the string
+          stop = FALSE;
+          tsc_state.flags |= TSCFLAG_IN_STRING;
+        } else if (tsc_state.flags & TSCFLAG_IN_STRING) {
+          // if we're in a string and next char is the end of it, stop parsing string
+          if (opcode == 0x00)
+            tsc_state.flags &= ~TSCFLAG_IN_STRING;
+          else
+            stop = tsc_parse_string((char)opcode);
+        } else {
+          // regular opcode
           stop = tsc_exec_opcode(opcode);
+        }
       }
       break;
 
@@ -572,4 +756,57 @@ bool tsc_update(void) {
     game_flags |= 4;
 
   return FALSE; // don't quit yet
+}
+
+void tsc_draw(void) {
+  if (tsc_state.mode == TSC_MODE_OFF || (tsc_state.flags & 1) == 0)
+    return;
+
+  const int text_y = ((tsc_state.flags & 0x20) ? 32 : TEXT_TOP) - 16;
+
+  // draw textbox
+  if (tsc_state.flags & 2) {
+    gfx_draw_texrect(&rc_textbox[0], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10);
+    for (int i = 1; i < 7; ++i)
+      gfx_draw_texrect(&rc_textbox[1], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10 + i * 8);
+    gfx_draw_texrect(&rc_textbox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10 + 7 * 8);
+  }
+
+  // draw face
+  int text_ofs_x = 0;
+  if (tsc_state.face) {
+    text_ofs_x = 56;
+    if (tsc_state.face_x < TO_FIX(TEXT_LEFT))
+      tsc_state.face_x += 0x1000;
+    gfx_draw_texrect(&rc_face, GFX_LAYER_FRONT, TO_INT(tsc_state.face_x), text_y);
+  }
+
+  // draw text
+  for (int i = 0; i < TSC_MAX_LINES; ++i) {
+    if (text[i][0])
+      gfx_draw_string_fnt8(text[i], GFX_LAYER_FRONT, TEXT_LEFT + 8 + text_ofs_x, text_y + tsc_state.line_y[i] + 8);
+  }
+
+  // draw NOD cursor
+  if (tsc_state.mode == TSC_MODE_NOD && (tsc_state.blink++ % 20 > 12)) {
+    const int cx = TEXT_LEFT + tsc_state.writepos * 8 + text_ofs_x;
+    const int cy = text_y + tsc_state.line_y[tsc_state.line % TSC_MAX_LINES];
+    const u8 rgba[4] = { 0xFF, 0xFF, 0xFE, 0x00 };
+    gfx_draw_fillrect(rgba, GFX_LAYER_FRONT, cx, cy, 4, 8);
+  }
+
+  // draw item
+  if (tsc_state.item) {
+    // TODO
+  }
+
+  // draw yes/no
+  if (tsc_state.mode == TSC_MODE_YESNO) {
+    const int ty = (tsc_state.wait < 2) ?
+      (VID_HEIGHT - 96 - 16) + (2 - tsc_state.wait) * 4 :
+      (VID_HEIGHT - 96 - 16);
+    gfx_draw_texrect(&rc_yesno, GFX_LAYER_FRONT, (VID_WIDTH / 2 + 56 + 8), ty);
+    if (tsc_state.wait == 16)
+      gfx_draw_texrect(&rc_yesno_cur, GFX_LAYER_FRONT, tsc_state.yesno * 41 + (VID_WIDTH / 2 + 51 + 8), ty + 8);
+  }
 }

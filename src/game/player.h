@@ -97,8 +97,13 @@ void plr_damage(int val);
 void plr_jump_back(int from);
 void plr_face_towards(int what);
 void plr_add_life(int val);
+void plr_add_max_life(int val);
 void plr_add_exp(int val);
 void plr_add_ammo(int arm, int val);
+
+void plr_item_equip(const u32 item, const bool equip);
+void plr_item_give(const u32 item);
+void plr_item_take(const u32 item);
 
 void plr_arm_reset_exp(void);
 void plr_arm_add_exp(int val);
@@ -112,3 +117,7 @@ int plr_arm_swap_to_prev(void);
 void plr_arm_shoot(void);
 bool plr_arm_give(const int id, const int max_ammo);
 bool plr_arm_take(const int id);
+bool plr_arm_trade(const int id, const int new_id, const int new_max_ammo);
+
+void plr_arms_refill_all(void);
+void plr_arms_empty_all(void);
