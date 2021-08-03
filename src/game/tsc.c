@@ -774,7 +774,7 @@ void tsc_draw(void) {
     gfx_draw_texrect(&rc_textbox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10 + 7 * 8);
   }
 
-  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y + 8, 244, 48);
+  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT + 16, text_y + 8, 244, 48);
 
   // draw face
   int text_ofs_x = 0;
