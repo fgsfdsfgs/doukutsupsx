@@ -151,106 +151,106 @@ npc_func_t npc_functab[NPC_MAX_ACTFUNC] = {
   npc_act_097,
   npc_act_098,
   npc_act_099,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
+  npc_act_null, // 100
+  npc_act_null, // 101
+  npc_act_null, // 102
+  npc_act_null, // 103
+  npc_act_null, // 104
+  npc_act_null, // 105
+  npc_act_null, // 106
+  npc_act_null, // 107
+  npc_act_null, // 108
+  npc_act_null, // 109
+  npc_act_null, // 110
+  npc_act_null, // 111
+  npc_act_null, // 112
+  npc_act_null, // 113
+  npc_act_null, // 114
+  npc_act_null, // 115
+  npc_act_null, // 116
+  npc_act_null, // 117
+  npc_act_null, // 118
+  npc_act_null, // 119
+  npc_act_null, // 120
+  npc_act_null, // 121
+  npc_act_null, // 122
+  npc_act_null, // 123
+  npc_act_null, // 124
+  npc_act_null, // 125
+  npc_act_null, // 126
+  npc_act_null, // 127
+  npc_act_null, // 128
+  npc_act_null, // 129
+  npc_act_null, // 130
+  npc_act_null, // 131
+  npc_act_null, // 132
+  npc_act_null, // 133
+  npc_act_null, // 134
+  npc_act_null, // 135
+  npc_act_null, // 136
+  npc_act_null, // 137
+  npc_act_null, // 138
+  npc_act_null, // 139
+  npc_act_140,
+  npc_act_141,
+  npc_act_142,
+  npc_act_143,
+  npc_act_144,
+  npc_act_145,
+  npc_act_146,
+  npc_act_147,
+  npc_act_148,
+  npc_act_149,
+  npc_act_150,
+  npc_act_151,
+  npc_act_152,
+  npc_act_153,
+  npc_act_154,
+  npc_act_155,
+  npc_act_156,
+  npc_act_157,
+  npc_act_158,
+  npc_act_159,
+  npc_act_null, // 160
+  npc_act_null, // 161
+  npc_act_null, // 162
+  npc_act_null, // 163
+  npc_act_null, // 164
+  npc_act_null, // 165
+  npc_act_null, // 166
+  npc_act_null, // 167
+  npc_act_null, // 168
+  npc_act_null, // 169
+  npc_act_null, // 170
+  npc_act_null, // 171
+  npc_act_null, // 172
+  npc_act_null, // 173
+  npc_act_null, // 174
+  npc_act_null, // 175
+  npc_act_null, // 176
+  npc_act_null, // 177
+  npc_act_null, // 178
+  npc_act_null, // 179
+  npc_act_null, // 180
+  npc_act_null, // 181
+  npc_act_null, // 182
+  npc_act_null, // 183
+  npc_act_null, // 184
+  npc_act_null, // 185
+  npc_act_null, // 186
+  npc_act_null, // 187
+  npc_act_null, // 188
+  npc_act_null, // 189
+  npc_act_null, // 190
+  npc_act_null, // 191
+  npc_act_null, // 192
+  npc_act_null, // 193
+  npc_act_null, // 194
+  npc_act_null, // 195
+  npc_act_null, // 196
+  npc_act_null, // 197
+  npc_act_null, // 198
+  npc_act_null, // 199
   npc_act_200,
   npc_act_201,
   npc_act_202,
