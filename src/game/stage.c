@@ -202,7 +202,7 @@ void stage_update(void) {
 static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
   for (int y = start_y; y < VID_HEIGHT; y += rc_back.r.h) {
     for (int x = start_x; x < VID_WIDTH; x += rc_back.r.w)
-      gfx_draw_texrect(&rc_back, GFX_LAYER_BACK, x, y);
+      gfx_draw_texrect(&rc_back, GFX_LAYER_BACK, x - 8, y - 8);
   }
 }
 
