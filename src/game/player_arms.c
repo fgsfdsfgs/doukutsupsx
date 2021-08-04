@@ -8,6 +8,7 @@
 #include "game/game.h"
 #include "game/npc.h"
 #include "game/player.h"
+#include "game/caret.h"
 
 const s16 plr_arms_exptab[PLR_MAX_ARMS][3] = {
   { 0,  0,  100 },
@@ -74,26 +75,26 @@ static void arm_act_snake(int level) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (3 * 0x200), player.y - (10 * 0x200), 1);
-          // SetCaret(player.x - (3 * 0x200), player.y - (10 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (3 * 0x200), player.y - (10 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (3 * 0x200), player.y - (10 * 0x200), 1);
-          // SetCaret(player.x + (3 * 0x200), player.y - (10 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (3 * 0x200), player.y - (10 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (3 * 0x200), player.y + (10 * 0x200), 3);
-          // SetCaret(player.x - (3 * 0x200), player.y + (10 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (3 * 0x200), player.y + (10 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (3 * 0x200), player.y + (10 * 0x200), 3);
-          // SetCaret(player.x + (3 * 0x200), player.y + (10 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (3 * 0x200), player.y + (10 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (6 * 0x200), player.y + (2 * 0x200), 0);
-          // SetCaret(player.x - (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (6 * 0x200), player.y + (2 * 0x200), 2);
-          // SetCaret(player.x + (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       }
 
@@ -128,26 +129,26 @@ static void arm_act_polarstar(int level) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (6 * 0x200), player.y + (3 * 0x200), 0);
-          // SetCaret(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (6 * 0x200), player.y + (3 * 0x200), 2);
-          // SetCaret(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       }
 
@@ -189,26 +190,26 @@ static void arm_act_fireball(int level) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (4 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x - (4 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (4 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (4 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x + (4 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (4 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (4 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x - (4 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (4 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (4 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x + (4 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (4 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (6 * 0x200), player.y + (2 * 0x200), 0);
-          // SetCaret(player.x - (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (6 * 0x200), player.y + (2 * 0x200), 2);
-          // SetCaret(player.x + (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (12 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       }
 
@@ -248,7 +249,7 @@ static void arm_act_machinegun(int level) {
       snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
 
       if (empty_cooldown == 0) {
-        // SetCaret(player.x, player.y, CARET_EMPTY, DIR_LEFT);
+        caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
         empty_cooldown = 50;
       }
 
@@ -260,10 +261,10 @@ static void arm_act_machinegun(int level) {
 
       if (player.dir == 0) {
         bullet_spawn(bul_no, player.x - (3 * 0x200), player.y - (8 * 0x200), 1);
-        // SetCaret(player.x - (3 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (3 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(bul_no, player.x + (3 * 0x200), player.y - (8 * 0x200), 1);
-        // SetCaret(player.x + (3 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (3 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     } else if (player.down) {
       if (level == 3) {
@@ -277,18 +278,18 @@ static void arm_act_machinegun(int level) {
 
       if (player.dir == 0) {
         bullet_spawn(bul_no, player.x - (3 * 0x200), player.y + (8 * 0x200), 3);
-        // SetCaret(player.x - (3 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (3 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(bul_no, player.x + (3 * 0x200), player.y + (8 * 0x200), 3);
-        // SetCaret(player.x + (3 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (3 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     } else {
       if (player.dir == 0) {
         bullet_spawn(bul_no, player.x - (12 * 0x200), player.y + (3 * 0x200), 0);
-        // SetCaret(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(bul_no, player.x + (12 * 0x200), player.y + (3 * 0x200), 2);
-        // SetCaret(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     }
 
@@ -399,7 +400,7 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
         snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
 
         if (empty_cooldown == 0) {
-          // SetCaret(player.x, player.y, CARET_EMPTY, DIR_LEFT);
+          caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
           empty_cooldown = 50;
         }
 
@@ -409,26 +410,26 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (6 * 0x200), player.y, 0);
-          // SetCaret(player.x - (12 * 0x200), player.y, CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (12 * 0x200), player.y, CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (6 * 0x200), player.y, 2);
-          // SetCaret(player.x + (12 * 0x200), player.y, CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (12 * 0x200), player.y, CARET_SHOOT, DIR_LEFT);
         }
       }
     } else {
@@ -436,7 +437,7 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
         snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
 
         if (empty_cooldown == 0) {
-          // SetCaret(player.x, player.y, CARET_EMPTY, DIR_LEFT);
+          caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
           empty_cooldown = 50;
         }
 
@@ -446,36 +447,36 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
           bullet_spawn(bul_no, player.x + (3 * 0x200), player.y, 1);
           bullet_spawn(bul_no, player.x - (3 * 0x200), player.y, 1);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
           bullet_spawn(bul_no, player.x + (3 * 0x200), player.y, 1);
           bullet_spawn(bul_no, player.x - (3 * 0x200), player.y, 1);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
           bullet_spawn(bul_no, player.x + (3 * 0x200), player.y, 3);
           bullet_spawn(bul_no, player.x - (3 * 0x200), player.y, 3);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
           bullet_spawn(bul_no, player.x - (3 * 0x200), player.y, 3);
           bullet_spawn(bul_no, player.x + (3 * 0x200), player.y, 3);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (6 * 0x200), player.y + (1 * 0x200), 0);
-          // SetCaret(player.x - (12 * 0x200), player.y + (1 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (12 * 0x200), player.y + (1 * 0x200), CARET_SHOOT, DIR_LEFT);
           bullet_spawn(bul_no, player.x, player.y - (8 * 0x200), 0);
           bullet_spawn(bul_no, player.x + (4 * 0x200), player.y - (1 * 0x200), 0);
         } else {
           bullet_spawn(bul_no, player.x + (6 * 0x200), player.y + (1 * 0x200), 2);
-          // SetCaret(player.x + (12 * 0x200), player.y + (1 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (12 * 0x200), player.y + (1 * 0x200), CARET_SHOOT, DIR_LEFT);
           bullet_spawn(bul_no, player.x, player.y - (8 * 0x200), 2);
           bullet_spawn(bul_no, player.x - (4 * 0x200), player.y - (1 * 0x200), 2);
         }
@@ -504,7 +505,7 @@ static void arm_act_bubbler1(void) {
       snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
 
       if (empty_cooldown == 0) {
-        // SetCaret(player.x, player.y, CARET_EMPTY, DIR_LEFT);
+        caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
         empty_cooldown = 50;
       }
 
@@ -514,26 +515,26 @@ static void arm_act_bubbler1(void) {
     if (player.up) {
       if (player.dir == 0) {
         bullet_spawn(19, player.x - (1 * 0x200), player.y - (2 * 0x200), 1);
-        // SetCaret(player.x - (1 * 0x200), player.y - (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (1 * 0x200), player.y - (2 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(19, player.x + (1 * 0x200), player.y - (2 * 0x200), 1);
-        // SetCaret(player.x + (1 * 0x200), player.y - (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (1 * 0x200), player.y - (2 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     } else if (player.down) {
       if (player.dir == 0) {
         bullet_spawn(19, player.x - (1 * 0x200), player.y + (2 * 0x200), 3);
-        // SetCaret(player.x - (1 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (1 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(19, player.x + (1 * 0x200), player.y + (2 * 0x200), 3);
-        // SetCaret(player.x + (1 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (1 * 0x200), player.y + (2 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     } else {
       if (player.dir == 0) {
         bullet_spawn(19, player.x - (6 * 0x200), player.y + (3 * 0x200), 0);
-        // SetCaret(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(19, player.x + (6 * 0x200), player.y + (3 * 0x200), 2);
-        // SetCaret(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     }
 
@@ -562,7 +563,7 @@ static void arm_act_bubbler2(int level) {
       snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
 
       if (empty_cooldown == 0) {
-        // SetCaret(player.x, player.y, CARET_EMPTY, DIR_LEFT);
+        caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
         empty_cooldown = 50;
       }
 
@@ -572,26 +573,26 @@ static void arm_act_bubbler2(int level) {
     if (player.up) {
       if (player.dir == 0) {
         bullet_spawn(level, player.x - (3 * 0x200), player.y - (8 * 0x200), 1);
-        // SetCaret(player.x - (3 * 0x200), player.y - (16 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (3 * 0x200), player.y - (16 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(level, player.x + (3 * 0x200), player.y - (8 * 0x200), 1);
-        // SetCaret(player.x + (3 * 0x200), player.y - (16 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (3 * 0x200), player.y - (16 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     } else if (player.down) {
       if (player.dir == 0) {
         bullet_spawn(level, player.x - (3 * 0x200), player.y + (8 * 0x200), 3);
-        // SetCaret(player.x - (3 * 0x200), player.y + (16 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (3 * 0x200), player.y + (16 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(level, player.x + (3 * 0x200), player.y + (8 * 0x200), 3);
-        // SetCaret(player.x + (3 * 0x200), player.y + (16 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (3 * 0x200), player.y + (16 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     } else {
       if (player.dir == 0) {
         bullet_spawn(level, player.x - (6 * 0x200), player.y + (3 * 0x200), 0);
-        // SetCaret(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
       } else {
         bullet_spawn(level, player.x + (6 * 0x200), player.y + (3 * 0x200), 2);
-        // SetCaret(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+        caret_spawn(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
       }
     }
 
@@ -680,26 +681,26 @@ static void arm_act_nemesis(int level) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y - (12 * 0x200), 1);
-          // SetCaret(player.x - (1 * 0x200), player.y - (12 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y - (12 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y - (12 * 0x200), 1);
-          // SetCaret(player.x + (1 * 0x200), player.y - (12 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y - (12 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y + (12 * 0x200), 3);
-          // SetCaret(player.x - (1 * 0x200), player.y + (12 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y + (12 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y + (12 * 0x200), 3);
-          // SetCaret(player.x + (1 * 0x200), player.y + (12 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y + (12 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (22 * 0x200), player.y + (3 * 0x200), 0);
-          // SetCaret(player.x - (16 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (16 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (22 * 0x200), player.y + (3 * 0x200), 2);
-          // SetCaret(player.x + (16 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (16 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       }
 
@@ -798,26 +799,26 @@ static void arm_act_spur(int level) {
       if (player.up) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y - (8 * 0x200), 1);
-          // SetCaret(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y - (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else if (player.down) {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (1 * 0x200), player.y + (8 * 0x200), 3);
-          // SetCaret(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (1 * 0x200), player.y + (8 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       } else {
         if (player.dir == 0) {
           bullet_spawn(bul_no, player.x - (6 * 0x200), player.y + (3 * 0x200), 0);
-          // SetCaret(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x - (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
         } else {
           bullet_spawn(bul_no, player.x + (6 * 0x200), player.y + (3 * 0x200), 2);
-          // SetCaret(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
+          caret_spawn(player.x + (12 * 0x200), player.y + (3 * 0x200), CARET_SHOOT, DIR_LEFT);
         }
       }
 
@@ -884,7 +885,7 @@ void plr_arm_add_exp(int val) {
         player.arms[player.arm].exp = 0;
         if (player.arm != 13) {
           snd_play_sound(CHAN_MISC, 27, SOUND_MODE_PLAY);
-          // SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
+          caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
         }
       }
     }

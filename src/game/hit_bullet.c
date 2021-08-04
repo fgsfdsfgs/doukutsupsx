@@ -9,6 +9,7 @@
 #include "game/npc.h"
 #include "game/player.h"
 #include "game/stage.h"
+#include "game/caret.h"
 
 static inline int hit_check_bullet_block(int x, int y, bullet_t *bul, const u8 atrb) {
   int i;
@@ -20,7 +21,7 @@ static inline int hit_check_bullet_block(int x, int y, bullet_t *bul, const u8 a
   if (hit && bul->bits & 0x60 && atrb == 0x43) {
     if (!(bul->bits & 0x40)) bul->cond = 0;
 
-    // set_caret(bul->x, bul->y, caret_projectile_dissipation, dir_left);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     snd_play_sound(-1, 12, SOUND_MODE_PLAY);
 
     for (i = 0; i < 4; ++i)

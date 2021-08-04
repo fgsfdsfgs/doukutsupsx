@@ -9,6 +9,7 @@
 #include "game/game.h"
 #include "game/player.h"
 #include "game/npc.h"
+#include "game/caret.h"
 #include "game/bullet.h"
 
 bullet_t bullet_list[BULLET_MAX];
@@ -170,7 +171,7 @@ static void bullet_act_null(bullet_t *bul) {
 static void bullet_act_snake1(bullet_t *bul) {
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    // caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -231,7 +232,7 @@ static void bullet_act_snake2(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -345,7 +346,7 @@ static void bullet_act_polarstar(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -459,7 +460,7 @@ static void bullet_act_fireball(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -472,7 +473,7 @@ static void bullet_act_fireball(bullet_t *bul) {
 
   if (do_break) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     snd_play_sound(-1, 28, SOUND_MODE_PLAY);
     return;
   }
@@ -611,7 +612,7 @@ static void bullet_act_machinegun(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -682,7 +683,7 @@ static void bullet_act_missile(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -810,16 +811,16 @@ static void bullet_act_missile(bullet_t *bul) {
 
     switch (bul->dir) {
       case DIR_LEFT:
-        // SetCaret(bul->x + (8 * 0x200), bul->y, CARET_EXHAUST, DIR_RIGHT);
+        caret_spawn(bul->x + (8 * 0x200), bul->y, CARET_EXHAUST, DIR_RIGHT);
         break;
       case DIR_UP:
-        // SetCaret(bul->x, bul->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
+        caret_spawn(bul->x, bul->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
         break;
       case DIR_RIGHT:
-        // SetCaret(bul->x - (8 * 0x200), bul->y, CARET_EXHAUST, DIR_LEFT);
+        caret_spawn(bul->x - (8 * 0x200), bul->y, CARET_EXHAUST, DIR_LEFT);
         break;
       case DIR_DOWN:
-        // SetCaret(bul->x, bul->y - (8 * 0x200), CARET_EXHAUST, DIR_UP);
+        caret_spawn(bul->x, bul->y - (8 * 0x200), CARET_EXHAUST, DIR_UP);
         break;
     }
   }
@@ -911,7 +912,7 @@ static void bullet_act_supermissile(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -1044,16 +1045,16 @@ static void bullet_act_supermissile(bullet_t *bul) {
 
     switch (bul->dir) {
       case DIR_LEFT:
-        // SetCaret(bul->x + (8 * 0x200), bul->y, CARET_EXHAUST, DIR_RIGHT);
+        caret_spawn(bul->x + (8 * 0x200), bul->y, CARET_EXHAUST, DIR_RIGHT);
         break;
       case DIR_UP:
-        // SetCaret(bul->x, bul->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
+        caret_spawn(bul->x, bul->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
         break;
       case DIR_RIGHT:
-        // SetCaret(bul->x - (8 * 0x200), bul->y, CARET_EXHAUST, DIR_LEFT);
+        caret_spawn(bul->x - (8 * 0x200), bul->y, CARET_EXHAUST, DIR_LEFT);
         break;
       case DIR_DOWN:
-        // SetCaret(bul->x, bul->y - (8 * 0x200), CARET_EXHAUST, DIR_UP);
+        caret_spawn(bul->x, bul->y - (8 * 0x200), CARET_EXHAUST, DIR_UP);
         break;
     }
   }
@@ -1131,7 +1132,7 @@ static void bullet_act_superexplosion(bullet_t *bul) {
 static void bullet_act_bubble1(bullet_t *bul) {
   if (bul->flags & 0x2FF) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     return;
   }
 
@@ -1177,7 +1178,7 @@ static void bullet_act_bubble1(bullet_t *bul) {
 
   if (++bul->act_wait > 40) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION_TINY, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION_TINY, DIR_LEFT);
   }
 
   static const rect_t rect[4] = {
@@ -1207,7 +1208,7 @@ static void bullet_act_bubble2(bullet_t *bul) {
 
   if (delete) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     return;
   }
 
@@ -1257,7 +1258,7 @@ static void bullet_act_bubble2(bullet_t *bul) {
 
   if (++bul->act_wait > 60) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION_TINY, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION_TINY, DIR_LEFT);
   }
 
   static const rect_t rect[4] = {
@@ -1281,7 +1282,7 @@ static void bullet_act_bubble3(bullet_t *bul) {
   // the only fucking input check in the entire bullet code
   if (++bul->act_wait > 100 || !(input_held & IN_FIRE)) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     snd_play_sound(-1, 100, SOUND_MODE_PLAY);
 
     if (player.up)
@@ -1355,7 +1356,7 @@ static void bullet_act_bubble3(bullet_t *bul) {
 static void bullet_act_bubblespine(bullet_t *bul) {
   if (++bul->count1 > bul->life_count || bul->flags & 8) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -1483,7 +1484,7 @@ static void bullet_act_dropspike(bullet_t *bul) {
 static void bullet_act_sword1(bullet_t *bul) {
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -1543,7 +1544,7 @@ static void bullet_act_sword1(bullet_t *bul) {
 static void bullet_act_sword2(bullet_t *bul) {
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -1663,7 +1664,7 @@ static void bullet_act_sword3(bullet_t *bul) {
 
       if (bul->count1 > bul->life_count) {
         bul->cond = 0;
-        // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+        caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
         return;
       }
 
@@ -1712,7 +1713,7 @@ static void bullet_act_nemesis(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -1811,7 +1812,7 @@ static void bullet_act_spur(bullet_t *bul) {
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
-    // SetCaret(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
+    caret_spawn(bul->x, bul->y, CARET_SHOOT, DIR_LEFT);
     return;
   }
 
@@ -2104,11 +2105,11 @@ void bullet_destroy(bullet_t *bul) {
   if (bul->class_num < 37 || bul->class_num > 39) {
     snd_play_sound(-1, 28, SOUND_MODE_PLAY);
   } else {
-    // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_UP);
+    caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_UP);
   }
 
   bul->cond = 0;
-  // SetCaret(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
+  caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
 }
 
 int bullet_count_by_arm(const int arm_id) {

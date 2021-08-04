@@ -896,7 +896,7 @@ void npc_act_011(npc_t *npc) {
 
   if (npc->flags & 0xFF) {
     npc->cond = 0;
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
   }
 
   npc->y += npc->yvel;
@@ -911,7 +911,7 @@ void npc_act_011(npc_t *npc) {
   npc->rect = &rect[npc->anim];
 
   if (++npc->count1 > 150) {
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     npc->cond = 0;
   }
 }

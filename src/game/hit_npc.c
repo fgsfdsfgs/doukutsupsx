@@ -9,6 +9,7 @@
 #include "game/player.h"
 #include "game/stage.h"
 #include "game/tsc.h"
+#include "game/caret.h"
 
 static inline void hit_check_npc_block(npc_t *npc, int x, int y) {
   int hit = 0;
@@ -462,9 +463,9 @@ void hit_npc_bullet(void) {
               npc->cond |= NPCCOND_KILLED;
           } else {
             if (npc->shock < 14) {
-              // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
-              // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
-              // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
+              caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
+              caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
+              caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
               snd_play_sound(-1, npc->snd_hit, SOUND_MODE_PLAY);
               npc->shock = 16;
             }
@@ -474,7 +475,7 @@ void hit_npc_bullet(void) {
           }
         } else if (!(bul->bits & 0x10)) {
           // Hit invulnerable NPC
-          // SetCaret((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
+          caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
           snd_play_sound(-1, 31, SOUND_MODE_PLAY);
           bul->life = 0;
           continue;

@@ -667,7 +667,7 @@ void npc_act_030(npc_t *npc) {
 
     if (++npc->act_wait > 100) {
       npc->act_wait = 0;
-      // SetCaret(npc->x, npc->y - (2 * 0x200), CARET_ZZZ, DIR_LEFT);
+      caret_spawn(npc->x, npc->y - (2 * 0x200), CARET_ZZZ, DIR_LEFT);
     }
   }
 
@@ -803,7 +803,7 @@ void npc_act_032(npc_t *npc) {
 // Balrog bouncing projectile
 void npc_act_033(npc_t *npc) {
   if (npc->flags & 5) {
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     npc->cond = 0;
   } else if (npc->flags & 8) {
     npc->yvel = -0x400;
@@ -828,7 +828,7 @@ void npc_act_033(npc_t *npc) {
   npc->rect = &rect_left[npc->anim];
 
   if (++npc->act_wait > 250) {
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     npc->cond = 0;
   }
 }

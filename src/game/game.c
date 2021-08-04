@@ -4,6 +4,7 @@
 #include "game/npc.h"
 #include "game/player.h"
 #include "game/bullet.h"
+#include "game/caret.h"
 #include "game/hit.h"
 #include "game/camera.h"
 #include "game/stage.h"
@@ -23,6 +24,7 @@ void game_init(void) {
   npc_init(NPC_MAIN_TABLE);
   plr_init();
   bullet_init();
+  caret_init();
   cam_set_target(&player.x, &player.y, 16);
 }
 
@@ -58,22 +60,25 @@ void game_frame(void) {
   hit_npc_bullet();
   // hit_boss_bullet();
 
-  // bullets and particles update after other shit
   if (input_enabled)
     plr_arm_shoot();
-  bullet_act();
 
-  // animate the player
-  plr_animate(btns_held);
+  // bullets and particles update after other shit
+  bullet_act();
+  caret_act();
 
   // move camera
   cam_update();
+
+  // animate the player
+  plr_animate(btns_held);
 
   // call `draw` on all entities
   stage_draw(camera.x, camera.y);
   npc_draw(camera.x, camera.y);
   bullet_draw(camera.x, camera.y);
   plr_draw(camera.x, camera.y);
+  caret_draw(camera.x, camera.y);
 
   if (!(game_flags & 4)) {
     // TODO: inventory and map

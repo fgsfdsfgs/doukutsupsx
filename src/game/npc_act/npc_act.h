@@ -9,6 +9,8 @@
 
 #include "game/game.h"
 #include "game/npc.h"
+#include "game/caret.h"
+#include "game/bullet.h"
 #include "game/player.h"
 #include "game/stage.h"
 

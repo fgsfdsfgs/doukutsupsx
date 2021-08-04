@@ -1631,7 +1631,7 @@ void npc_act_357(npc_t *npc) {
   }
 
   if (npc->act_wait % 8 == 1) {
-    // SetCaret(npc->x + (m_rand(-8, 8) * 0x200), npc->y + 0x1000, CARET_TINY_PARTICLES, DIR_UP);
+    caret_spawn(npc->x + (m_rand(-8, 8) * 0x200), npc->y + 0x1000, CARET_TINY_PARTICLES, DIR_UP);
   }
 }
 

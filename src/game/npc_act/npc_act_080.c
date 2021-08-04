@@ -508,7 +508,7 @@ void npc_act_083(npc_t *npc) {
 // Basu projectile (Egg Corridor)
 void npc_act_084(npc_t *npc) {
   if (npc->flags & 0xFF) {
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     npc->cond = 0;
   }
 
@@ -532,7 +532,7 @@ void npc_act_084(npc_t *npc) {
   npc->rect = &rect_left[npc->anim];
 
   if (++npc->count1 > 300) {
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     npc->cond = 0;
   }
 }
@@ -1165,7 +1165,7 @@ void npc_act_093(npc_t *npc) {
 
       if (++npc->act_wait > 200) {
         npc->act_wait = 0;
-        // SetCaret(npc->x, npc->y, CARET_ZZZ, DIR_LEFT);
+        caret_spawn(npc->x, npc->y, CARET_ZZZ, DIR_LEFT);
       }
 
       break;

@@ -124,7 +124,7 @@ void npc_act_201(npc_t *npc) {
 void npc_act_202(npc_t *npc) {
   if (npc->flags & 0xFF) {
     npc->cond = 0;
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
   }
 
   npc->y += npc->yvel;
@@ -147,7 +147,7 @@ void npc_act_202(npc_t *npc) {
 
   if (++npc->count1 > 300) {
     npc->cond = 0;
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
   }
 }
 
@@ -631,7 +631,7 @@ void npc_act_208(npc_t *npc) {
 void npc_act_209(npc_t *npc) {
   if (npc->flags & 0xFF) {
     npc->cond = 0;
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
   }
 
   npc->y += npc->yvel;
@@ -655,7 +655,7 @@ void npc_act_209(npc_t *npc) {
 
   if (++npc->count1 > 300) {
     npc->cond = 0;
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
   }
 }
 

@@ -11,6 +11,7 @@
 #include "game/npc.h"
 #include "game/player.h"
 #include "game/npctab.h"
+#include "game/caret.h"
 
 u8 npc_flags[NPC_MAX_FLAGS];
 
@@ -133,7 +134,7 @@ void npc_spawn_death_fx(int x, int y, int w, int num, int up) {
   }
 
   // flash
-  // SetCaret(x, y, CARET_EXPLOSION, DIR_LEFT);
+  caret_spawn(x, y, CARET_EXPLOSION, DIR_LEFT);
 }
 
 void npc_delete(npc_t *npc) {

@@ -7,12 +7,13 @@
 #include "game/npc.h"
 #include "game/player.h"
 #include "game/tsc.h"
+#include "game/caret.h"
 
 static inline void star_particle(void) {
   if (!(player.cond & 2) && player.yvel < -0x200) {
     snd_play_sound(CHAN_STEP, 3, SOUND_MODE_PLAY);
-    // set_caret(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
-    // set_caret(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
+    caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
+    caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
   }
 }
 

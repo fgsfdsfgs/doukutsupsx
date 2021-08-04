@@ -678,7 +678,7 @@ void npc_act_048(npc_t *npc) {
   } else if (npc->flags & 8) {
     if (++npc->count1 > 2 || npc->dir == 2) {
       npc_show_death_damage(npc);
-      // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+      caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     } else {
       npc->yvel = -0x100;
     }
@@ -709,7 +709,7 @@ void npc_act_048(npc_t *npc) {
   }
 
   if (++npc->act_wait > 750) {
-    // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+    caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
     npc->cond = 0;
   }
 
@@ -891,7 +891,7 @@ void npc_act_050(npc_t *npc) {
 
       if (npc->flags & 8) {
         if (++npc->count1 > 1) {
-          // SetCaret(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
+          caret_spawn(npc->x, npc->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
           npc->cond = 0;
         }
       }

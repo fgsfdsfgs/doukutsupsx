@@ -9,6 +9,7 @@
 #include "game/npc.h"
 #include "game/tsc.h"
 #include "game/game.h"
+#include "game/caret.h"
 
 // also known as MyChar.cpp
 // most of the animation and physics code was left intact
@@ -464,12 +465,12 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
       // Boost particles (and sound)
       if (trig & IN_JUMP || player.boost_cnt % 3 == 1) {
-        // SetCaret(player.x, player.y + (6 * 0x200), CARET_EXHAUST, DIR_DOWN);
+        caret_spawn(player.x, player.y + (6 * 0x200), CARET_EXHAUST, DIR_DOWN);
         snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
       }
     } else if (player.boost_sw == 3 && (trig & IN_JUMP || player.boost_cnt % 3 == 1)) {
       // Boost particles (and sound)
-      // SetCaret(player.x, player.y - (6 * 0x200), CARET_EXHAUST, DIR_UP);
+      caret_spawn(player.x, player.y - (6 * 0x200), CARET_EXHAUST, DIR_UP);
       snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
     }
   } else if (player.flags & 0x2000) {
@@ -481,7 +482,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
     player.yvel -= 0x20;
 
     if (player.boost_cnt % 3 == 0) {
-      // SetCaret(player.x, player.y + (player.hit.bottom / 2), CARET_EXHAUST, DIR_DOWN);
+      caret_spawn(player.x, player.y + (player.hit.bottom / 2), CARET_EXHAUST, DIR_DOWN);
       snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
     }
 
@@ -694,7 +695,7 @@ void plr_add_exp(int val) {
         player.arms[player.arm].exp = 0;
         if (player.arm != 13) {
           snd_play_sound(CHAN_MISC, 27, SOUND_MODE_PLAY);
-          // SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
+          caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
         }
       }
     }
