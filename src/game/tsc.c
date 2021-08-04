@@ -448,10 +448,10 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       player.xvel = 0;
       return FALSE;
     case 0x1F: // HMC
-      player.flags |= PLRCOND_INVISIBLE;
+      player.cond |= PLRCOND_INVISIBLE;
       return FALSE;
     case 0x20: // SMC
-      player.flags &= ~PLRCOND_INVISIBLE;
+      player.cond &= ~PLRCOND_INVISIBLE;
       return FALSE;
     case 0x21: // UNI
       player.unit = args[0];
@@ -463,7 +463,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       plr_face_towards(args[0]);
       return FALSE;
     case 0x24: // MOV
-      plr_set_pos(args[0], args[1]);
+      plr_set_pos(TO_FIX(args[0]) * TILE_SIZE, TO_FIX(args[1]) * TILE_SIZE);
       return FALSE;
     case 0x25: // TRA
       stage_transition(args[0], args[1], args[2], args[3]);
