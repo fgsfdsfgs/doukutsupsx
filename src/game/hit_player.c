@@ -719,8 +719,8 @@ static inline void hit_player_npc(void) {
   }
 
   // Create question mark when NPC hasn't been interacted with
-  // if (player.question)
-  //   SetCaret(player.x, player.y, CARET_QUESTION_MARK, DIR_LEFT);
+  if (player.question)
+    caret_spawn(player.x, player.y, CARET_QUESTION_MARK, DIR_LEFT);
 }
 
 void hit_player(const u32 input_held) {

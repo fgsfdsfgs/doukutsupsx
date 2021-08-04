@@ -449,14 +449,10 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
       // Boost particles (and sound) 
       if (trig & IN_JUMP || player.boost_cnt % 3 == 1) {
-      /*
         if (player.dir == 0)
-          SetCaret(player.x + (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST,
-                   DIR_RIGHT);
+          caret_spawn(player.x + (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST, DIR_RIGHT);
         if (player.dir == 2)
-          SetCaret(player.x - (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST,
-                   DIR_LEFT);
-      */
+          caret_spawn(player.x - (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST, DIR_LEFT);
         snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
       }
     } else if (player.boost_sw == 2) {
@@ -642,8 +638,8 @@ void plr_damage(int val) {
       const int lv = player.arms[player.arm].level - 1;
       player.arms[player.arm].exp = plr_arms_exptab[player.arm][lv] + player.arms[player.arm].exp;
 
-      // if (player.life > 0 && player.arms[player.arm].code != 13)
-      //   SetCaret(player.x, player.y, CARET_LEVEL_UP, DIR_RIGHT);
+      if (player.life > 0 && player.arm != 13)
+        caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_RIGHT);
     } else {
       player.arms[player.arm].exp = 0;
     }
