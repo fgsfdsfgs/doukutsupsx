@@ -80,6 +80,9 @@ void stage_update(void); // actually just updates the bg
 int stage_load_stage_bank(const u32 id);
 void stage_free_stage_bank(void);
 
+void stage_change_music(const u32 id);
+void stage_resume_music(void);
+
 // changes current stage to `id`, executes `event` and puts player at `plr_x`, `plr_y`
 // if stage `id` is not in the current stage bank, will change bank to `id`
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y);

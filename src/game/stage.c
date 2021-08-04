@@ -4,6 +4,7 @@
 #include "engine/memory.h"
 #include "engine/graphics.h"
 #include "engine/sound.h"
+#include "engine/org.h"
 
 #include "game/game.h"
 #include "game/player.h"
@@ -34,6 +35,11 @@ static gfx_texrect_t rc_back;
 // background position
 static int bg_x;
 static int bg_y;
+
+// previous music track
+static u32 music_prev = 0;
+// position in previous music track
+static u32 music_prev_pos = 0;
 
 void stage_init(void) {
   // the surface should be already loaded by now
@@ -83,6 +89,8 @@ int stage_load_stage_bank(const u32 id) {
   rc_back.r.bottom = stage_bank->bk_height;
   gfx_set_texrect(&rc_back, SURFACE_ID_LEVEL_BACKGROUND);
 
+  printf("stage bank %02x loaded\nfree mem: %u bytes\n", id, mem_get_free_space());
+
   return TRUE;
 }
 
@@ -102,8 +110,10 @@ void stage_free_stage_bank(void) {
 
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   if (!stages[id]) {
+    org_pause(true);
     stage_free_stage_bank();
     stage_load_stage_bank(id);
+    org_pause(false);
   }
 
   ASSERT(stages[id]);
@@ -130,6 +140,48 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   printf("tileset (%d, %d, %02x, %04x)\n", gfx_surf[2].tex_x, gfx_surf[2].tex_y, gfx_surf[2].mode, gfx_surf[2].clut);
 
   return true;
+}
+
+static inline void stage_load_music(const u32 id) {
+  if (id == 0) {
+    // NULL music, just free the current track
+    org_free();
+    return;
+  }
+
+  // find song in bank
+  const stage_song_t *sng = NULL;
+  for (u32 i = 0; i < stage_bank->numsongs; ++i) {
+    if (id == stage_bank->songs[i].music_id) {
+      sng = &stage_bank->songs[i];
+      break;
+    }
+  }
+
+  if (!sng)
+    panic("music %02x is not in stage bank", id);
+
+  // free previous track
+  org_free();
+
+  // copy new track
+  sfx_bank_t *orgbank = (sfx_bank_t *)((u8 *)stage_bank + sng->bank_ofs);
+  u8 *orgdata = (u8 *)orgbank + sizeof(*orgbank) + sizeof(u32) * orgbank->num_sfx + orgbank->data_size;
+  org_load(id, orgdata, orgbank);
+}
+
+void stage_change_music(const u32 id) {
+  music_prev_pos = org_get_pos();
+  music_prev = org_get_id();
+  if (music_prev != id) {
+    stage_load_music(id);
+    org_restart_from(0);
+  }
+}
+
+void stage_resume_music(void) {
+  stage_load_music(music_prev);
+  org_restart_from(music_prev_pos);
 }
 
 void stage_update(void) {

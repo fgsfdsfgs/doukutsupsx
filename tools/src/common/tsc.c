@@ -6,6 +6,7 @@
 #include <assert.h>
 
 #include "common.h"
+#include "musiclist.h"
 #include "tsc.h"
 
 #define MAX_OP_ARGS 8
@@ -247,7 +248,7 @@ int tsc_scan_music(const char *src, uint32_t *songlist, const int limit) {
     while (*num && *num == '0') ++num;
     if (!*num) break;
     const uint32_t musnum = atoi(num);
-    if (musnum > 0 && musnum < limit && find_id(musnum, songlist, count) < 0) {
+    if (musnum > 0 && musnum < MUSIC_COUNT && find_id(musnum, songlist, count) < 0) {
       if (count < limit)
         songlist[count++] = musnum;
       else

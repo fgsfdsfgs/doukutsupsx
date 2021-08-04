@@ -581,6 +581,7 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   uint32_t fsize = 0;
   uint8_t *fdata = NULL;
   for (uint32_t i = 0; i < num_songs; ++i) {
+    printf("* music '%s' id %02x\n", music_names[song_list[i]], song_list[i]);
     hdr->songs[i].music_id = song_list[i];
     hdr->songs[i].bank_ofs = ftell(f);
     // read bank

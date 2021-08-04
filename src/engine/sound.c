@@ -76,12 +76,16 @@ sfx_bank_t *snd_load_sfx_bank(const char *path) {
   return ret;
 }
 
-void snd_free_sfx_bank(sfx_bank_t *bank) {
-  ASSERT(bank);
-  // free SPU RAM if this is the last loaded bank
+void snd_free_sfx_bank_data(sfx_bank_t *bank) {
   const u32 prevaddr = spuram_ptr - bank->data_size;
   if (prevaddr == bank->sfx_addr[0] || prevaddr == bank->sfx_addr[1])
     spuram_ptr = prevaddr;
+}
+
+void snd_free_sfx_bank(sfx_bank_t *bank) {
+  ASSERT(bank);
+  // free SPU RAM if this is the last loaded bank
+  snd_free_sfx_bank_data(bank);
   // free the bank header
   mem_free(bank);
 }

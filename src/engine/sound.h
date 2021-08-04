@@ -28,7 +28,7 @@ typedef enum {
 typedef struct {
   u32 data_size;   // size of raw SPU data at the end
   u32 num_sfx;     // number of samples in bank, including #0 (dummy) and all the unused samples
-  u32 sfx_addr[1]; // address in SPU RAM of each sample, first one is always 0, others may be 0 (means it's unused)
+  u32 sfx_addr[];  // address in SPU RAM of each sample, first one is always 0, others may be 0 (means it's unused)
 } sfx_bank_t;
 
 // main sample bank; never unloaded
@@ -44,6 +44,7 @@ sfx_bank_t *snd_load_sfx_bank(const char *path);
 
 // frees a sfx_bank struct
 void snd_free_sfx_bank(sfx_bank_t *bank);
+void snd_free_sfx_bank_data(sfx_bank_t *bank);
 
 // plays/stops a sample from the main sample bank
 // if ch is -1, plays on next available channel

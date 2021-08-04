@@ -5,6 +5,7 @@
 #include "engine/common.h"
 #include "engine/memory.h"
 #include "engine/sound.h"
+#include "engine/org.h"
 #include "engine/graphics.h"
 #include "engine/filesystem.h"
 #include "engine/input.h"
@@ -15,6 +16,7 @@ int main(int argc, char **argv) {
   cd_init();
   mem_init(); // have to do this AFTER CdInit for some reason
   snd_init(SFX_MAIN_BANK);
+  org_init();
   in_init();
 
   // load main graphics bank
@@ -25,10 +27,8 @@ int main(int argc, char **argv) {
   timer_start();
   game_init();
 
-  // from now on, allocations are per stage
+  // from now on, allocations persist until the end of the stage
   mem_set_mark();
-
-  printf("free mem after everything: %u bytes\n", mem_get_free_space());
 
   u32 now = timer_ticks;
   u32 next_frame = now;
@@ -38,11 +38,18 @@ int main(int argc, char **argv) {
 
   while (1) {
     now = timer_ticks;
+
     if (now >= next_frame) {
       in_update();
       game_frame();
       gfx_swap_buffers();
       next_frame = now + 2; 
+    }
+
+    const u32 orgwait = org_get_wait() / 10;
+    if (now >= next_orgtick && orgwait) {
+      org_tick();
+      next_orgtick = now + orgwait;
     }
   }
 

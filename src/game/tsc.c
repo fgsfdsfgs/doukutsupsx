@@ -5,6 +5,7 @@
 #include "engine/memory.h"
 #include "engine/graphics.h"
 #include "engine/sound.h"
+#include "engine/org.h"
 #include "engine/input.h"
 #include "engine/filesystem.h"
 
@@ -596,13 +597,13 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       snd_play_sound(CHAN_LOOP2, 58, SOUND_MODE_STOP);
       return FALSE;
     case 0x4C: // CMU
-      printf("TODO: change music %02x\n", args[0]);
+      stage_change_music(args[0]);
       return FALSE;
     case 0x4D: // FMU
-      printf("TODO: fade out music\n");
+      org_start_fade();
       return FALSE;
     case 0x4E: // RMU
-      printf("TODO: restart music\n");
+      stage_resume_music();
       return FALSE;
     // other
     case 0x4F: // SVP
