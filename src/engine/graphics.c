@@ -205,6 +205,19 @@ void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
+// for hud numbers
+void gfx_draw_texrect_8x8(const gfx_texrect_t *texrect, const int layer, const int x, const int y) {
+  // SPRTs have no tpage field, so we have to make do
+  gfx_update_tpage(layer, texrect->tpage);
+  SPRT_8 *prim = (SPRT_8 *)primptr;
+  setSprt8(prim);
+  setRGB0(prim, 0x80, 0x80, 0x80);
+  setXY0(prim, x, y);
+  setUV0(prim, texrect->u, texrect->v);
+  prim->clut = gfx_surf[texrect->surf].clut;
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
 // tiles always start at the top left of a texture page, so no need to figure them out
 // they are also at most 256x256 texels wide in total
 void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int y) {

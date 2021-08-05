@@ -5,47 +5,13 @@
 #include "engine/math.h"
 
 #include "game/dmgnum.h"
+#include "game/hud.h"
 
 dmgnum_t dmgnum_list[DMGNUM_MAX];
 
 static int dmgnum_last = 0;
 
-static gfx_texrect_t rc_digit[] = {
-  // white numbers
-  {{ 0,  56, 8,  64 }},
-  {{ 8,  56, 16, 64 }},
-  {{ 16, 56, 24, 64 }},
-  {{ 24, 56, 32, 64 }},
-  {{ 32, 56, 40, 64 }},
-  {{ 40, 56, 48, 64 }},
-  {{ 48, 56, 56, 64 }},
-  {{ 56, 56, 64, 64 }},
-  {{ 64, 56, 72, 64 }},
-  {{ 72, 56, 80, 64 }},
-  // red numbers
-  {{ 0,  64, 8,  72 }},
-  {{ 8,  64, 16, 72 }},
-  {{ 16, 64, 24, 72 }},
-  {{ 24, 64, 32, 72 }},
-  {{ 32, 64, 40, 72 }},
-  {{ 40, 64, 48, 72 }},
-  {{ 48, 64, 56, 72 }},
-  {{ 56, 64, 64, 72 }},
-  {{ 64, 64, 72, 72 }},
-  {{ 72, 64, 80, 72 }},
-  // plus
-  {{ 32, 48, 40, 56 }},
-  // minus
-  {{ 40, 48, 48, 56 }},
-};
-
 void dmgnum_init(void) {
-  dmgnum_clear();
-  for (u32 i = 0; i < sizeof(rc_digit) / sizeof(*rc_digit); ++i)
-    gfx_set_texrect(&rc_digit[i], SURFACE_ID_TEXT_BOX);
-}
-
-void dmgnum_clear(void) {
   memset(dmgnum_list, 0, sizeof(dmgnum_list));
 }
 
@@ -101,7 +67,7 @@ void dmgnum_spawn(int *tgt_x, int *tgt_y, int val) {
   dnum->xofs = -TO_FIX(8 * numdigits / 2);
 
   for (int i = 0; i < numdigits; ++i)
-    dnum->texrects[i] = &rc_digit[digits[i]];
+    dnum->texrects[i] = &hud_rc_digit[digits[i]];
 }
 
 void dmgnum_act(void) {
@@ -110,7 +76,7 @@ void dmgnum_act(void) {
     if (dnum->cond) {
       if (++dnum->count < 32)
         dnum->yofs -= 0x100;
-      else if (dnum->count > 80)
+      if (dnum->count > 80)
         dnum->cond = FALSE;
       else if (dnum->count > 72)
         ++dnum->vofs;
@@ -127,7 +93,7 @@ void dmgnum_draw(int cam_x, int cam_y) {
       int x = TO_INT(*dnum->tgt_x + dnum->xofs) - cam_x;
       const int y = TO_INT(*dnum->tgt_y + dnum->yofs) - cam_y - 4;
       for (int d = 0; d < dnum->digits; ++d, x += 8)
-        gfx_draw_texrect_ofs(dnum->texrects[d], GFX_LAYER_BACK, x, y, 0, dnum->vofs);
+        gfx_draw_texrect_ofs(dnum->texrects[d], GFX_LAYER_FRONT, x, y, 0, dnum->vofs);
     }
   }
 }

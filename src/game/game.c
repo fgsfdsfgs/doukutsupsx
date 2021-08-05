@@ -10,6 +10,7 @@
 #include "game/stage.h"
 #include "game/tsc.h"
 #include "game/dmgnum.h"
+#include "game/hud.h"
 #include "game/game.h"
 
 u32 game_flags = GFLAG_INPUT_ENABLED;
@@ -26,7 +27,7 @@ void game_init(void) {
   plr_init();
   bullet_init();
   caret_init();
-  dmgnum_init();
+  hud_init();
   cam_set_target(&player.x, &player.y, 16);
 }
 
@@ -81,6 +82,7 @@ void game_frame(void) {
   npc_draw(camera.x, camera.y);
   bullet_draw(camera.x, camera.y);
   plr_draw(camera.x, camera.y);
+  // these are on the front layer
   caret_draw(camera.x, camera.y);
   dmgnum_draw(camera.x, camera.y);
 
@@ -98,6 +100,7 @@ void game_frame(void) {
   tsc_update();
 
   // TODO: hud drawing here
+  hud_draw();
   tsc_draw();
 
   ++game_tick;

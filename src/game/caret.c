@@ -44,7 +44,7 @@ static inline void caret_draw_instance(caret_t *crt, const int cam_vx, const int
   const int y = TO_INT(crt->y - crt->view_top);
   // TODO: cache caret texrects
   gfx_set_texrect(&crt->texrect, SURFACE_ID_CARET);
-  gfx_draw_texrect(&crt->texrect, GFX_LAYER_BACK, x - cam_vx, y - cam_vy);
+  gfx_draw_texrect(&crt->texrect, GFX_LAYER_FRONT, x - cam_vx, y - cam_vy);
 }
 
 void caret_draw(int cam_x, int cam_y) {

@@ -29,16 +29,16 @@ const s16 plr_arms_exptab[PLR_MAX_ARMS][3] = {
 
 // snake, machinegun, nemesis and spur are first, since they can be traded for;
 // weapons #6, #8 and #11 do not exist
-static const s8 arms_order[] = {
+const s8 plr_arms_order[] = {
   1, 4, 12, 13, 2, 3, 5, 7, 9, 10,
 };
 
+const int plr_arms_order_num = sizeof(plr_arms_order) / sizeof(*plr_arms_order);
+
 // reverse lookup (arm id -> arm order)
-static const s8 arms_order_reverse[PLR_MAX_ARMS] = {
+const s8 plr_arms_order_reverse[PLR_MAX_ARMS] = {
   -1, 0, 4, 5, 1, 6, -1, 7, -1, 8, 9, -1, 2, 3, 
 };
-
-static const int arms_order_num = sizeof(arms_order) / sizeof(*arms_order);
 
 // using statics for these counters is not good, but that's how the original does it
 // if I change this, this will probably fuck up some delicate timings or something
@@ -935,10 +935,10 @@ bool plr_arm_use_ammo(const int val) {
 
 void plr_arm_swap_to_first(void) {
   // swap to first available arm in the order
-  for (int i = 0; i < arms_order_num; ++i) {
-    if (player.arms[arms_order[i]].owned) {
-      player.arm = arms_order[i];
-      // gArmsEnergyX = 32;
+  for (int i = 0; i < plr_arms_order_num; ++i) {
+    if (player.arms[plr_arms_order[i]].owned) {
+      player.arm = plr_arms_order[i];
+      player.arms_x = 32;
       snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
       return;
     }
@@ -948,15 +948,15 @@ void plr_arm_swap_to_first(void) {
 }
 
 int plr_arm_swap_to_next(void) {
-  const int start = arms_order_reverse[player.arm];
+  const int start = plr_arms_order_reverse[player.arm];
   if (start < 0) return 0;
 
   // original game always plays the change effects
-  // gArmsEnergyX = 32;
+  player.arms_x = 32;
   snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
 
-  for (int i = 1; i < arms_order_num; ++i) {
-    const int arm = arms_order[(start + i) % arms_order_num];
+  for (int i = 1; i < plr_arms_order_num; ++i) {
+    const int arm = plr_arms_order[(start + i) % plr_arms_order_num];
     if (player.arms[arm].owned) {
       player.arm = arm;
       return arm;
@@ -967,18 +967,18 @@ int plr_arm_swap_to_next(void) {
 }
 
 int plr_arm_swap_to_prev(void) {
-  const int start = arms_order_reverse[player.arm];
+  const int start = plr_arms_order_reverse[player.arm];
   if (start < 0) return 0;
 
   // original game always plays the change effects
-  // gArmsEnergyX = 32;
+  player.arms_x = 32;
   snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
 
-  for (int i = 1; i < arms_order_num - 1; ++i) {
-    const int arm = arms_order[(start + arms_order_num - i) % arms_order_num];
+  for (int i = 1; i < plr_arms_order_num - 1; ++i) {
+    const int arm = plr_arms_order[(start + plr_arms_order_num - i) % plr_arms_order_num];
     if (player.arms[arm].owned) {
       player.arm = arm;
-      // gArmsEnergyX = 0;
+      player.arms_x = 0;
       snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
       return arm;
     }

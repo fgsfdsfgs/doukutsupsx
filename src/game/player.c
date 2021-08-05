@@ -57,6 +57,11 @@ static gfx_texrect_t rc_right[] = {
   {{ 112, 16, 128, 32 }},
 };
 
+static gfx_texrect_t rc_bubble[] = {
+  {{ 56, 96, 80, 120 }},
+  {{ 80, 96, 104, 120 }},
+};
+
 static gfx_texrect_t rc_arms[PLR_MAX_ARMS];
 
 static const struct phystab {
@@ -92,7 +97,10 @@ void plr_init(void) {
   player.hit.bottom = TO_FIX(8);
 
   player.life = 3;
+  player.life_bar = 3;
   player.max_life = 3;
+
+  player.arms_x = 16;
 
   // init texrects; player surfaces should already be loaded by now
 
@@ -108,6 +116,9 @@ void plr_init(void) {
     rc_arms[i].r.bottom = rc_arms[i].r.top + ARMS_FRAME_H;
     gfx_set_texrect(&rc_arms[i], SURFACE_ID_ARMS);
   }
+
+  gfx_set_texrect(&rc_bubble[0], SURFACE_ID_CARET);
+  gfx_set_texrect(&rc_bubble[1], SURFACE_ID_CARET);
 
   // give some weapons for testing
 
@@ -210,6 +221,12 @@ static inline void plr_draw_char(int plr_vx, int plr_vy, int cam_vx, int cam_vy)
   gfx_draw_texrect_16x16(&rect, GFX_LAYER_BACK, plr_vx - cam_vx + 8, plr_vy - cam_vy + 8);
 }
 
+static inline void plr_draw_bubble(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
+  ++player.bubble;
+  if ((player.equip & EQUIP_AIR_TANK) || player.unit == 1)
+    gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 12 - cam_vx, plr_vy - 12 - cam_vy);
+}
+
 void plr_draw(int cam_x, int cam_y) {
   if (!(player.cond & PLRCOND_ALIVE) || player.cond & PLRCOND_INVISIBLE)
     return;
@@ -225,7 +242,7 @@ void plr_draw(int cam_x, int cam_y) {
     return;
 
   plr_draw_char(plr_vx, plr_vy, cam_vx, cam_vy);
-  // plr_draw_airtank(plr_vx, plr_vy, cam_vx, cam_vy);
+  plr_draw_bubble(plr_vx, plr_vy, cam_vx, cam_vy);
 }
 
 void plr_set_pos(int x, int y) {
@@ -278,11 +295,41 @@ void plr_face_towards(int what) {
   }
 }
 
+static inline void plr_update_air(void) {
+  if (player.equip & EQUIP_AIR_TANK) {
+    player.air = 1000;
+    player.air_count = 0;
+    return;
+  }
+
+  if (!(player.flags & 0x100)) {
+    player.air = 1000;
+    if (player.air_count)
+      --player.air_count;
+  } else {
+    player.air_count = 60;
+    if (--player.air == 0) {
+      if (npc_get_flag(4000)) {
+        // core cutscene
+        tsc_start_event(1100);
+      } else {
+        // drown
+        tsc_start_event(41);
+        caret_spawn(player.x, player.y, CARET_DROWNED_QUOTE, player.dir);
+        player.cond &= ~PLRCOND_ALIVE;
+      }
+    }
+  }
+}
+
 // jesus h christ
 static void plr_act_normal(const u32 btns, const u32 trig) {
   // Get speeds and accelerations
   const struct phystab *phys = &phystab[(player.flags & 0x100) != 0];
   int a, x;
+
+  if ((game_flags & (GFLAG_INPUT_ENABLED | 4)) == GFLAG_INPUT_ENABLED)
+    plr_update_air();
 
   if (player.cond & PLRCOND_INVISIBLE)
     return;
@@ -593,14 +640,27 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   player.y += player.yvel;
 }
 
+static void plr_act_stream(const u32 btns, const u32 trig) {
+}
+
 void plr_act(const u32 btns, const u32 trig) {
   if (!(player.cond & PLRCOND_ALIVE))
     return;
 
-  if (player.exp_wait) --player.exp_wait;
-  if (player.shock) --player.shock;
+  if (player.exp_wait)
+    --player.exp_wait;
 
-  plr_act_normal(btns, trig);
+  if (player.shock) {
+    --player.shock;
+  } else if (player.exp_count) {
+    dmgnum_spawn(&player.x, &player.y, player.exp_count);
+    player.exp_count = 0;
+  }
+
+  if (player.unit == 1)
+    plr_act_stream(btns, trig);
+  else
+    plr_act_normal(btns, trig);
 
   player.cond &= ~PLRCOND_UNKNOWN20;
 }
@@ -662,7 +722,7 @@ void plr_add_life(int val) {
   player.life += val;
   if (player.life > player.max_life)
     player.life = player.max_life;
-  // player.life_br = player.life;
+  player.life_bar = player.life;
 }
 
 void plr_add_max_life(int val) {

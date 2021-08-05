@@ -69,10 +69,17 @@ typedef struct {
 
   s16 life;
   s16 max_life;
+  s16 life_bar;
+  s16 life_count;
   s16 exp_count;
   s16 exp_wait;
+  s16 exp_flash;
+  s16 air;
+  s16 air_count;
   s16 star;
   s16 cooldown;
+  s16 bubble;
+  s16 arms_x;
 
   u8 cond;
   s8 dir;
@@ -85,6 +92,9 @@ typedef struct {
 } player_t;
 
 extern const s16 plr_arms_exptab[PLR_MAX_ARMS][3];
+extern const s8 plr_arms_order[];
+extern const s8 plr_arms_order_reverse[PLR_MAX_ARMS];
+extern const int plr_arms_order_num;
 
 extern player_t player;
 
