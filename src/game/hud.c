@@ -108,12 +108,12 @@ static const int numdiv[4] = { 1000, 100, 10, 1 };
 
 static inline void hud_draw_number(int val, int x, int y) {
   // drawing right to left
-  while (val) {
+  do {
     const int d = val % 10;
     val /= 10;
     gfx_draw_texrect_8x8(&hud_rc_digit[d], GFX_LAYER_FRONT, x, y);
     x -= 8;
-  }
+  } while(val);
 }
 
 static inline void hud_draw_ammo(void) {
