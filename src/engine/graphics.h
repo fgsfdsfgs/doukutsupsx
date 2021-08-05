@@ -43,6 +43,7 @@ typedef struct {
 #pragma pack(pop)
 
 extern gfx_surf_t gfx_surf[];
+extern const u8 gfx_clear_rgb[3];
 
 typedef struct {
   rect_t r;  // rect inside surface
@@ -70,6 +71,7 @@ void gfx_draw_string(const char *str, const int layer, int x, int y);
 void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x, int y) ;
 void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y, const int w, const int h);
 void gfx_draw_loading(void);
+void gfx_draw_clear(const u8 *rgb);
 
 void gfx_push_cliprect(const int layer, const int x, const int y, const int w, const int h);
 void gfx_pop_cliprect(const int layer);

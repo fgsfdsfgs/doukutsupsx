@@ -32,6 +32,9 @@ typedef struct  {
 // currently loaded surfaces
 gfx_surf_t gfx_surf[GFX_MAX_SURFACES];
 
+// common clear color
+const u8 gfx_clear_rgb[3] = { 0x00, 0x00, 0x20 };
+
 static struct fb
 {
   DRAWENV draw;
@@ -91,11 +94,13 @@ int gfx_init(void) {
     fb[1].disp.screen.y = 24;
   }
 
-  fb[0].gpubuf_end = fb[0].gpubuf + sizeof(fb[0].gpubuf);
-  fb[1].gpubuf_end = fb[1].gpubuf + sizeof(fb[1].gpubuf);
-
-  fb[0].draw.isbg = fb[1].draw.isbg = 1;
-  fb[0].draw.b0 = fb[1].draw.b0 = 0x20;
+  for (int i = 0; i < 2; ++i) {
+    fb[i].gpubuf_end = fb[i].gpubuf + sizeof(fb[i].gpubuf);
+    fb[i].draw.isbg = 1;
+    fb[i].draw.r0 = gfx_clear_rgb[0];
+    fb[i].draw.g0 = gfx_clear_rgb[1];
+    fb[i].draw.b0 = gfx_clear_rgb[2];
+  }
 
   // clear screen ASAP
   // need two FILL primitives because h=512 doesn't work correctly
@@ -302,17 +307,20 @@ void gfx_pop_cliprect(const int layer) {
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
-void gfx_draw_loading(void) {
-  // clear both framebuffers
+void gfx_draw_clear(const u8 *rgb) {
   FILL fill;
   setFill(&fill);
-  setRGB0(&fill, 0x00, 0x00, 0x20);
+  setRGB0(&fill, rgb[0], rgb[1], rgb[2]);
   setXY0(&fill, fb[0].draw.clip.x, fb[0].draw.clip.y);
   setWH(&fill, fb[0].draw.clip.w, fb[0].draw.clip.h);
   DrawPrim(&fill);
   setXY0(&fill, fb[1].draw.clip.x, fb[1].draw.clip.y);
-  setWH(&fill, fb[1].draw.clip.w, fb[1].draw.clip.h);
   DrawPrim(&fill);
+}
+
+void gfx_draw_loading(void) {
+  // clear both framebuffers
+  gfx_draw_clear(gfx_clear_rgb);
   // just plop it into the currently shown framebuffer
   const RECT *curclip = &fb[!cur_fb_num].draw.clip;
   RECT rc = {

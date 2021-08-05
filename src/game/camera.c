@@ -17,8 +17,6 @@ cam_t camera;
 
 static gfx_texrect_t rc_fade[16];
 
-static const u8 fade_color[3] = { 0x00, 0x00, 0x20 };
-
 static struct {
   s32 mode;
   s32 count;
@@ -224,7 +222,7 @@ void cam_update_fade(void) {
 void cam_draw_fade(void) {
   if (fade.full) {
     // fade out finished or fade in not started; just clear screen
-    gfx_draw_fillrect(fade_color, GFX_LAYER_FRONT, 0, 0, VID_WIDTH, VID_HEIGHT);
+    gfx_draw_fillrect(gfx_clear_rgb, GFX_LAYER_FRONT, 0, 0, VID_WIDTH, VID_HEIGHT);
   } else if (fade.mode) {
     // draw fade animation
     for (int y = 0; y < FADE_HEIGHT; ++y) {
