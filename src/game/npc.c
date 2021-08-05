@@ -12,6 +12,7 @@
 #include "game/player.h"
 #include "game/npctab.h"
 #include "game/caret.h"
+#include "game/dmgnum.h"
 
 u8 npc_flags[NPC_MAX_FLAGS];
 
@@ -114,7 +115,7 @@ void npc_kill(npc_t *npc, bool show_damage) {
 
   // Create value view
   if (npc->bits & NPC_SHOW_DAMAGE) {
-    // SetValueView(&npc->x, &npc->y, npc->damage_view);
+    dmgnum_spawn(&npc->x, &npc->y, npc->damage_view);
     if (show_damage)
       npc_show_death_damage(npc);
   } else {
@@ -272,8 +273,9 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
     dx = 2 * ((npc->shock / 2) % 2) - 1;
   } else {
     dx = 0;
-    if (npc->bits & NPC_SHOW_DAMAGE) {
-      // todo
+    if ((npc->bits & NPC_SHOW_DAMAGE) && npc->damage_view) {
+      dmgnum_spawn(&npc->x, &npc->y, npc->damage_view);
+      npc->damage_view = 0;
     }
   }
 

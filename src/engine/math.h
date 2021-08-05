@@ -16,6 +16,10 @@ static inline int m_cos(u8 deg) {
   return m_sintab[deg];
 }
 
+static inline int m_sign(int x) {
+  return (x > 0) - (x < 0);
+}
+
 u8 m_atan2(int x, int y);
 void m_srand(const u32 seed);
 int m_rand(const int min, const int max);

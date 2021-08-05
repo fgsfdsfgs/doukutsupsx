@@ -9,6 +9,7 @@
 #include "game/camera.h"
 #include "game/stage.h"
 #include "game/tsc.h"
+#include "game/dmgnum.h"
 #include "game/game.h"
 
 u32 game_flags = GFLAG_INPUT_ENABLED;
@@ -25,6 +26,7 @@ void game_init(void) {
   plr_init();
   bullet_init();
   caret_init();
+  dmgnum_init();
   cam_set_target(&player.x, &player.y, 16);
 }
 
@@ -66,6 +68,7 @@ void game_frame(void) {
   // bullets and particles update after other shit
   bullet_act();
   caret_act();
+  dmgnum_act();
 
   // move camera
   cam_update();
@@ -79,6 +82,7 @@ void game_frame(void) {
   bullet_draw(camera.x, camera.y);
   plr_draw(camera.x, camera.y);
   caret_draw(camera.x, camera.y);
+  dmgnum_draw(camera.x, camera.y);
 
   if (!(game_flags & 4)) {
     // TODO: inventory and map

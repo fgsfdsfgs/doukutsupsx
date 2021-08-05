@@ -11,6 +11,7 @@
 #include "game/bullet.h"
 #include "game/caret.h"
 #include "game/camera.h"
+#include "game/dmgnum.h"
 #include "game/tsc.h"
 #include "game/npc.h"
 #include "game/stage.h"
@@ -133,6 +134,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   cam_center_on_player();
   bullet_init();
   caret_init();
+  dmgnum_clear();
 
   stage_water_y = TO_FIX(240 * TILE_SIZE);
   game_tick = 0;

@@ -177,6 +177,21 @@ void gfx_draw_texrect(const gfx_texrect_t *texrect, const int layer, const int x
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
+void gfx_draw_texrect_ofs(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int du, const int dv) {
+  // SPRTs have no tpage field, so we have to make do
+  gfx_update_tpage(layer, texrect->tpage);
+  SPRT *prim = (SPRT *)primptr;
+  setSprt(prim);
+  setRGB0(prim, 0x80, 0x80, 0x80);
+  // FIXME: figure out why the game feeds positions offset by -8, -8 into the drawing routine
+  // or if it was me who fucked it up
+  setXY0(prim, x + 8, y + 8);
+  setUV0(prim, texrect->u + du, texrect->v + dv);
+  setWH(prim, texrect->r.w - du, texrect->r.h - dv);
+  prim->clut = gfx_surf[texrect->surf].clut;
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
 // for that one stupid tile and the player
 void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const int x, const int y) {
   // SPRTs have no tpage field, so we have to make do

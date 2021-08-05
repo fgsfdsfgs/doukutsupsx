@@ -10,6 +10,7 @@
 #include "game/tsc.h"
 #include "game/game.h"
 #include "game/caret.h"
+#include "game/dmgnum.h"
 
 // also known as MyChar.cpp
 // most of the animation and physics code was left intact
@@ -646,7 +647,7 @@ void plr_damage(int val) {
   }
 
   // Tell player how much damage was taken
-  // SetValueView(&player.x, &player.y, -val);
+  dmgnum_spawn(&player.x, &player.y, -val);
 
   // Death
   if (player.life <= 0) {
