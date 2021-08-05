@@ -1010,9 +1010,11 @@ void plr_arm_shoot(void) {
 
 bool plr_arm_give(const int id, const int max_ammo) {
   if (player.arms[id].owned == FALSE) {
-    memset(&player.arms[id], 0, sizeof(*player.arms));
+    memset(&player.arms[id], 0, sizeof(player.arms[id]));
     player.arms[id].level = 1;
     player.arms[id].owned = TRUE;
+    if (player.arm == 0)
+      player.arm = id;
   }
 
   player.arms[id].max_ammo += max_ammo;
