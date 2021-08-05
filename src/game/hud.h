@@ -4,6 +4,8 @@
 #include "engine/graphics.h"
 
 extern gfx_texrect_t hud_rc_digit[];
+extern gfx_texrect_t hud_rc_item[];
+extern gfx_texrect_t hud_rc_arms[];
 
 void hud_init(void);
 void hud_draw(void);

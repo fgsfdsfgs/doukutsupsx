@@ -38,6 +38,9 @@ gfx_texrect_t hud_rc_digit[] = {
   {{ 40, 48, 48, 56 }},
 };
 
+gfx_texrect_t hud_rc_item[PLR_MAX_ITEMS];
+gfx_texrect_t hud_rc_arms[PLR_MAX_ARMS];
+
 static gfx_texrect_t hud_rc_life_label = {{ 0, 40, 64, 48 }};
 static gfx_texrect_t hud_rc_life = {{ 0, 24, 232, 32 }};
 static gfx_texrect_t hud_rc_life_flash = {{ 0, 32, 232, 40 }};
@@ -57,13 +60,11 @@ static gfx_texrect_t hud_rc_ammo[] = {
   {{ 72, 48, 80, 56 }}, // slash
   {{ 80, 80, 96, 88 }}, // Lv
   {{ 80, 48, 96, 56 }}, // "--"
-	{{ 0,  72, 40, 80 }}, // ExpBox
-	{{ 0,  80, 0,  88 }}, // ExpVal
-	{{ 40, 72, 80, 80 }}, // ExpMax
-	{{ 40, 80, 80, 88 }}, // ExpFlash
+  {{ 0,  72, 40, 80 }}, // ExpBox
+  {{ 0,  80, 0,  88 }}, // ExpVal
+  {{ 40, 72, 80, 80 }}, // ExpMax
+  {{ 40, 80, 80, 88 }}, // ExpFlash
 };
-
-static gfx_texrect_t hud_rc_arms[PLR_MAX_ARMS];
 
 static int map_name_time = 0;
 static int map_name_xofs = 0;
@@ -78,6 +79,14 @@ void hud_init(void) {
     hud_rc_arms[i].r.top = 0;
     hud_rc_arms[i].r.bottom = 16;
     gfx_set_texrect(&hud_rc_arms[i], SURFACE_ID_ARMS_IMAGE);
+  }
+
+  for (u32 i = 0; i < PLR_MAX_ITEMS; ++i) {
+    hud_rc_item[i].r.left = (i % 8) * 32;
+    hud_rc_item[i].r.top = (i / 8) * 16;
+    hud_rc_item[i].r.right = hud_rc_item[i].r.left + 32;
+    hud_rc_item[i].r.bottom = hud_rc_item[i].r.top + 16;
+    gfx_set_texrect(&hud_rc_item[i], SURFACE_ID_ITEM_IMAGE);
   }
 
   for (u32 i = 0; i < sizeof(hud_rc_ammo) / sizeof(*hud_rc_ammo); ++i)

@@ -808,7 +808,20 @@ void tsc_draw(void) {
 
   // draw item
   if (tsc_state.item) {
-    // TODO
+    gfx_draw_texrect(&rc_itembox[0], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 40, VID_HEIGHT - 112 - 16);
+    gfx_draw_texrect(&rc_itembox[1], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 40, VID_HEIGHT - 96 - 16);
+    gfx_draw_texrect(&rc_itembox[2], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 112 - 16);
+    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 104 - 16);
+    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 96 - 16);
+    gfx_draw_texrect(&rc_itembox[4], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 88 - 16);
+
+    if (tsc_state.item_y < VID_HEIGHT - 104)
+      ++tsc_state.item_y;
+
+    if (tsc_state.item < 1000)
+      gfx_draw_texrect_16x16(&hud_rc_arms[tsc_state.item], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 12 + 8, tsc_state.item_y + 8 - 16);
+    else
+      gfx_draw_texrect(&hud_rc_item[tsc_state.item - 1000], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 20, tsc_state.item_y - 16);
   }
 
   // draw yes/no
