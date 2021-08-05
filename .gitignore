@@ -5,6 +5,7 @@ data/*/*
 tools/data/*
 tools/out/*
 !tools/data/FontAscii.pbm
+!tools/data/Fade4bpp.pbm
 *.o
 *.elf
 *.exe

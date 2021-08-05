@@ -1,8 +1,10 @@
 #include "engine/common.h"
 #include "engine/graphics.h"
+#include "engine/input.h"
 
 #include "game/game.h"
 #include "game/player.h"
+#include "game/tsc.h"
 
 gfx_texrect_t hud_rc_digit[] = {
   // white numbers
@@ -220,6 +222,20 @@ static inline void hud_draw_life(void) {
   hud_draw_number(player.life_bar, 32, 40);
 }
 
+static inline void hud_draw_debug(void) {
+  /*
+  char line[80];
+  snprintf(line, sizeof(line), "GFLAGS:   %08x", game_flags);
+  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 48);
+  snprintf(line, sizeof(line), "TSC MODE: %02x", tsc_state.mode);
+  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 60);
+  snprintf(line, sizeof(line), "IN TRIG:  %02x", input_trig);
+  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 72);
+  snprintf(line, sizeof(line), "IN HELD:  %02x", input_held);
+  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 84);
+  */
+}
+
 void hud_draw(void) {
   hud_draw_time();
   if (game_flags & GFLAG_INPUT_ENABLED) {
@@ -228,4 +244,5 @@ void hud_draw(void) {
     hud_draw_air();
     hud_draw_arms();
   }
+  hud_draw_debug();
 }

@@ -393,11 +393,11 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     case 0x0F: // FAI
       tsc_state.mode = TSC_MODE_FADE;
-      // hud_start_fade_in(args[0])
+      cam_start_fade_in(args[0]);
       return TRUE;
     case 0x10: // FAO
       tsc_state.mode = TSC_MODE_FADE;
-      // hud_start_fade_out(args[0])
+      cam_start_fade_out(args[0]);
       return TRUE;
     case 0x11: // WAI
       tsc_state.mode = TSC_MODE_WAIT;
@@ -736,9 +736,10 @@ bool tsc_update(void) {
       break;
 
     case TSC_MODE_FADE:
-      // if (hud_fade_active()) break;
-      tsc_state.mode = TSC_MODE_PARSE;
-      tsc_state.blink = 0;
+      if (!cam_is_fading()) {
+        tsc_state.mode = TSC_MODE_PARSE;
+        tsc_state.blink = 0;
+      }
       break;
 
     case TSC_MODE_WAIT_PLAYER:
@@ -786,6 +787,16 @@ void tsc_draw(void) {
     gfx_draw_texrect(&rc_face, GFX_LAYER_FRONT, TO_INT(tsc_state.face_x), text_y);
   }
 
+  // append NOD cursor
+  int p = tsc_state.writepos;
+  const int line = tsc_state.line % TSC_MAX_LINES;
+  if (tsc_state.mode == TSC_MODE_NOD && (tsc_state.blink++ % 20 > 12)) {
+    text[line][p++] = '|';
+    text[line][p++] = 0;
+  } else {
+    text[line][p] = 0;
+  }
+
   // draw text
   for (int i = 0; i < TSC_MAX_LINES; ++i) {
     if (text[i][0])
@@ -793,14 +804,6 @@ void tsc_draw(void) {
   }
 
   gfx_pop_cliprect(GFX_LAYER_FRONT);
-
-  // draw NOD cursor
-  if (tsc_state.mode == TSC_MODE_NOD && (tsc_state.blink++ % 20 > 12)) {
-    const int cx = TEXT_LEFT + tsc_state.writepos * 8 + text_ofs_x;
-    const int cy = text_y + tsc_state.line_y[tsc_state.line % TSC_MAX_LINES];
-    const u8 rgba[4] = { 0xFF, 0xFF, 0xFE, 0x00 };
-    gfx_draw_fillrect(rgba, GFX_LAYER_FRONT, cx, cy, 4, 8);
-  }
 
   // draw item
   if (tsc_state.item) {

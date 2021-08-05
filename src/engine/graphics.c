@@ -250,12 +250,12 @@ void gfx_draw_string(const char *str, const int layer, int x, int y) {
   }
 }
 
-void gfx_draw_fillrect(const u8 *rgba, const int layer, const int x, const int y, const int w, const int h) {
+void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y, const int w, const int h) {
   FILL *prim = (FILL *)primptr;
+  const RECT *curclip = &fb[!cur_fb_num].draw.clip;
   setFill(prim);
-  setRGB0(prim, rgba[0], rgba[1], rgba[2]);
-  setSemiTrans(prim, rgba[3]);
-  setXY0(prim, x, y);
+  setRGB0(prim, rgb[0], rgb[1], rgb[2]);
+  setXY0(prim, x + curclip->x, y + curclip->y);
   setWH(prim, w, h);
   plist_append(&primlist[layer], sizeof(*prim));
 }

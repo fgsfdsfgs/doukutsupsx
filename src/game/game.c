@@ -28,6 +28,11 @@ void game_init(void) {
   bullet_init();
   caret_init();
   hud_init();
+  cam_init();
+
+  // hide screen for now
+  cam_complete_fade();
+
   cam_set_target(&player.x, &player.y, 16);
 }
 
@@ -71,7 +76,7 @@ void game_frame(void) {
   caret_act();
   dmgnum_act();
 
-  // move camera
+  // move camera and update fade/quake effects
   cam_update();
 
   // animate the player
@@ -99,9 +104,9 @@ void game_frame(void) {
 
   tsc_update();
 
-  // TODO: hud drawing here
   hud_draw();
   tsc_draw();
+  cam_draw_fade();
 
   ++game_tick;
 }

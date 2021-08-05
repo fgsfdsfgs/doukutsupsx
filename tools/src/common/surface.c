@@ -115,7 +115,8 @@ int convert_surface(const uint32_t id, const struct bitmap *img) {
     (id == SURFACE_ID_LEVEL_BACKGROUND) ||
     (id == SURFACE_ID_TEXT_BOX) ||
     (id == SURFACE_ID_FONT1) ||
-    (id == SURFACE_ID_FONT2);
+    (id == SURFACE_ID_FONT2) ||
+    (id == SURFACE_ID_FADE);
   vram_surf_t *vsurf = vram_fit_surf(img, clut, align_to_page);
   if (!vsurf) {
     fprintf(stderr, "error: could not fit #%u in VRAM!\n", id);
@@ -182,7 +183,9 @@ int read_bmp(struct bitmap *bmp, FILE *f) {
 
   if (bmp->numcolors == 2) {
     bmp->numcolors = 16;
-    return 0; // assume the image is all black
+    // assume the image is all black
+    // this trips us up on Fade.pbm, but we can just use a copy with 3 colors
+    return 0;
   }
 
   fseek(f, header.dataofs, SEEK_SET);

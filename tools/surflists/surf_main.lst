@@ -17,3 +17,4 @@ SURF, 19, data/Caret.pbm,       0,   SURFACE_ID_
 SURF, 26, data/TextBox.pbm,     0,   SURFACE_ID_
 SURF, 20, data/Npc/NpcSym.pbm,  0,   SURFACE_ID_
 SURF, 38, data/FontAscii.pbm,   0,   SURFACE_ID_FONT1
+SURF, 6,  data/Fade4bpp.pbm,    0,   SURFACE_ID_FADE, but not 2bpp
