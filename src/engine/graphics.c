@@ -303,6 +303,16 @@ void gfx_pop_cliprect(const int layer) {
 }
 
 void gfx_draw_loading(void) {
+  // clear both framebuffers
+  FILL fill;
+  setFill(&fill);
+  setRGB0(&fill, 0x00, 0x00, 0x20);
+  setXY0(&fill, fb[0].draw.clip.x, fb[0].draw.clip.y);
+  setWH(&fill, fb[0].draw.clip.w, fb[0].draw.clip.h);
+  DrawPrim(&fill);
+  setXY0(&fill, fb[1].draw.clip.x, fb[1].draw.clip.y);
+  setWH(&fill, fb[1].draw.clip.w, fb[1].draw.clip.h);
+  DrawPrim(&fill);
   // just plop it into the currently shown framebuffer
   const RECT *curclip = &fb[!cur_fb_num].draw.clip;
   RECT rc = {

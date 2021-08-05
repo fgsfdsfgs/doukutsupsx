@@ -105,8 +105,8 @@ void game_frame(void) {
   tsc_update();
 
   hud_draw();
-  tsc_draw();
   cam_draw_fade();
+  tsc_draw();
 
   ++game_tick;
 }
