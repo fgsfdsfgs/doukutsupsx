@@ -27,8 +27,8 @@ void org_start_fade(void);
 u32 org_get_id(void);
 int org_get_wait(void);
 int org_get_pos(void);
-u16 org_get_mute_mask(void);
-u16 org_set_mute_mask(const u16 mask);
+u32 org_get_mute_mask(void);
+u32 org_set_mute_mask(const u32 mask);
 
 org_note_t *org_get_track(const int tracknum, u32 *numnotes);
 org_note_t *org_get_track_pos(const int tracknum);

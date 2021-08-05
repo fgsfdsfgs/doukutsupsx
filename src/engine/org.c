@@ -165,8 +165,6 @@ bool org_load(const u32 id, u8 *data, sfx_bank_t *bank) {
   memcpy(inst_bank, bank, sizeof(*bank) + sizeof(u32) * bank->num_sfx);
   snd_upload_sfx_bank(bank, NULL);
 
-  org_restart_from(0);
-
   return TRUE;
 }
 
@@ -269,6 +267,7 @@ void org_tick(void) {
     if (org.vol <= 0) {
       org_pause(TRUE);
       org.vol = 0;
+      org.fadeout = 0;
     }
   }
 
@@ -337,23 +336,23 @@ int org_get_pos(void) {
   return org.pos;
 }
 
-u16 org_get_mute_mask(void) {
-  register u16 mask = 0;
-  for (u16 i = 0; i < MAX_TRACKS; ++i) {
+u32 org_get_mute_mask(void) {
+  register u32 mask = 0;
+  for (u32 i = 0; i < MAX_TRACKS; ++i) {
     if (org.tracks[i].mute)
       mask |= (1 << i);
   }
   return mask;
 }
 
-u16 org_set_mute_mask(const u16 mask) {
-  register u16 oldmask = 0;
-  for (u16 i = 0; i < MAX_TRACKS; ++i) {
+u32 org_set_mute_mask(const u32 mask) {
+  register u32 oldmask = 0;
+  for (u32 i = 0; i < MAX_TRACKS; ++i) {
     if (org.tracks[i].mute)
       oldmask |= (1 << i);
     org.tracks[i].mute = !!(mask & (1 << i));
   }
-  spu_key_off((u32)mask << ORG_START_CH);
+  spu_key_off(mask << ORG_START_CH);
   return oldmask;
 }
 
