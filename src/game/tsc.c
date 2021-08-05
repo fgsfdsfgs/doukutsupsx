@@ -14,6 +14,7 @@
 #include "game/player.h"
 #include "game/camera.h"
 #include "game/npc.h"
+#include "game/hud.h"
 #include "game/tsc.h"
 
 #define FACE_SIZE 48
@@ -554,7 +555,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       // TODO: minimap
       return TRUE;
     case 0x3F: // MNA
-      printf("TODO: map name: %s\n", stage_data->title);
+      hud_show_map_name();
       return FALSE;
     case 0x40: // CMP
       stage_set_tile(args[0], args[1], args[2]);

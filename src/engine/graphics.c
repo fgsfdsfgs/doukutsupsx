@@ -250,6 +250,24 @@ void gfx_draw_string(const char *str, const int layer, int x, int y) {
   }
 }
 
+void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x, int y) {
+  // SPRTs have no tpage field, so we have to make do
+  gfx_update_tpage(layer, fnt8_rect.tpage);
+  for (const char *ch = str; *ch; ++ch, x += GFX_FONT_WIDTH) {
+    const int n = *ch - ' ';
+    SPRT *prim = (SPRT *)primptr;
+    setSprt(prim);
+    setRGB0(prim, rgb[0], rgb[1], rgb[2]);
+    setSemiTrans(prim, 0);
+    setXY0(prim, x, y);
+    setUV0(prim, fnt8_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt8_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
+    setWH(prim, GFX_FONT_WIDTH, GFX_FONT_HEIGHT);
+    prim->clut = gfx_surf[SURFACE_ID_FONT1].clut;
+    plist_append(&primlist[layer], sizeof(*prim));
+  }
+}
+
+
 void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y, const int w, const int h) {
   FILL *prim = (FILL *)primptr;
   const RECT *curclip = &fb[!cur_fb_num].draw.clip;
