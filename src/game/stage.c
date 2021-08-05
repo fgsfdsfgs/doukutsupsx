@@ -113,6 +113,7 @@ void stage_free_stage_bank(void) {
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   if (!stages[id]) {
     org_pause(true);
+    gfx_draw_loading();
     stage_free_stage_bank();
     stage_load_stage_bank(id);
     org_pause(false);

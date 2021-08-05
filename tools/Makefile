@@ -21,6 +21,9 @@ trigcalc.exe: src/trigcalc.c
 tscc.exe: src/tscc.c src/common/tsc.c
 	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
 
+img2h.exe: src/img2h.c
+	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
+
 clean:
 	rm -f *.exe
 

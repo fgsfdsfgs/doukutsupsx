@@ -55,6 +55,13 @@ static gfx_texrect_t fnt16_rect;
 // texrect for the currently loaded tileset
 static gfx_texrect_t tiles_rect;
 
+// "LOADING" icon; embedded into the executable so I don't need to load the loading screen
+static u16 img_loading[] = {
+#include "engine/loading.inc"
+};
+static const u32 img_loading_w = 64;
+static const u32 img_loading_h = 8;
+
 static inline u8 *plist_append(plist_t *list, const u32 size) {
   if (!list->last)
     catPrim(&list->first, primptr);
@@ -117,6 +124,9 @@ int gfx_init(void) {
   // mark all surfaces as unloaded
   for (int i = 0; i < GFX_MAX_SURFACES; ++i)
     gfx_surf[i].id = -1;
+
+  // draw loading screen
+  gfx_draw_loading();
 
   // enable display
   SetDispMask(1);
@@ -290,6 +300,18 @@ void gfx_pop_cliprect(const int layer) {
   DR_AREA *prim = (DR_AREA *)primptr;
   setDrawArea(prim, &fb[!cur_fb_num].draw.clip);
   plist_append(&primlist[layer], sizeof(*prim));
+}
+
+void gfx_draw_loading(void) {
+  // just plop it into the currently shown framebuffer
+  const RECT *curclip = &fb[!cur_fb_num].draw.clip;
+  RECT rc = {
+    curclip->x + VID_WIDTH - 88,
+    curclip->y + VID_HEIGHT - 32,
+    img_loading_w,
+    img_loading_h
+  };
+  LoadImage(&rc, (u_long *)img_loading);
 }
 
 int gfx_upload_gfx_bank(gfx_bank_t *bank, u8 *bank_data) {

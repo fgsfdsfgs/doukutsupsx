@@ -100,6 +100,7 @@ void plr_init(void) {
   player.life_bar = 3;
   player.max_life = 3;
 
+  player.arm = 0;
   player.arms_x = 16;
 
   // init texrects; player surfaces should already be loaded by now
@@ -119,14 +120,6 @@ void plr_init(void) {
 
   gfx_set_texrect(&rc_bubble[0], SURFACE_ID_CARET);
   gfx_set_texrect(&rc_bubble[1], SURFACE_ID_CARET);
-
-  // give some weapons for testing
-
-  plr_arm_give(2, 0);
-  plr_arm_give(3, 0);
-  plr_arm_give(5, 100);
-  plr_arm_give(7, 100);
-  player.arm = 2;
 }
 
 void plr_animate(const u32 btns) {
