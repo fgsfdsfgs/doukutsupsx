@@ -14,13 +14,14 @@ enum input_flags {
   IN_INVENTORY = 256,
   IN_MAP = 512,
   IN_PAUSE = 1024,
+  IN_DEBUG = 2048,
 
   // to allow switching fire/jump cancel
-  IN_OK = 2048,
-  IN_CANCEL = 4096,
+  IN_OK = 4096,
+  IN_CANCEL = 8192,
 
   // real actions, not counting OK/CANCEL
-  IN_NUM_ACTIONS = 11
+  IN_NUM_ACTIONS = 12
 };
 
 // IN_ flags of actions currently held

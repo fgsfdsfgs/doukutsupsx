@@ -24,8 +24,9 @@ static u32 binds[IN_NUM_ACTIONS] = {
   PAD_TRIANGLE, // IN_SWAP_L = 64
   PAD_CIRCLE,   // IN_SWAP_R = 128
   PAD_R2,       // IN_INVENTORY = 256
-  PAD_SELECT,   // IN_MAP = 512
+  PAD_R1,       // IN_MAP = 512
   PAD_START,    // IN_PAUSE = 1024
+  PAD_SELECT,   // IN_DEBUG = 2048
 };
 
 void in_init(void) {
