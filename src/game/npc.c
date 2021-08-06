@@ -279,7 +279,7 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
     }
   }
 
-  if (xv + npc->texrect.r.w >= 0 && xv < VID_WIDTH && yv + npc->texrect.r.h >= 0 && yv < VID_HEIGHT)
+  if (xv + npc->texrect.r.w + 8 >= 0 && xv < VID_WIDTH && yv + npc->texrect.r.h + 8 >= 0 && yv < VID_HEIGHT)
     gfx_draw_texrect(&npc->texrect, GFX_LAYER_BACK, xv + dx, yv);
 }
 
