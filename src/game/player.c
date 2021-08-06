@@ -282,10 +282,12 @@ void plr_face_towards(int what) {
       player.dir = what;
     } else {
       npc_t *npc = npc_find_by_event_num(what);
-      if (npc)
-        player.dir = (player.x < npc->x) ? DIR_LEFT : DIR_RIGHT;
+      if (!npc) return;
+      player.dir = (player.x < npc->x) ? DIR_LEFT : DIR_RIGHT;
     }
   }
+  player.xvel = 0;
+  plr_animate(0);
 }
 
 static inline void plr_update_air(void) {
