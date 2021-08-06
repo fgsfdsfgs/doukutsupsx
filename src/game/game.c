@@ -33,7 +33,7 @@ void game_init(void) {
   // hide screen for now
   cam_complete_fade();
 
-  cam_set_target(&player.x, &player.y, 16);
+  cam_target_player(16);
 }
 
 void game_start(void) {
