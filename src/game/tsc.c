@@ -644,7 +644,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     /* catch-all in case I forgot to implement something */
     default:
-      printf("unimplemented opcode %02x\n", opcode);
+      printf("unimplemented TSC opcode %02x\n", opcode);
       return TRUE;
   }
 }
@@ -777,7 +777,7 @@ void tsc_draw(void) {
     gfx_draw_texrect(&rc_textbox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10 + 7 * 8);
   }
 
-  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT + 16, text_y + 8, 244, 48);
+  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT + 16, text_y + 6, 244, 48);
 
   // draw face
   int text_ofs_x = 0;
@@ -785,7 +785,7 @@ void tsc_draw(void) {
     text_ofs_x = 56;
     if (tsc_state.face_x < TO_FIX(TEXT_LEFT))
       tsc_state.face_x += 0x1000;
-    gfx_draw_texrect(&rc_face, GFX_LAYER_FRONT, TO_INT(tsc_state.face_x), text_y);
+    gfx_draw_texrect(&rc_face, GFX_LAYER_FRONT, TO_INT(tsc_state.face_x) - 4, text_y - 1);
   }
 
   // append NOD cursor
