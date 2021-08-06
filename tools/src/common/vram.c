@@ -167,19 +167,26 @@ uint16_t vram_fit_clut(const uint8_t *clut, uint16_t mode) {
 
   for (int i = 0; i < VRAM_NUM_CLUT_PAGES; ++i) {
     if (clutptr[i] + len <= VRAM_CLUT_PAGE_SIZE) {
-      const uint32_t x = clutptr[i] % VRAM_CLUT_PAGE_WIDTH;
-      const uint32_t y = clutptr[i] / VRAM_CLUT_PAGE_WIDTH;
-      const uint16_t addr = PSXCLUT(x, y + VRAM_CLUT_PAGE_Y(i));
+      uint32_t x = clutptr[i] % VRAM_CLUT_PAGE_WIDTH;
+      uint32_t y = clutptr[i] / VRAM_CLUT_PAGE_WIDTH;
+      uint32_t w = x + len;
+      if (x + len > VRAM_CLUT_PAGE_WIDTH) {
+        // palette overlaps border; move it to the next line
+        clutptr[i] += VRAM_CLUT_PAGE_WIDTH - x;
+        ++y;
+        x = 0;
+        w = VRAM_CLUT_PAGE_WIDTH;
+        if (clutptr[i] + len > VRAM_CLUT_PAGE_SIZE)
+          return 0;
+      }
       if (y + 1 > clutrect[i].h)
         clutrect[i].h = y + 1;
-      const uint32_t w = (x + len > VRAM_CLUT_PAGE_WIDTH) ?
-        VRAM_CLUT_PAGE_WIDTH : x + len;
       if (w > clutrect[i].w)
         clutrect[i].w = w;
       ++numcluts;
       vram_transform_clut(&clutatlas[i][clutptr[i]], clut, len);
       clutptr[i] += len;
-      return addr;
+      return PSXCLUT(x, y + VRAM_CLUT_PAGE_Y(i));
     }
   }
 
