@@ -5,6 +5,7 @@
 #include "engine/graphics.h"
 #include "engine/sound.h"
 #include "engine/org.h"
+#include "engine/timer.h"
 
 #include "game/game.h"
 #include "game/player.h"
@@ -112,11 +113,11 @@ void stage_free_stage_bank(void) {
 
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   if (!stages[id]) {
-    org_pause(true);
+    timer_set_callback(timer_cb_music); // switch to IRQ based music
     gfx_draw_loading();
     stage_free_stage_bank();
     stage_load_stage_bank(id);
-    org_pause(false);
+    timer_set_callback(timer_cb_ticker); // switch back to a simple ticker
   }
 
   ASSERT(stages[id]);

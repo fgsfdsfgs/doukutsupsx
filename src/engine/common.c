@@ -3,31 +3,11 @@
 #include <stdarg.h>
 #include <string.h>
 #include <psxgpu.h>
-#include <psxapi.h>
-#include <psxetc.h>
 
 #include "engine/common.h"
 #include "spu.h"
 
 #define MAX_ERROR 512
-#define TIMER_RATE 100
-
-volatile u32 timer_ticks;
-
-static void timer_cb(void) {
-  ++timer_ticks;
-}
-
-void timer_start(void) {
-  timer_ticks = 0;
-  EnterCriticalSection();
-  const u32 dt = 15625 / TIMER_RATE;
-  SetRCnt(RCntCNT1, dt, RCntMdINTR);
-  InterruptCallback(5, timer_cb); // IRQ5 is RCNT1
-  StartRCnt(RCntCNT1);
-  ChangeClearRCnt(1, 0);
-  ExitCriticalSection();
-}
 
 void panic(const char *error, ...) {
   char buf[MAX_ERROR];

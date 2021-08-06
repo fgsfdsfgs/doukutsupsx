@@ -3,6 +3,7 @@
 #include <sys/types.h>
 
 #include "engine/common.h"
+#include "engine/timer.h"
 #include "engine/memory.h"
 #include "engine/sound.h"
 #include "engine/org.h"
@@ -24,7 +25,7 @@ int main(int argc, char **argv) {
   gfx_init_fonts();
 
   // now we can init game-related stuff
-  timer_start();
+  timer_init();
   game_init();
 
   // from now on, allocations persist until the end of the stage
@@ -32,7 +33,7 @@ int main(int argc, char **argv) {
 
   u32 now = timer_ticks;
   u32 next_frame = now;
-  u32 next_orgtick = now;
+  timer_next_orgtick = now;
 
   game_start();
 
@@ -47,9 +48,9 @@ int main(int argc, char **argv) {
     }
 
     const u32 orgwait = org_get_wait() / 10;
-    if (now >= next_orgtick && orgwait) {
+    if (now >= timer_next_orgtick && orgwait) {
       org_tick();
-      next_orgtick = now + orgwait;
+      timer_next_orgtick = now + orgwait;
     }
   }
 

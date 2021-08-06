@@ -60,10 +60,6 @@ typedef struct {
   int bottom;
 } hitbox_t;
 
-// global timer; ticks at 100hz
-extern volatile u32 timer_ticks;
-void timer_start(void);
-
 // utilities
 
 void panic(const char *fmt, ...) __attribute__((noreturn));
