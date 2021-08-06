@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "engine/common.h"
+#include "engine/math.h"
 #include "engine/graphics.h"
 #include "engine/sound.h"
 #include "engine/input.h"
@@ -569,17 +570,15 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
     if (!(player.flags & 8) && player.yvel > 0x200) {
       for (a = 0; a < 8; ++a) {
-        // x = player.x + (m_rand(-8, 8) * 0x200);
-        // SetNpChar(73, x, player.y, player.xvel + m_rand(-0x200, 0x200),
-        //           m_rand(-0x200, 0x80) - (player.yvel / 2), dir, NULL, 0);
+        x = player.x + (m_rand(-8, 8) * 0x200);
+        npc_spawn(73, x, player.y, player.xvel + m_rand(-0x200, 0x200), m_rand(-0x200, 0x80) - (player.yvel / 2), dir, NULL, 0);
       }
       snd_play_sound(CHAN_STEP, 56, SOUND_MODE_PLAY);
     } else {
       if (player.xvel > 0x200 || player.xvel < -0x200) {
         for (a = 0; a < 8; ++a) {
-          // x = player.x + (m_rand(-8, 8) * 0x200);
-          // SetNpChar(73, x, player.y, player.xvel + m_rand(-0x200, 0x200),
-          //           m_rand(-0x200, 0x80), dir, NULL, 0);
+          x = player.x + (m_rand(-8, 8) * 0x200);
+          npc_spawn(73, x, player.y, player.xvel + m_rand(-0x200, 0x200), m_rand(-0x200, 0x80), dir, NULL, 0);
         }
         snd_play_sound(CHAN_STEP, 56, SOUND_MODE_PLAY);
       }
@@ -591,9 +590,9 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   if (!(player.flags & 0x100))
     player.splash = FALSE;
 
-  // Spike val
-  // if (player.flags & 0x400)
-  //   plr_damage(10);
+  // Spike damage
+  if (player.flags & 0x400)
+    plr_damage(10);
 
   // Camera
   if (player.dir == 0) {
@@ -624,13 +623,8 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   player.tgt_y = player.y + player.index_y;
 
   // Change position
-  if (player.xvel <= phys->resist && player.xvel >= -phys->resist) {
-    // This case is completely empty. This is most likely the result of
-    // commented-out code or some other change (so this is most likely
-    // inaccurate to the original source code)
-  } else {
+  if (!(player.xvel <= phys->resist && player.xvel >= -phys->resist))
     player.x += player.xvel;
-  }
 
   player.y += player.yvel;
 }
