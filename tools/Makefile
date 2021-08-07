@@ -1,4 +1,5 @@
 CC ?= gcc
+CXX ?= g++
 LIBPSXAV_SRC := $(wildcard src/libpsxav/*.c)
 
 all: orgconv.exe sfxconv.exe surfpack.exe stagepack.exe trigcalc.exe tscc.exe
@@ -23,6 +24,9 @@ tscc.exe: src/tscc.c src/common/tsc.c
 
 img2h.exe: src/img2h.c
 	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
+
+fontgen.exe: src/fontgen.cpp
+	$(CXX) -std=gnu++11 -g -Og -o $@ $^ -static -lmingw32 -lgdi32 -lddraw
 
 clean:
 	rm -f *.exe
