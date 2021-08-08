@@ -59,7 +59,7 @@ static const tsc_opcode_t tsc_optab[] = {
   { "MM0", 0 }, { "HMC", 0 }, { "SMC", 0 }, { "UNI", 1 },
   { "MYB", 1 }, { "MYD", 1 }, { "MOV", 2 }, { "TRA", 4 },
   // camera
-  { "FOB", 1 }, { "FOM", 1 }, { "FON", 2 }, { "FLA", 0 },
+  { "FOB", 2 }, { "FOM", 1 }, { "FON", 2 }, { "FLA", 0 },
   { "QUA", 1 },
   // npc
   { "ANP", 3 }, { "CNP", 3 }, { "INP", 3 }, { "MNP", 4 },
@@ -471,7 +471,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     /* camera */
     case 0x26: // FOB
-      // cam_target_boss(args[0]);
+      cam_target_boss(args[0], args[1]);
       return FALSE;
     case 0x27: // FOM
       cam_target_player(args[0]);
@@ -512,7 +512,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       npc_delete_by_event_num(args[0]);
       return FALSE;
     case 0x32: // BOA
-      // boss_change_action(args[0]);
+      npc_set_boss_act(args[0]);
       return FALSE;
     case 0x33: // BSL
       // boss_start_fight(args[0]);

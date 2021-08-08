@@ -7,6 +7,7 @@
 #include "game/npctab.h"
 
 #define NPC_MAX 512
+#define NPC_MAX_BOSS 20
 #define NPC_MAX_FLAGS 1024
 #define NPC_STARTIDX_DYNAMIC 256
 #define NPC_STARTIDX_EVENT 170
@@ -87,6 +88,7 @@ typedef struct npc {
   s16 act_wait;
   s16 count1;
   s16 count2;
+  s16 size;
 
   u8 cond;
   s8 dir;
@@ -100,6 +102,8 @@ typedef struct npc {
 extern u8 npc_flags[NPC_MAX_FLAGS];
 extern npc_t npc_list[NPC_MAX];
 extern int npc_list_max;
+extern npc_t npc_boss[NPC_MAX_BOSS];
+extern int npc_boss_max;
 
 void npc_init(const char *tabpath);
 void npc_parse_event_list(const stage_event_t *ev, const int numev);
@@ -119,6 +123,8 @@ void npc_spawn_death_fx(int x, int y, int w, int num, int up);
 void npc_spawn_exp(int x, int y, int exp);
 npc_t *npc_spawn_life(int x, int y, int val);
 npc_t *npc_spawn_ammo(int x, int y, int val);
+npc_t *npc_spawn_boss(const int boss_id);
+void npc_set_boss_act(const int act);
 
 void npc_draw(int cam_x, int cam_y);
 void npc_act(void);

@@ -40,7 +40,7 @@ static opcode_t op_table[] = {
   { "<MM0", 0  }, { "<HMC", 0  }, { "<SMC", 0  }, { "<UNI", 1  },
   { "<MYB", 1  }, { "<MYD", 1  }, { "<MOV", 2  }, { "<TRA", 4  },
   // camera
-  { "<FOB", 1  }, { "<FOM", 1  }, { "<FON", 2  }, { "<FLA", 0  },
+  { "<FOB", 2  }, { "<FOM", 1  }, { "<FON", 2  }, { "<FLA", 0  },
   { "<QUA", 1  },
   // npc
   { "<ANP", 3  }, { "<CNP", 3  }, { "<INP", 3  }, { "<MNP", 4  },

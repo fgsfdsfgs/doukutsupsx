@@ -137,6 +137,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   bullet_init();
   caret_init();
   dmgnum_init();
+  npc_spawn_boss(stage_data->boss_type);
 
   stage_water_y = TO_FIX(240 * TILE_SIZE);
   game_tick = 0;

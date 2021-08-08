@@ -723,8 +723,52 @@ static inline void hit_player_npc(void) {
     caret_spawn(player.x, player.y, CARET_QUESTION_MARK, DIR_LEFT);
 }
 
+static inline void hit_player_boss(void) {
+  int hit = 0;
+
+  if (!(player.cond & PLRCOND_ALIVE) || player.cond & PLRCOND_INVISIBLE)
+    return;
+
+  for (int i = 0; i <= npc_boss_max; ++i) {
+    npc_t *npc = &npc_boss[i];
+
+    if (!(npc->cond & NPCCOND_ALIVE))
+      continue;
+
+    hit = 0;
+
+    if (npc->bits & NPC_SOLID_SOFT) {
+      hit = hit_check_player_npc_soft(npc);
+      player.flags |= hit;
+    } else if (npc->bits & NPC_SOLID_HARD) {
+      hit = hit_check_player_npc_solid(npc);
+      player.flags |= hit;
+    } else {
+      hit = hit_check_player_npc_normal(npc);
+    }
+
+    // Run event on contact
+    if (!(game_flags & 4) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
+      tsc_start_event(npc->event_num);
+
+    if (npc->bits & NPC_REAR_AND_TOP_DONT_HURT) {
+      if (hit & 4 && npc->xvel < 0) plr_damage(npc->damage);
+      if (hit & 1 && npc->xvel > 0) plr_damage(npc->damage);
+    } else if (hit != 0 && npc->damage && !(game_flags & 4)) {
+      plr_damage(npc->damage);
+    }
+
+    if (!(game_flags & 4) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
+      tsc_start_event(npc->event_num);
+      player.xvel = 0;
+      player.question = FALSE;
+    }
+  }
+}
+
 void hit_player(const u32 input_held) {
   player.flags = 0;
   hit_player_map(input_held);
   hit_player_npc();
+  hit_player_boss();
 }

@@ -17,13 +17,19 @@
 u8 npc_flags[NPC_MAX_FLAGS];
 
 npc_t npc_list[NPC_MAX];
-
 // highest live npc in the list
 int npc_list_max;
+
+// all npcs that are part of the boss we're currently fighting
+npc_t npc_boss[NPC_MAX_BOSS];
+// highest live npc in the boss list
+int npc_boss_max;
 
 void npc_init(const char *tabpath) {
   npc_list_max = 0;
   memset(&npc_list, 0, sizeof(npc_list));
+  npc_boss_max = -1;
+  memset(&npc_boss, 0, sizeof(npc_boss));
   // load npc table
   npc_load_classtab(tabpath);
 }
@@ -38,6 +44,7 @@ static inline void npc_set_class(npc_t *npc, const u32 class_num) {
   npc->snd_die = nclass->snd_die;
   npc->snd_hit = nclass->snd_hit;
   npc->surf = nclass->surf_id;
+  npc->size = nclass->size;
   npc->hit.front = TO_FIX((int)nclass->hit.front);
   npc->hit.back = TO_FIX((int)nclass->hit.back);
   npc->hit.top = TO_FIX((int)nclass->hit.top);
@@ -67,7 +74,7 @@ void npc_kill(npc_t *npc, bool show_damage) {
   snd_play_sound(-1, npc->snd_die, SOUND_MODE_PLAY);
 
   // Create smoke
-  switch (npc->info->size) {
+  switch (npc->size) {
     case 1:
       npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 3, 0);
       break;
@@ -155,7 +162,7 @@ void npc_delete_by_class(const int class_num, const int spawn_smoke) {
       npc_delete(npc);
       if (spawn_smoke) {
         snd_play_sound(-1, npc->snd_die, SOUND_MODE_PLAY);
-        npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 1 << (1 + npc->info->size), 0);
+        npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 1 << (1 + npc->size), 0);
       }
     }
   }
@@ -204,6 +211,7 @@ npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *pa
 
 void npc_parse_event_list(const stage_event_t *ev, const int numev) {
   memset(npc_list, 0, sizeof(npc_list));
+  npc_boss[0].cond = 0;
 
   for (int i = 0; i < numev; ++i) {
     const int dir = (ev[i].bits & NPC_SPAWN_IN_OTHER_DIRECTION) ? 2 : 0;
@@ -230,15 +238,28 @@ void npc_parse_event_list(const stage_event_t *ev, const int numev) {
   }
 
   npc_list_max = NPC_STARTIDX_EVENT + numev - 1;
+  npc_boss_max = -1; // absolutely no boss yet
 }
 
 void npc_act(void) {
+  // regular npcs update first
   for (int i = 0; i <= npc_list_max; ++i) {
     if (npc_list[i].cond & NPCCOND_ALIVE) {
       npc_func_t actfunc = npc_functab[npc_list[i].class_num];
       actfunc(&npc_list[i]);
       if (npc_list[i].shock)
         --npc_list[i].shock;
+    }
+  }
+  // bosses update last
+  if (npc_boss[0].cond & NPCCOND_ALIVE) {
+    npc_func_t actfunc = npc_boss_functab[npc_boss[0].class_num];
+    actfunc(&npc_boss[0]);
+    for (int i = 0; i <= npc_boss_max; ++i) {
+      if (npc_boss[i].cond & NPCCOND_ALIVE) {
+        if (npc_boss[i].shock)
+          --npc_boss[i].shock;
+      }
     }
   }
 }
@@ -286,6 +307,12 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
 void npc_draw(int cam_x, int cam_y) {
   cam_x = TO_INT(cam_x);
   cam_y = TO_INT(cam_y);
+  // draw bosses first
+  for (int i = npc_boss_max; i >= 0; --i) {
+    if (npc_boss[i].cond & NPCCOND_ALIVE)
+      npc_draw_instance(&npc_list[i], cam_x, cam_y);
+  }
+  // draw regular npcs after
   for (int i = 0; i <= npc_list_max; ++i) {
     if (npc_list[i].cond & NPCCOND_ALIVE)
       npc_draw_instance(&npc_list[i], cam_x, cam_y);
@@ -409,4 +436,18 @@ void npc_set_pos(npc_t *npc, const int x, const int y, const int dir) {
   npc->x = x;
   npc->y = y;
   npc_set_dir(npc, dir);
+}
+
+npc_t *npc_spawn_boss(const int boss_id) {
+  memset(npc_boss, 0, sizeof(npc_boss));
+  npc_boss[0].class_num = boss_id;
+  if (boss_id) {
+    npc_boss[0].cond = NPCCOND_ALIVE;
+    npc_boss_max = 0;
+  }
+  return &npc_boss[0];
+}
+
+void npc_set_boss_act(const int act) {
+  npc_boss[0].act = act;
 }

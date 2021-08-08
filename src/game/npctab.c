@@ -436,3 +436,16 @@ npc_func_t npc_functab[NPC_MAX_ACTFUNC] = {
   npc_act_null,
   npc_act_null,
 };
+
+npc_func_t npc_boss_functab[] = {
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+  npc_act_null,
+};

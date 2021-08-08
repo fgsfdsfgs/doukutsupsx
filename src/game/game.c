@@ -63,10 +63,10 @@ void game_frame(void) {
   // call `hit` on all entities
   hit_player();
   hit_npc_map();
-  // hit_boss_map();
+  hit_boss_map();
   hit_bullet_map();
   hit_npc_bullet();
-  // hit_boss_bullet();
+  hit_boss_bullet();
 
   if (input_enabled)
     plr_arm_shoot();

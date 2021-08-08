@@ -33,5 +33,6 @@ typedef void (*npc_func_t)(struct npc *);
 
 extern npc_class_t *npc_classtab;
 extern npc_func_t npc_functab[];
+extern npc_func_t npc_boss_functab[];
 
 void npc_load_classtab(const char *tabpath);
