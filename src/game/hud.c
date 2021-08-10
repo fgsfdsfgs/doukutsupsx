@@ -7,7 +7,9 @@
 #include "game/game.h"
 #include "game/stage.h"
 #include "game/player.h"
+#include "game/npc.h"
 #include "game/tsc.h"
+#include "game/hud.h"
 
 gfx_texrect_t hud_rc_digit[] = {
   // white numbers
@@ -45,6 +47,12 @@ static gfx_texrect_t hud_rc_life_label = {{ 0, 40, 64, 48 }};
 static gfx_texrect_t hud_rc_life = {{ 0, 24, 232, 32 }};
 static gfx_texrect_t hud_rc_life_flash = {{ 0, 32, 232, 40 }};
 
+static gfx_texrect_t hud_rc_boss_label = {{ 0, 48, 32, 56 }};
+static gfx_texrect_t hud_rc_boss_box1 = {{ 0, 0, 244, 8 }};
+static gfx_texrect_t hud_rc_boss_box2 = {{ 0, 16, 244, 24 }};
+static gfx_texrect_t hud_rc_boss_life = {{ 0, 24, 0, 32 }};
+static gfx_texrect_t hud_rc_boss_flash = {{ 0, 32, 232, 40 }};
+
 static gfx_texrect_t hud_rc_air[2] = {
   {{ 112, 72, 144, 80 }},
   {{ 112, 80, 144, 88 }},
@@ -68,6 +76,11 @@ static gfx_texrect_t hud_rc_ammo[] = {
 
 static int map_name_time = 0;
 static int map_name_xofs = 0;
+
+static int hud_boss_bar_max = 0;
+static int hud_boss_bar_flash = 0;
+static int hud_boss_bar_count = 0;
+static s16 *hud_boss_life = NULL;
 
 void hud_init(void) {
   for (u32 i = 0; i < sizeof(hud_rc_digit) / sizeof(*hud_rc_digit); ++i)
@@ -96,12 +109,30 @@ void hud_init(void) {
   gfx_set_texrect(&hud_rc_life_flash, SURFACE_ID_TEXT_BOX);
   gfx_set_texrect(&hud_rc_life_label, SURFACE_ID_TEXT_BOX);
 
+  gfx_set_texrect(&hud_rc_boss_box1, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&hud_rc_boss_box2, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&hud_rc_boss_life, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&hud_rc_boss_flash, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&hud_rc_boss_label, SURFACE_ID_TEXT_BOX);
+
   gfx_set_texrect(&hud_rc_air[0], SURFACE_ID_TEXT_BOX);
   gfx_set_texrect(&hud_rc_air[1], SURFACE_ID_TEXT_BOX);
  
   gfx_set_texrect(&hud_rc_time[0], SURFACE_ID_TEXT_BOX);
-  gfx_set_texrect(&hud_rc_time[1], SURFACE_ID_TEXT_BOX); 
-  gfx_set_texrect(&hud_rc_time[2], SURFACE_ID_TEXT_BOX); 
+  gfx_set_texrect(&hud_rc_time[1], SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&hud_rc_time[2], SURFACE_ID_TEXT_BOX);
+
+  hud_clear();
+}
+
+void hud_clear(void) {
+  hud_boss_life = NULL;
+  hud_boss_bar_count = 0;
+}
+
+void hud_update(void) {
+  if (*hud_boss_life < 1)
+    hud_boss_life = NULL;
 }
 
 static const int numdiv[4] = { 1000, 100, 10, 1 };
@@ -245,18 +276,28 @@ static inline void hud_draw_map_name(void) {
   gfx_draw_string(stage_data->title, GFX_LAYER_FRONT, x, y);
 }
 
+static inline void hud_draw_boss_life(void) {
+  const int life = *hud_boss_life;
+
+  if (hud_boss_bar_flash > life) {
+    if (++hud_boss_bar_count > 30)
+      --hud_boss_bar_flash;
+  } else {
+    hud_boss_bar_count = 0;
+  }
+
+  hud_rc_boss_life.r.w = (life * 198) / hud_boss_bar_max;
+  hud_rc_boss_flash.r.w = (hud_boss_bar_flash * 198) / hud_boss_bar_max;
+
+  gfx_draw_texrect(&hud_rc_boss_box1, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 128, VID_HEIGHT - 20 - 16);
+  gfx_draw_texrect(&hud_rc_boss_box2, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 128, VID_HEIGHT - 12 - 16);
+  gfx_draw_texrect(&hud_rc_boss_flash, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 88, VID_HEIGHT - 16 - 16);
+  gfx_draw_texrect(&hud_rc_boss_life, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 88, VID_HEIGHT - 16 - 16);
+  gfx_draw_texrect(&hud_rc_boss_label, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 120, VID_HEIGHT - 16 - 16);
+}
+
 static inline void hud_draw_debug(void) {
-  /*
-  char line[80];
-  snprintf(line, sizeof(line), "GFLAGS:   %08x", game_flags);
-  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 48);
-  snprintf(line, sizeof(line), "TSC MODE: %02x", tsc_state.mode);
-  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 60);
-  snprintf(line, sizeof(line), "IN TRIG:  %02x", input_trig);
-  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 72);
-  snprintf(line, sizeof(line), "IN HELD:  %02x", input_held);
-  gfx_draw_string(line, GFX_LAYER_FRONT, 8, 84);
-  */
+  // char line[80];
 }
 
 void hud_draw(void) {
@@ -274,10 +315,19 @@ void hud_draw(void) {
     --map_name_time;
   }
 
+  if (hud_boss_life)
+    hud_draw_boss_life();
+
   hud_draw_debug();
 }
 
 void hud_show_map_name(void) {
   map_name_time = 160;
   map_name_xofs = -GFX_FONT_WIDTH * strlen(stage_data->title) / 2;
+}
+
+void hud_init_boss_life(npc_t *npc) {
+  hud_boss_life = &npc->life;
+  hud_boss_bar_max = npc->life;
+  hud_boss_bar_flash = npc->life;
 }

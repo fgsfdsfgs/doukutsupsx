@@ -15,6 +15,7 @@
 #include "game/dmgnum.h"
 #include "game/tsc.h"
 #include "game/npc.h"
+#include "game/hud.h"
 #include "game/stage.h"
 
 // pointer to current stage
@@ -137,6 +138,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   bullet_init();
   caret_init();
   dmgnum_init();
+  hud_clear();
   npc_spawn_boss(stage_data->boss_type);
 
   stage_water_y = TO_FIX(240 * TILE_SIZE);

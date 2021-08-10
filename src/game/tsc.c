@@ -515,7 +515,8 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       npc_set_boss_act(args[0]);
       return FALSE;
     case 0x33: // BSL
-      // boss_start_fight(args[0]);
+      npc = args[0] ? npc_find_by_event_num(args[0]) : &npc_boss[0];
+      if (npc) hud_init_boss_life(npc);
       return FALSE;
     // item
     case 0x34: // EQ+

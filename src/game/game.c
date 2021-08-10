@@ -91,6 +91,10 @@ void game_frame(void) {
   caret_draw(camera.x, camera.y);
   dmgnum_draw(camera.x, camera.y);
 
+  // the only reason this exists is that the boss life counter
+  // has to be checked *before* tsc_update()
+  hud_update();
+
   if (!(game_flags & 4)) {
     // TODO: inventory and map
   }
