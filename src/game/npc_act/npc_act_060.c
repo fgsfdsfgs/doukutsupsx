@@ -973,7 +973,7 @@ void npc_act_068(npc_t *npc) {
         npc->act = 10;
         npc->anim = 5;
         player.cond |= 2;
-        // plr_damage(2);
+        plr_damage(2);
         break;
       }
 
@@ -1007,7 +1007,7 @@ void npc_act_068(npc_t *npc) {
         npc->act = 10;
         npc->anim = 5;
         player.cond |= 2;
-        // plr_damage(2);
+        plr_damage(2);
       }
 
       break;

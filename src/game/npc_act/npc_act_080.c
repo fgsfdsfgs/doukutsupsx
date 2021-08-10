@@ -111,15 +111,8 @@ void npc_act_080(npc_t *npc) {
 
   if (npc->xvel > 0x400) npc->xvel = 0x400;
   if (npc->xvel < -0x400) npc->xvel = -0x400;
-
-#ifdef FIX_BUGS
   if (npc->yvel > 0x5FF) npc->yvel = 0x5FF;
   if (npc->yvel < -0x5FF) npc->yvel = -0x5FF;
-#else
-  // Caps npc->xvel instead of npc->yvel
-  if (npc->yvel > 0x5FF) npc->xvel = 0x5FF;
-  if (npc->yvel < -0x5FF) npc->xvel = -0x5FF;
-#endif
 
   npc->x += npc->xvel;
   npc->y += npc->yvel;

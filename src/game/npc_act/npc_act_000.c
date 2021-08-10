@@ -61,13 +61,8 @@ void npc_act_001(npc_t *npc) {
     // Destroy when off-screen
     if (npc->x < 80 * 0x200) npc->cond = 0;
 
-#ifdef FIX_BUGS
     // Limit speed
     if (npc->xvel < -0x600) npc->xvel = -0x600;
-#else
-    // Limit speed (except Pixel applied it to the X position)
-    if (npc->x < -0x600) npc->x = -0x600;
-#endif
 
     // Bounce off walls
     if (npc->flags & 1) npc->xvel = 0x100;
