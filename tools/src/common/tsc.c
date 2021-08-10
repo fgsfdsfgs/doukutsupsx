@@ -244,8 +244,6 @@ int tsc_scan_music(const char *src, uint32_t *songlist, const int limit) {
   const char *cmd = strstr(tsc, "<CMU");
   while (cmd) {
     const char *num = cmd + 4;
-    // skip the leading zeroes, god knows what atoi() will do with that
-    while (*num && *num == '0') ++num;
     if (!*num) break;
     const uint32_t musnum = atoi(num);
     if (musnum > 0 && musnum < MUSIC_COUNT && find_id(musnum, songlist, count) < 0) {
@@ -271,8 +269,6 @@ int tsc_scan_transitions(const char *src, uint32_t *linklist, const uint32_t ign
   const char *cmd = strstr(tsc, "<TRA");
   while (cmd) {
     const char *num = cmd + 4;
-    // skip the leading zeroes, god knows what atoi() will do with that
-    while (*num && *num == '0') ++num;
     if (!*num) break;
     const uint32_t linknum = atoi(num);
     if (linknum && ignore != linknum && find_id(linknum, linklist, count) < 0) {
