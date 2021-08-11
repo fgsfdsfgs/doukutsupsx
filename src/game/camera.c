@@ -136,7 +136,8 @@ void cam_start_fade_in(const int dir) {
 }
 
 // jesus take the wheel
-static inline void fade_center(void) {
+
+static inline void fade_out_center(void) {
   int x, y;
 
   for (y = 0; y < (FADE_HEIGHT / 2); ++y)
@@ -157,6 +158,30 @@ static inline void fade_center(void) {
   for (y = (FADE_HEIGHT / 2); y < FADE_HEIGHT; ++y)
     for (x = (FADE_WIDTH / 2); x < FADE_WIDTH; ++x)
       if (fade.count == ((FADE_WIDTH - 1) - x) + ((FADE_HEIGHT - 1) - y))
+        fade.flag[y][x] = TRUE;
+}
+
+static inline void fade_in_center(void) {
+  int x, y;
+
+  for (y = 0; y < (FADE_HEIGHT / 2); ++y)
+    for (x = 0; x < (FADE_WIDTH / 2); ++x)
+      if ((FADE_WIDTH - 1) - fade.count == x + y)
+        fade.flag[y][x] = TRUE;
+
+  for (y = 0; y < (FADE_HEIGHT / 2); ++y)
+    for (x = (FADE_WIDTH / 2); x < FADE_WIDTH; ++x)
+      if ((FADE_WIDTH - 1) - fade.count == y + ((FADE_WIDTH - 1) - x))
+        fade.flag[y][x] = TRUE;
+
+  for (y = (FADE_HEIGHT / 2); y < FADE_HEIGHT; ++y)
+    for (x = 0; x < (FADE_WIDTH / 2); ++x)
+      if ((FADE_WIDTH - 1) - fade.count == x + ((FADE_HEIGHT - 1) - y))
+        fade.flag[y][x] = TRUE;
+
+  for (y = (FADE_HEIGHT / 2); y < FADE_HEIGHT; ++y)
+    for (x = (FADE_WIDTH / 2); x < FADE_WIDTH; ++x)
+      if ((FADE_WIDTH - 1) - fade.count == ((FADE_WIDTH - 1) - x) + ((FADE_HEIGHT - 1) - y))
         fade.flag[y][x] = TRUE;
 }
 
@@ -193,7 +218,10 @@ void cam_update_fade(void) {
       }
       break;
     default: // from center
-      fade_center();
+      if (fade.mode == 1)
+        fade_in_center();
+      else
+        fade_out_center();
       break;
   }
 
