@@ -54,6 +54,60 @@
         <file name="stage1e.stg" type="data"/>
         <file name="stage1f.stg" type="data"/>
       </dir>
+      <dir name="2" srcdir="data/2">
+        <file name="stage20.stg" type="data"/>
+        <file name="stage21.stg" type="data"/>
+        <file name="stage22.stg" type="data"/>
+        <file name="stage23.stg" type="data"/>
+        <file name="stage24.stg" type="data"/>
+        <file name="stage25.stg" type="data"/>
+        <file name="stage26.stg" type="data"/>
+        <file name="stage27.stg" type="data"/>
+        <file name="stage28.stg" type="data"/>
+        <file name="stage29.stg" type="data"/>
+        <file name="stage2a.stg" type="data"/>
+        <file name="stage2b.stg" type="data"/>
+        <file name="stage2c.stg" type="data"/>
+        <file name="stage2d.stg" type="data"/>
+        <file name="stage2e.stg" type="data"/>
+        <file name="stage2f.stg" type="data"/>
+      </dir>
+      <dir name="3" srcdir="data/3">
+        <file name="stage30.stg" type="data"/>
+        <file name="stage31.stg" type="data"/>
+        <file name="stage32.stg" type="data"/>
+        <file name="stage33.stg" type="data"/>
+        <file name="stage34.stg" type="data"/>
+        <file name="stage35.stg" type="data"/>
+        <file name="stage36.stg" type="data"/>
+        <file name="stage37.stg" type="data"/>
+        <file name="stage38.stg" type="data"/>
+        <file name="stage39.stg" type="data"/>
+        <file name="stage3a.stg" type="data"/>
+        <file name="stage3b.stg" type="data"/>
+        <file name="stage3c.stg" type="data"/>
+        <file name="stage3d.stg" type="data"/>
+        <file name="stage3e.stg" type="data"/>
+        <file name="stage3f.stg" type="data"/>
+      </dir>
+      <dir name="4" srcdir="data/4">
+        <file name="stage40.stg" type="data"/>
+        <file name="stage41.stg" type="data"/>
+        <file name="stage42.stg" type="data"/>
+        <file name="stage43.stg" type="data"/>
+        <file name="stage44.stg" type="data"/>
+        <file name="stage45.stg" type="data"/>
+        <file name="stage46.stg" type="data"/>
+        <file name="stage47.stg" type="data"/>
+        <file name="stage48.stg" type="data"/>
+        <file name="stage49.stg" type="data"/>
+        <file name="stage4a.stg" type="data"/>
+        <file name="stage4b.stg" type="data"/>
+        <file name="stage4c.stg" type="data"/>
+        <file name="stage4d.stg" type="data"/>
+        <file name="stage4e.stg" type="data"/>
+        <file name="stage4f.stg" type="data"/>
+      </dir>
       <dir name="5" srcdir="data/5">
         <file name="stage50.stg" type="data"/>
         <file name="stage51.stg" type="data"/>

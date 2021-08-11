@@ -255,7 +255,7 @@ static inline void cam_update_fade(void) {
 void cam_draw_fade(void) {
   if (fade.full) {
     // fade out finished or fade in not started; just clear screen
-    gfx_draw_fillrect(gfx_clear_rgb, GFX_LAYER_FRONT, 0, 0, VID_WIDTH, VID_HEIGHT);
+    gfx_draw_clear(gfx_clear_rgb, GFX_LAYER_FRONT);
   } else if (fade.mode) {
     // draw fade animation
     for (int y = 0; y < FADE_HEIGHT; ++y) {

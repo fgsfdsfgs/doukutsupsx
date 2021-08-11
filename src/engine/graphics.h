@@ -70,11 +70,17 @@ void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int
 void gfx_draw_string(const char *str, const int layer, int x, int y);
 void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x, int y) ;
 void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y, const int w, const int h);
+void gfx_draw_pixel(const u8 *rgb, const int layer, const int x, const int y);
 void gfx_draw_loading(void);
-void gfx_draw_clear(const u8 *rgb);
+void gfx_draw_clear_immediate(const u8 *rgb);
+void gfx_draw_clear(const u8 *rgb, const int layer);
 
 void gfx_push_cliprect(const int layer, const int x, const int y, const int w, const int h);
 void gfx_pop_cliprect(const int layer);
+
+// if mode != 2, CLUT is immediately after the image (data + w * h) and may be up to w bytes in size
+// w must be aligned to 16
+void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id);
 
 // converts the `rect` field of `r` into tpage address, UVs and XYWH instead of LTRB
 static inline void gfx_set_texrect(gfx_texrect_t *tr, const int s) {

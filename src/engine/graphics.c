@@ -282,14 +282,30 @@ void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x,
   }
 }
 
-
-void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y, const int w, const int h) {
+void gfx_draw_clear(const u8 *rgb, const int layer) {
   FILL *prim = (FILL *)primptr;
   const RECT *curclip = &fb[!cur_fb_num].draw.clip;
   setFill(prim);
   setRGB0(prim, rgb[0], rgb[1], rgb[2]);
-  setXY0(prim, x + curclip->x, y + curclip->y);
+  setXY0(prim, curclip->x, curclip->y);
+  setWH(prim, curclip->w, curclip->h);
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
+void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y, const int w, const int h) {
+  TILE *prim = (TILE *)primptr;
+  setTile(prim);
+  setRGB0(prim, rgb[0], rgb[1], rgb[2]);
+  setXY0(prim, x, y);
   setWH(prim, w, h);
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
+void gfx_draw_pixel(const u8 *rgb, const int layer, const int x, const int y) {
+  TILE_1 *prim = (TILE_1 *)primptr;
+  setTile1(prim);
+  setRGB0(prim, rgb[0], rgb[1], rgb[2]);
+  setXY0(prim, x, y);
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
@@ -307,7 +323,7 @@ void gfx_pop_cliprect(const int layer) {
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
-void gfx_draw_clear(const u8 *rgb) {
+void gfx_draw_clear_immediate(const u8 *rgb) {
   FILL fill;
   setFill(&fill);
   setRGB0(&fill, rgb[0], rgb[1], rgb[2]);
@@ -320,7 +336,7 @@ void gfx_draw_clear(const u8 *rgb) {
 
 void gfx_draw_loading(void) {
   // clear both framebuffers
-  gfx_draw_clear(gfx_clear_rgb);
+  gfx_draw_clear_immediate(gfx_clear_rgb);
   // just plop it into the currently shown framebuffer
   const RECT *curclip = &fb[!cur_fb_num].draw.clip;
   RECT rc = {
@@ -330,6 +346,21 @@ void gfx_draw_loading(void) {
     img_loading_h
   };
   LoadImage(&rc, (u_long *)img_loading);
+}
+
+void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id) {
+  const int shift = 2 - mode;
+  w >>= shift;
+  if (shift) ++h; // CLUT underneath image
+  // upload into bottom right corner of VRAM and hope it doesn't hit anything
+  RECT rect = { 1024 - w, 512 - h, w, h };
+  gfx_surf[surf_id].clut = shift ? getClut(rect.x, rect.y + h - 1) : 0;
+  gfx_surf[surf_id].mode = mode;
+  gfx_surf[surf_id].id = surf_id;
+  gfx_surf[surf_id].tex_x = rect.x;
+  gfx_surf[surf_id].tex_y = rect.y;
+  LoadImage(&rect, (u_long *)data);
+  DrawSync(0);
 }
 
 int gfx_upload_gfx_bank(gfx_bank_t *bank, u8 *bank_data) {

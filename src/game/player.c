@@ -659,6 +659,8 @@ void plr_act(const u32 btns, const u32 trig) {
     player.arm = 2;
     // heal
     player.life = player.life_bar = player.max_life;
+    // give map
+    player.equip |= EQUIP_MAP;
   }
 
   if (player.unit == 1)

@@ -1,5 +1,8 @@
+#include <string.h>
+
 #include "engine/common.h"
 #include "engine/graphics.h"
+#include "engine/memory.h"
 #include "engine/sound.h"
 #include "engine/input.h"
 
@@ -80,7 +83,7 @@ static void menu_pause_act(void) {
 
 static void menu_pause_draw(void) {
   // clear screen
-  gfx_draw_fillrect(gfx_clear_rgb, GFX_LAYER_FRONT, 0, 0, VID_WIDTH, VID_HEIGHT);
+  gfx_draw_clear(gfx_clear_rgb, GFX_LAYER_FRONT);
   // draw the prompt
   const int x = (VID_WIDTH - rc_pause.r.w) / 2 - 8;
   const int y = (VID_HEIGHT - rc_pause.r.h) / 2 - 8;
@@ -310,6 +313,135 @@ static void menu_inventory_draw(void) {
   }
 }
 
+/* minimap */
+
+static struct {
+  gfx_texrect_t texrect;
+  u32 mode;
+  s32 count;
+  u32 title_w;
+  s32 player_x;
+  s32 player_y;
+  s32 wait;
+} map;
+
+static const u16 map_clut[] = {
+  GFX_RGB(0x00, 0x19, 0x00),
+  GFX_RGB(0x00, 0x4E, 0x00),
+  GFX_RGB(0x00, 0x98, 0x00),
+  GFX_RGB(0x00, 0xFF, 0x00),
+};
+
+static inline u16 map_get_color(const u8 atrb) {
+  // fuck
+  switch (atrb) {
+    case 0x00:
+      return 0;
+    case 0x01: case 0x02: case 0x40: case 0x44: case 0x51: case 0x52: case 0x55: case 0x56:
+    case 0x60: case 0x71: case 0x72: case 0x75: case 0x76: case 0x80: case 0x81: case 0x82:
+    case 0x83: case 0xA0: case 0xA1: case 0xA2: case 0xA3:
+      return 1;
+    case 0x43: case 0x50: case 0x53: case 0x54: case 0x57: case 0x63: case 0x70: case 0x73:
+    case 0x74: case 0x77:
+      return 2;
+    default:
+      return 3;
+  }
+}
+
+static void menu_map_open(void) {
+  map.mode = 0;
+  map.count = 0;
+  map.title_w = strlen(stage_data->title) * GFX_FONT_WIDTH;
+  map.player_x = TO_INT(player.x) / TILE_SIZE;
+  map.player_y = TO_INT(player.y) / TILE_SIZE;
+
+  // unfortunately rendering the map in real time every frame is SLOW
+  // even if you render line by line instead of pixel by pixel
+  // as such, we just pre-render the motherfucker
+  // TODO: maybe pre-render on map load
+  const int aw = ALIGN(stage_data->width, 16);
+  const int ah = stage_data->height;
+  u8 *data = mem_zeroalloc(aw * (ah + 1));
+  u8 *ptr = data;
+  for (u32 ty = 0; ty < stage_data->height; ++ty) {
+    ptr = data + ty * aw;
+    for (u32 tx = 0; tx < stage_data->width; ++tx, ++ptr)
+      *ptr = map_get_color(stage_get_atrb(tx, ty));
+  }
+  // append CLUT
+  memcpy(data + aw * ah, map_clut, sizeof(map_clut));
+  // upload for later
+  map.texrect.r.left = 0;
+  map.texrect.r.top = 0;
+  map.texrect.r.right = stage_data->width;
+  map.texrect.r.bottom = stage_data->height;
+  gfx_upload_image(data, aw, ah, 1, SURFACE_ID_MAP);
+  gfx_set_texrect(&map.texrect, SURFACE_ID_MAP);
+  mem_free(data);
+}
+
+static void menu_map_act(void) {
+  if ((input_trig & (IN_CANCEL | IN_MAP | IN_OK)) && (map.mode | map.count)) {
+    map.mode = 3;
+    map.count = 0;
+  }
+}
+
+static void menu_map_draw(void) {
+  int xofs, yofs, cw, ch;
+  const u8 colors[2][3] = { { 0x00, 0x00, 0x00 }, { 0xFF, 0xFF, 0xFE } };
+
+  // draw map title
+  gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, 0, 16, VID_WIDTH, 16);
+  xofs = (VID_WIDTH - map.title_w) / 2;
+  gfx_draw_string(stage_data->title, GFX_LAYER_FRONT, xofs, 16 + (16 - GFX_FONT_HEIGHT) / 2);
+
+  // draw map
+  switch (map.mode) {
+    case 0: // background rect opening
+    case 3: // and closing
+      cw = stage_data->width * map.count / 8;
+      ch = stage_data->height * map.count / 8;
+      if (map.mode == 3) {
+        cw = stage_data->width - cw;
+        ch = stage_data->height - ch;
+      }
+      xofs = (VID_WIDTH - cw) / 2;
+      yofs = (VID_HEIGHT - ch) / 2;
+      gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs, yofs, cw, ch);
+      if (++map.count > 8) {
+        if (map.mode == 3)
+          menu_id = 0;
+        else
+          map.mode = 1;
+        map.count = 0;
+      }
+      break;
+    case 1: // map scanning in from the top
+      map.count += 2;
+      if (map.count >= stage_data->height) {
+        map.mode = 2;
+        map.count = stage_data->height;
+      }
+    /* fallthrough */
+    case 2: // and being rendered normally
+      cw = stage_data->width;
+      ch = stage_data->height;
+      xofs = (VID_WIDTH - cw) / 2;
+      yofs = (VID_HEIGHT - ch) / 2;
+      // draw background
+      gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs - 1, yofs - 1, cw + 2, ch + 2);
+      // draw map
+      map.texrect.r.h = map.count;
+      gfx_draw_texrect(&map.texrect, GFX_LAYER_FRONT, xofs - 8, yofs - 8);
+      // draw player
+      if ((map.mode == 2) && ((++map.wait / 8) % 2))
+        gfx_draw_pixel(colors[1], GFX_LAYER_FRONT, xofs + map.player_x, yofs + map.player_y);
+      break;
+  }
+}
+
 typedef void (*menu_func_t)(void);
 
 static const struct menu_desc {
@@ -321,7 +453,7 @@ static const struct menu_desc {
   { menu_null,           menu_null,          menu_null           }, // TITLE
   { menu_null,           menu_pause_act,     menu_pause_draw     }, // PAUSE
   { menu_inventory_open, menu_inventory_act, menu_inventory_draw }, // INVENTORY
-  { menu_null,           menu_null,          menu_null           }, // MAP
+  { menu_map_open,       menu_map_act,       menu_map_draw       }, // MAP
   { menu_null,           menu_null,          menu_null           }, // STAGESELECT
 };
 
