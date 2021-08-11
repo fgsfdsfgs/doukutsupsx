@@ -194,13 +194,16 @@ void stage_change_music(const u32 id) {
   music_prev = org_get_id();
   if (music_prev != id) {
     stage_load_music(id);
-    org_restart_from(0);
+    if (id != ORG_INVALID)
+      org_restart_from(0);
   }
 }
 
 void stage_resume_music(void) {
-  stage_load_music(music_prev);
-  org_restart_from(music_prev_pos);
+  if (music_prev != ORG_INVALID) {
+    stage_load_music(music_prev);
+    org_restart_from(music_prev_pos);
+  }
 }
 
 void stage_update(void) {
