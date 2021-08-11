@@ -182,6 +182,7 @@ void org_free(void) {
   snd_free_sfx_bank_data(inst_bank);
 
   org.id = ORG_INVALID;
+  org.fadeout = 0;
 }
 
 void org_pause(const bool new_paused) {
@@ -197,6 +198,7 @@ void org_start_fade(void) {
 
 void org_restart_from(const s32 pos) {
   org.pos = pos;
+  org.fadeout = 0;
   for (int i = 0; i < MAX_TRACKS; ++i) {
     org.tracks[i].cur_note = NULL;
     for (int j = 0; j < org.info.tdata[i].note_num; ++j) {
