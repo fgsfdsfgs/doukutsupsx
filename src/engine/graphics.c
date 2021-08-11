@@ -192,6 +192,23 @@ void gfx_draw_texrect(const gfx_texrect_t *texrect, const int layer, const int x
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
+void gfx_draw_texrect_scaled(const gfx_texrect_t *texrect, const int layer, int x, int y, const int scale) {
+  const int w = texrect->r.w;
+  const int h = texrect->r.h;
+  const int sw = w * scale;
+  const int sh = h * scale;
+  const int u0 = texrect->u;
+  const int v0 = texrect->v;
+  POLY_FT4 *prim = (POLY_FT4 *)primptr;
+  setPolyFT4(prim);
+  setRGB0(prim, 0x80, 0x80, 0x80);
+  setXY4(prim, x, y, x + sw, y, x, y + sh, x + sw, y + sh);
+  setUV4(prim, u0, v0, u0 + w, v0, u0, v0 + h, u0 + w, v0 + h);
+  prim->clut = gfx_surf[texrect->surf].clut;
+  prim->tpage = texrect->tpage;
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
 void gfx_draw_texrect_ofs(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int du, const int dv) {
   // SPRTs have no tpage field, so we have to make do
   gfx_update_tpage(layer, texrect->tpage);
@@ -298,14 +315,6 @@ void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y,
   setRGB0(prim, rgb[0], rgb[1], rgb[2]);
   setXY0(prim, x, y);
   setWH(prim, w, h);
-  plist_append(&primlist[layer], sizeof(*prim));
-}
-
-void gfx_draw_pixel(const u8 *rgb, const int layer, const int x, const int y) {
-  TILE_1 *prim = (TILE_1 *)primptr;
-  setTile1(prim);
-  setRGB0(prim, rgb[0], rgb[1], rgb[2]);
-  setXY0(prim, x, y);
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
