@@ -662,6 +662,12 @@ void plr_act(const u32 btns, const u32 trig) {
     // give map
     player.items[2] = TRUE;
     player.equip |= EQUIP_MAP;
+    // give arthur's key and set flags
+    player.items[1] = TRUE;
+    npc_set_flag(390);
+    npc_set_flag(320);
+    npc_set_flag(321);
+    npc_set_flag(302);
   }
 
   if (player.unit == 1)

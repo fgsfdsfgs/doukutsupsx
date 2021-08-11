@@ -22,7 +22,10 @@ u32 game_tick = 0;
 
 u8 skip_flags[GAME_MAX_SKIPFLAGS];
 u8 map_flags[GAME_MAX_MAPFLAGS];
-u8 tele_flags[GAME_MAX_MAPFLAGS];
+
+// teleport destinations
+tele_dest_t tele_dest[GAME_MAX_MAPFLAGS];
+int tele_dest_num;
 
 void game_init(void) {
   stage_init();
@@ -63,7 +66,8 @@ void game_reset(void) {
 
   memset(skip_flags, 0, sizeof(skip_flags));
   memset(map_flags, 0, sizeof(map_flags));
-  memset(tele_flags, 0, sizeof(tele_flags));
+  memset(tele_dest, 0, sizeof(tele_dest));
+  tele_dest_num = 0;
 
   // hide screen for now
   cam_complete_fade();
@@ -172,4 +176,20 @@ void game_frame(void) {
   tsc_draw();
 
   ++game_tick;
+}
+
+tele_dest_t *game_find_tele_dest(const u16 stage_id) {
+  for (int i = 0; i < tele_dest_num; ++i) {
+    if (stage_id == tele_dest[i].stage_num)
+      return &tele_dest[i];
+  }
+  return NULL;
+}
+
+tele_dest_t *game_add_tele_dest(const u16 stage_id, const u16 event_num) {
+  tele_dest_t *dest = game_find_tele_dest(stage_id);
+  if (!dest) dest = &tele_dest[tele_dest_num++];
+  dest->stage_num = stage_id;
+  dest->event_num = event_num;
+  return dest;
 }

@@ -641,7 +641,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       game_start();
       return TRUE;
     case 0x58: // PS+
-      game_set_teleflag(args[0]);
+      game_add_tele_dest(args[0], args[1]);
       return FALSE;
     case 0x59: // SLP
       menu_open(MENU_STAGESELECT);

@@ -40,6 +40,10 @@ static gfx_texrect_t rc_title[2] = {
   {{ 80, 56, 144, 64 }},
 };
 
+static gfx_texrect_t rc_stage[8];
+
+static gfx_texrect_t rc_stagesel_title = {{ 80, 64, 144, 72 }};
+
 void menu_init(void) {
   menu_id = MENU_NONE;
 
@@ -60,7 +64,22 @@ void menu_init(void) {
     gfx_set_texrect(&rc_title[i], SURFACE_ID_TEXT_BOX);
   }
 
+  for (int i = 0; i < 8; ++i) {
+    rc_stage[i].r.left =  i * 32;
+    rc_stage[i].r.top = 0;
+    rc_stage[i].r.right = rc_stage[i].r.left + 32;
+    rc_stage[i].r.bottom = rc_stage[i].r.top + 16;
+    gfx_set_texrect(&rc_stage[i], SURFACE_ID_STAGE_ITEM);
+  }
+
   gfx_set_texrect(&rc_pause, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&rc_stagesel_title, SURFACE_ID_TEXT_BOX);
+}
+
+static inline void menu_close(void) {
+  tsc_stop_event();
+  tsc_switch_script(TSC_SCRIPT_STAGE);
+  menu_id = MENU_NONE;
 }
 
 /* default func */
@@ -238,17 +257,11 @@ static void menu_inventory_act(void) {
 
   // check for exit buttons
   if (inventory.in_items) {
-    if ((game_flags & GFLAG_INPUT_ENABLED) && (input_trig & (IN_INVENTORY | IN_CANCEL | IN_PAUSE))) {
-      tsc_stop_event();
-      tsc_switch_script(TSC_SCRIPT_STAGE);
-      menu_id = MENU_NONE;
-    }
+    if ((game_flags & GFLAG_INPUT_ENABLED) && (input_trig & (IN_INVENTORY | IN_CANCEL | IN_PAUSE)))
+      menu_close();
   } else {
-    if (input_trig & (IN_INVENTORY | IN_CANCEL | IN_PAUSE | IN_OK)) {
-      tsc_stop_event();
-      tsc_switch_script(TSC_SCRIPT_STAGE);
-      menu_id = MENU_NONE;
-    }
+    if (input_trig & (IN_INVENTORY | IN_CANCEL | IN_PAUSE | IN_OK))
+      menu_close();
   }
 }
 
@@ -460,6 +473,81 @@ static void menu_map_draw(void) {
   }
 }
 
+/* stage select */
+
+#define STAGESEL_TOP ((VID_HEIGHT / 2) - 82)
+#define STAGESEL_
+
+static struct {
+  s32 idx;
+  s32 flash;
+  s32 title_y;
+} stagesel;
+
+static void menu_stagesel_open(void) {
+  tsc_switch_script(TSC_SCRIPT_STAGE_SELECT);
+  stagesel.idx = 0;
+  stagesel.title_y = STAGESEL_TOP + 8;
+  tsc_start_event(1000 + tele_dest[stagesel.idx].stage_num);
+}
+
+static inline void menu_stagesel_controls(void) {
+  if (tele_dest_num == 0)
+    return;
+
+  if (input_trig & IN_LEFT)
+    --stagesel.idx;
+  else if (input_trig & IN_RIGHT)
+    ++stagesel.idx;
+
+  if (stagesel.idx < 0)
+    stagesel.idx = tele_dest_num - 1;
+  if (stagesel.idx >= tele_dest_num)
+    stagesel.idx = 0;
+
+  if (input_trig & (IN_LEFT | IN_RIGHT)) {
+    snd_play_sound(CHAN_MISC, 1, SOUND_MODE_PLAY);
+    tsc_start_event(1000 + tele_dest[stagesel.idx].stage_num);
+  }
+}
+
+static void menu_stagesel_act(void) {
+  menu_stagesel_controls();
+
+  tsc_update();
+
+  if (input_trig & IN_OK) {
+    menu_close();
+    tsc_start_event(tele_dest[stagesel.idx].event_num);
+    game_flags &= ~3;
+  } else if (input_trig & (IN_CANCEL | IN_PAUSE)) {
+    menu_close();
+    tsc_start_event(0);
+    game_flags &= ~3;
+  }
+}
+
+static void menu_stagesel_draw(void) {
+  ++stagesel.flash;
+
+  if (stagesel.title_y > STAGESEL_TOP)
+    --stagesel.title_y;
+
+  gfx_draw_texrect(&rc_stagesel_title, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 40, stagesel.title_y);
+
+  if (tele_dest_num == 0) return;
+
+  int x = (VID_WIDTH - (tele_dest_num * 40)) / 2 - 4;
+
+  gfx_draw_texrect(&rc_cursor_items[stagesel.flash / 2 % 2], GFX_LAYER_FRONT, x, STAGESEL_TOP + 18);
+
+  for (int i = 0; i < tele_dest_num; ++i, x += 40) {
+    if (tele_dest[i].stage_num == 0)
+      break; // likely nothing after this
+    gfx_draw_texrect(&rc_stage[tele_dest[i].stage_num], GFX_LAYER_FRONT, x, STAGESEL_TOP + 18);
+  }
+}
+
 typedef void (*menu_func_t)(void);
 
 static const struct menu_desc {
@@ -472,7 +560,7 @@ static const struct menu_desc {
   { menu_null,           menu_pause_act,     menu_pause_draw     }, // PAUSE
   { menu_inventory_open, menu_inventory_act, menu_inventory_draw }, // INVENTORY
   { menu_map_open,       menu_map_act,       menu_map_draw       }, // MAP
-  { menu_null,           menu_null,          menu_null           }, // STAGESELECT
+  { menu_stagesel_open,  menu_stagesel_act,  menu_stagesel_draw  }, // STAGESELECT
 };
 
 void menu_open(const int menu) {
