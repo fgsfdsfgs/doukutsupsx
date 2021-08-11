@@ -116,7 +116,7 @@ static void menu_inventory_open(void) {
   // this is one of the places where the original system wins
 
   inventory.in_items = FALSE;
-  inventory.title_y = (VID_HEIGHT / 2) - 104;
+  inventory.title_y = INV_BOX_TOP + 16;
 
   inventory.num_arms = 0;
   inventory.arm_idx = 0;
@@ -259,7 +259,7 @@ static void menu_inventory_draw(void) {
   gfx_draw_texrect(&rc_menubox[2], GFX_LAYER_FRONT, INV_BOX_LEFT, INV_BOX_TOP + (i * 8));
 
   // update title offset
-  if (inventory.title_y > (VID_HEIGHT / 2) - 112)
+  if (inventory.title_y > INV_BOX_TOP + 8)
     --inventory.title_y;
   // draw titles
   gfx_draw_texrect(&rc_title[0], GFX_LAYER_FRONT, INV_CUR_LEFT, inventory.title_y);
