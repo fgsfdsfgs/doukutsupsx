@@ -660,6 +660,7 @@ void plr_act(const u32 btns, const u32 trig) {
     // heal
     player.life = player.life_bar = player.max_life;
     // give map
+    player.items[2] = TRUE;
     player.equip |= EQUIP_MAP;
   }
 
