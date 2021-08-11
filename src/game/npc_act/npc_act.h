@@ -6,6 +6,7 @@
 #include "engine/math.h"
 #include "engine/graphics.h"
 #include "engine/sound.h"
+#include "engine/input.h"
 
 #include "game/game.h"
 #include "game/npc.h"

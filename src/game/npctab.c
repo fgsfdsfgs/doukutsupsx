@@ -151,46 +151,46 @@ npc_func_t npc_functab[NPC_MAX_ACTFUNC] = {
   npc_act_097,
   npc_act_098,
   npc_act_099,
-  npc_act_null, // 100
-  npc_act_null, // 101
-  npc_act_null, // 102
-  npc_act_null, // 103
-  npc_act_null, // 104
-  npc_act_null, // 105
-  npc_act_null, // 106
-  npc_act_null, // 107
-  npc_act_null, // 108
-  npc_act_null, // 109
-  npc_act_null, // 110
-  npc_act_null, // 111
-  npc_act_null, // 112
-  npc_act_null, // 113
-  npc_act_null, // 114
-  npc_act_null, // 115
-  npc_act_null, // 116
-  npc_act_null, // 117
-  npc_act_null, // 118
-  npc_act_null, // 119
-  npc_act_null, // 120
-  npc_act_null, // 121
-  npc_act_null, // 122
-  npc_act_null, // 123
-  npc_act_null, // 124
-  npc_act_null, // 125
-  npc_act_null, // 126
-  npc_act_null, // 127
-  npc_act_null, // 128
-  npc_act_null, // 129
-  npc_act_null, // 130
-  npc_act_null, // 131
-  npc_act_null, // 132
-  npc_act_null, // 133
-  npc_act_null, // 134
-  npc_act_null, // 135
-  npc_act_null, // 136
-  npc_act_null, // 137
-  npc_act_null, // 138
-  npc_act_null, // 139
+  npc_act_100,
+  npc_act_101,
+  npc_act_102,
+  npc_act_103,
+  npc_act_104,
+  npc_act_105,
+  npc_act_106,
+  npc_act_107,
+  npc_act_108,
+  npc_act_109,
+  npc_act_110,
+  npc_act_111,
+  npc_act_112,
+  npc_act_113,
+  npc_act_114,
+  npc_act_115,
+  npc_act_116,
+  npc_act_117,
+  npc_act_118,
+  npc_act_119,
+  npc_act_120,
+  npc_act_121,
+  npc_act_122,
+  npc_act_123,
+  npc_act_124,
+  npc_act_125,
+  npc_act_126,
+  npc_act_127,
+  npc_act_128,
+  npc_act_129,
+  npc_act_130,
+  npc_act_131,
+  npc_act_132,
+  npc_act_133,
+  npc_act_134,
+  npc_act_135,
+  npc_act_136,
+  npc_act_137,
+  npc_act_138,
+  npc_act_139,
   npc_act_140,
   npc_act_141,
   npc_act_142,
