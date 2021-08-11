@@ -29,7 +29,12 @@ static fs_file_t fhandle;
 static int num_fhandles = 0;
 
 void cd_init(void) {
+  // psn00b's CdInit always returns 1, so we'll have to check for success below
   CdInit();
+
+  // see if there was a CD in the drive during init, die if there wasn't
+  if (CdSync(1, NULL) == CdlDiskError)
+    panic("bad CD or no CD in drive");
 
   // look alive
   CdControl(CdlNop, 0, 0);
