@@ -143,7 +143,7 @@ void npc_act_340(npc_t *npc) {
         npc->act = 212;
         npc->act_wait = 0;
         npc->damage = 3;
-        // SetQuake2(10);
+        cam_start_quake_big(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
       }
 
@@ -151,7 +151,7 @@ void npc_act_340(npc_t *npc) {
         npc->act = 212;
         npc->act_wait = 0;
         npc->damage = 3;
-        // SetQuake2(10);
+        cam_start_quake_big(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
       }
 
@@ -205,7 +205,7 @@ void npc_act_340(npc_t *npc) {
 
         npc_spawn(332, npc->x - (12 * 0x200), npc->y - (12 * 0x200), 0, 0, 0, NULL, 0x100);
         npc_spawn(332, npc->x + (12 * 0x200), npc->y - (12 * 0x200), 0, 0, 2, NULL, 0x100);
-        // SetQuake2(10);
+        cam_start_quake_big(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
       }
 
@@ -262,7 +262,7 @@ void npc_act_340(npc_t *npc) {
 
         npc_spawn(332, npc->x - (12 * 0x200), npc->y + (12 * 0x200), 0, 0, 0, NULL, 0x100);
         npc_spawn(332, npc->x + (12 * 0x200), npc->y + (12 * 0x200), 0, 0, 2, NULL, 0x100);
-        // SetQuake2(10);
+        cam_start_quake_big(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
       }
 
@@ -381,7 +381,7 @@ void npc_act_340(npc_t *npc) {
       npc->yvel = 0;
       npc->dir = 2;
 
-      if (++npc->act_wait == 40) // SetFlash(0, 0, FLASH_MODE_FLASH);
+      if (++npc->act_wait == 40) cam_start_flash(0, 0, FLASH_MODE_FLASH);
 
       if (npc->act_wait > 50 && npc->act_wait % 10 == 1) {
         x = ((4 * npc->act_wait - 200) / 10 + 2) * 0x200 * 0x10;
@@ -455,7 +455,7 @@ void npc_act_340(npc_t *npc) {
         npc->yvel = 0;
         npc->act = 1005;
         npc->act_wait = 0;
-        // SetFlash(0, 0, FLASH_MODE_FLASH);
+        cam_start_flash(0, 0, FLASH_MODE_FLASH);
         snd_play_sound(-1, 29, SOUND_MODE_PLAY);
       }
 
@@ -808,7 +808,7 @@ void npc_act_345(npc_t *npc) {
         npc->act = 110;
         npc->bits |= NPC_IGNORE_SOLIDITY;
         snd_play_sound(-1, 12, SOUND_MODE_PLAY);
-        // SetQuake(10);
+        cam_start_quake_small(10);
 
         for (i = 0; i < 4; ++i)
           npc_spawn(4, npc->x + (m_rand(-12, 12) * 0x200), npc->y + (16 * 0x200), m_rand(-341, 341),
@@ -1470,7 +1470,7 @@ void npc_act_354(npc_t *npc) {
     case 11:
       if (++npc->act_wait > 100) {
         npc->act_wait = 0;
-        // SetQuake(20);
+        cam_start_quake_small(20);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
         snd_play_sound(-1, 12, SOUND_MODE_PLAY);
 

@@ -428,7 +428,7 @@ void npc_act_206(npc_t *npc) {
           npc->damage = 30;
           snd_play_sound(-1, 35, SOUND_MODE_PLAY);
           npc_spawn_death_fx(npc->x, npc->y, 0x10000, 100, 0);
-          // SetQuake(20);
+          cam_start_quake_small(20);
           npc->cond |= 8;
           break;
       }

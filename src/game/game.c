@@ -88,6 +88,7 @@ void game_frame(void) {
   bullet_draw(camera.x, camera.y);
   plr_draw(camera.x, camera.y);
   // these are on the front layer
+  cam_draw_flash();
   caret_draw(camera.x, camera.y);
   dmgnum_draw(camera.x, camera.y);
 

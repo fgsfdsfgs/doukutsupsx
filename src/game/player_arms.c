@@ -721,12 +721,6 @@ static void arm_act_nemesis(int level) {
   }
 }
 
-void ResetspurCharge(void) {
-  spur_charge = 0;
-  if (player.arm == 13)
-    plr_arm_reset_exp();
-}
-
 static void arm_act_spur(int level) {
   static bool max;
   int bul_no;

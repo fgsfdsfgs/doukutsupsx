@@ -26,6 +26,16 @@ static struct {
   s8 flag[FADE_HEIGHT][FADE_WIDTH];
 } fade;
 
+static struct {
+  rect_t rect[2];
+  s32 mode;
+  s32 act;
+  s32 count;
+  s32 width;
+  s32 x;
+  s32 y;
+} flash;
+
 void cam_init(void) {
   for (int i = 0; i < 16; ++i) {
     rc_fade[i].r.left = i * 16;
@@ -34,6 +44,10 @@ void cam_init(void) {
     rc_fade[i].r.bottom = rc_fade[i].r.top + 16;
     gfx_set_texrect(&rc_fade[i], SURFACE_ID_FADE);
   }
+
+  memset(&camera, 0, sizeof(camera));
+  memset(&fade, 0, sizeof(fade));
+  memset(&flash, 0, sizeof(flash));
 }
 
 static inline void cam_bound(void) {
@@ -52,25 +66,6 @@ static inline void cam_bound(void) {
     camera.x = x_max;
   if (camera.y > y_max)
     camera.y = y_max;
-}
-
-void cam_update(void) {
-  camera.x += (*camera.tgt_x - (TO_FIX(VID_WIDTH) / 2) - camera.x) / camera.wait;
-  camera.y += (*camera.tgt_y - (TO_FIX(VID_HEIGHT) / 2) - camera.y) / camera.wait;
-
-  cam_bound();
-
-  if (camera.quake2) {
-    camera.x += (m_rand(-5, 5) * 0x200);
-    camera.y += (m_rand(-3, 3) * 0x200);
-    --camera.quake2;
-  } else if (camera.quake) {
-    camera.x += (m_rand(-1, 1) * 0x200);
-    camera.y += (m_rand(-1, 1) * 0x200);
-  }
-
-  if (fade.mode != 0)
-    cam_update_fade();
 }
 
 void cam_center_on_player(void) {
@@ -185,7 +180,7 @@ static inline void fade_in_center(void) {
         fade.flag[y][x] = TRUE;
 }
 
-void cam_update_fade(void) {
+static inline void cam_update_fade(void) {
   int t;
 
   switch (fade.dir) {
@@ -277,4 +272,152 @@ void cam_clear_fade(void) {
 
 void cam_complete_fade(void) {
   fade.full = TRUE;
+}
+
+void cam_start_quake_small(const int duration) {
+  camera.quake = duration;
+}
+
+void cam_start_quake_big(const int duration) {
+  camera.quake2 = duration;
+}
+
+void cam_stop_quake(void) {
+  camera.quake = 0;
+  camera.quake2 = 0;
+}
+
+void cam_start_flash(const int x, const int y, const int mode) {
+  flash.act = 0;
+  flash.mode = mode;
+  flash.x = x;
+  flash.y = y;
+  flash.count = 0;
+  flash.width = 0;
+}
+
+void cam_stop_flash(void) {
+  flash.mode = FLASH_MODE_NONE;
+}
+
+void cam_draw_flash(void) {
+  static const u8 rgb[] = { 0xFF, 0xFF, 0xFE };
+  if (flash.mode != FLASH_MODE_NONE) {
+    for (int i = 0; i < 2; ++i) {
+      if (flash.rect[i].w)
+        gfx_draw_fillrect(rgb, GFX_LAYER_FRONT, flash.rect[i].x, flash.rect[i].y, flash.rect[i].w, flash.rect[i].h);
+    }
+  }
+}
+
+static inline void flash_update_flash(void) {
+  int x, y, w, h;
+
+  switch (flash.act) {
+    case 0: // stage 1: expand
+      flash.count += 0x200;
+      flash.width += flash.count;
+      x = TO_INT(flash.x - camera.x - flash.width);
+      y = TO_INT(flash.y - camera.y - flash.width);
+      w = TO_INT(flash.width * 2);
+      h = TO_INT(flash.width * 2);
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x + w > VID_WIDTH) w = VID_WIDTH - x;
+      if (y + h > VID_HEIGHT) h = VID_HEIGHT - y;
+      // vertical strip
+      flash.rect[0].x = x;
+      flash.rect[0].y = 0;
+      flash.rect[0].w = w;
+      flash.rect[0].h = VID_HEIGHT;
+      // horizontal strip
+      flash.rect[1].x = 0;
+      flash.rect[1].y = y;
+      flash.rect[1].w = VID_WIDTH;
+      flash.rect[1].h = h;
+      if (flash.width > TO_FIX(VID_WIDTH) * 4) {
+        flash.act = 0;
+        flash.count = 0;
+        flash.width = TO_FIX(VID_HEIGHT);
+      }
+      break;
+
+    case 1: // stage 2: shrink
+      flash.width -= flash.width / 8;
+      if (flash.width < 0x100)
+        flash.mode = FLASH_MODE_NONE;
+      y = TO_INT(flash.y - camera.y - flash.width);
+      if (y < 0) y = 0;
+      h = TO_INT(flash.width * 2);
+      if (y + h > VID_HEIGHT) h = VID_HEIGHT - y;
+      // vertical strip doesn't show
+      flash.rect[0].x = 0;
+      flash.rect[0].y = 0;
+      flash.rect[0].w = 0;
+      flash.rect[0].h = 0;
+      // horizontal strip
+      flash.rect[1].x = 0;
+      flash.rect[1].y = y;
+      flash.rect[1].w = VID_WIDTH;
+      flash.rect[1].h = h;
+      break;
+  }
+}
+
+static inline void flash_update_explosion(void) {
+  ++flash.count;
+
+  flash.rect[0].left = 0;
+  flash.rect[0].right = 0;
+  flash.rect[0].top = 0;
+  flash.rect[0].bottom = 0;
+
+  if (flash.count / 2 % 2) {
+    flash.rect[1].x = 0;
+    flash.rect[1].y = 0;
+    flash.rect[1].w = VID_WIDTH;
+    flash.rect[1].h = VID_HEIGHT;
+  } else {
+    flash.rect[1].x = 0;
+    flash.rect[1].y = 0;
+    flash.rect[1].w = 0;
+    flash.rect[1].h = 0;
+  }
+
+  if (flash.count > 20)
+    flash.mode = FLASH_MODE_NONE;
+}
+
+static inline void cam_update_flash(void) {
+  switch (flash.mode) {
+    case FLASH_MODE_EXPLOSION:
+      flash_update_explosion();
+      break;
+    case FLASH_MODE_FLASH:
+      flash_update_flash();
+      break;
+  }
+}
+
+void cam_update(void) {
+  camera.x += (*camera.tgt_x - (TO_FIX(VID_WIDTH) / 2) - camera.x) / camera.wait;
+  camera.y += (*camera.tgt_y - (TO_FIX(VID_HEIGHT) / 2) - camera.y) / camera.wait;
+
+  cam_bound();
+
+  if (camera.quake2) {
+    camera.x += (m_rand(-5, 5) * 0x200);
+    camera.y += (m_rand(-3, 3) * 0x200);
+    --camera.quake2;
+  } else if (camera.quake) {
+    camera.x += (m_rand(-1, 1) * 0x200);
+    camera.y += (m_rand(-1, 1) * 0x200);
+    --camera.quake;
+  }
+
+  if (fade.mode != 0)
+    cam_update_fade();
+
+  if (flash.mode != FLASH_MODE_NONE)
+    cam_update_flash();
 }

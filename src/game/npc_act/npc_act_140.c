@@ -146,7 +146,7 @@ void npc_act_140(npc_t *npc) {
         npc->act_wait = 0;
         npc->anim = 2;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(20);
+        cam_start_quake_small(20);
       }
 
       break;
@@ -207,7 +207,7 @@ void npc_act_140(npc_t *npc) {
         npc->act_wait = 0;
         npc->anim = 2;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(20);
+        cam_start_quake_small(20);
       }
 
       break;
@@ -610,7 +610,7 @@ void npc_act_146(npc_t *npc) {
       npc->act = 1;
 
       if (npc->dir == 2)
-        // SetFlash(0, 0, FLASH_MODE_FLASH);
+        cam_start_flash(0, 0, FLASH_MODE_FLASH);
         // Fallthrough
       case 1:
         if (++npc->act_wait > 10) {
@@ -856,7 +856,7 @@ void npc_act_149(npc_t *npc) {
         npc->xvel = 0;
         npc->dir = 2;
         npc->act = 20;
-        // SetQuake(10);
+        cam_start_quake_small(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
 
         for (i = 0; i < 4; ++i)
@@ -897,7 +897,7 @@ void npc_act_149(npc_t *npc) {
         npc->xvel = 0;
         npc->dir = 0;
         npc->act = 10;
-        // SetQuake(10);
+        cam_start_quake_small(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
 
         for (i = 0; i < 4; ++i)
@@ -1512,7 +1512,7 @@ void npc_act_157(npc_t *npc) {
         npc->yvel = 0;
         npc->dir = 2;
         npc->act = 20;
-        // SetQuake(10);
+        cam_start_quake_small(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
 
         for (i = 0; i < 4; ++i)
@@ -1553,7 +1553,7 @@ void npc_act_157(npc_t *npc) {
         npc->yvel = 0;
         npc->dir = 0;
         npc->act = 10;
-        // SetQuake(10);
+        cam_start_quake_small(10);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
 
         for (i = 0; i < 4; ++i)

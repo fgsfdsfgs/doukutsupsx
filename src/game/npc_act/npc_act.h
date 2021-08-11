@@ -13,6 +13,7 @@
 #include "game/bullet.h"
 #include "game/player.h"
 #include "game/stage.h"
+#include "game/camera.h"
 
 void npc_act_null(npc_t *npc);
 

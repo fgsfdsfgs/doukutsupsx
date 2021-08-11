@@ -255,7 +255,7 @@ void npc_act_002(npc_t *npc) {
         // https://www.cavestory.org/forums/threads/version-1-0-0-5-really-different-than-1-0-0-6.102/#post-3231
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
         npc_spawn(4, npc->x, npc->y + (3 * 0x200), 0, 0, 0, NULL, 0x100);
-        // SetQuake(8);
+        cam_start_quake_small(8);
       }
       break;
   }
@@ -745,7 +745,7 @@ void npc_act_009(npc_t *npc) {
         npc->anim = 1;
         npc->act_wait = 0;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(30);
+        cam_start_quake_small(30);
       }
 
       break;
@@ -847,7 +847,7 @@ void npc_act_010(npc_t *npc) {
         npc->act_wait = 0;
         npc->anim = 2;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(30);
+        cam_start_quake_small(30);
         npc->damage = 0;
       }
 
@@ -990,7 +990,7 @@ void npc_act_012(npc_t *npc) {
       if (npc->y < 0) {
         npc->class_num = 0;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(30);
+        cam_start_quake_small(30);
       }
 
       break;
@@ -1173,12 +1173,12 @@ void npc_act_012(npc_t *npc) {
         stage_set_tile(x - 1, y, 0);
         stage_set_tile(x + 1, y, 0);
         snd_play_sound(-1, 44, SOUND_MODE_PLAY);
-        // SetQuake2(10);
+        cam_start_quake_big(10);
       }
 
       if (npc->y < -32 * 0x200) {
         npc->class_num = 0;
-        // SetQuake(30);
+        cam_start_quake_small(30);
       }
 
       break;
@@ -1511,7 +1511,7 @@ void npc_act_019(npc_t *npc) {
       npc->yvel = -0x100;
       snd_play_sound(-1, 12, SOUND_MODE_PLAY);
       snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-      // SetQuake(30);
+      cam_start_quake_small(30);
       // Fallthrough
     case 1:
       npc->yvel += 0x10;
@@ -1521,7 +1521,7 @@ void npc_act_019(npc_t *npc) {
         npc->anim = 2;
         npc->act_wait = 0;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(30);
+        cam_start_quake_small(30);
       }
 
       break;

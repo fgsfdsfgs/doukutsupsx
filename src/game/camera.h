@@ -2,6 +2,12 @@
 
 #include "engine/common.h"
 
+enum cam_flash_mode {
+  FLASH_MODE_NONE = 0,
+  FLASH_MODE_EXPLOSION = 1,
+  FLASH_MODE_FLASH = 2,
+};
+
 typedef struct {
   s32 x;
   s32 y;
@@ -24,9 +30,16 @@ void cam_set_pos(const int fx, const int fy);
 void cam_set_target(s32 *tx, s32 *ty, const int wait);
 
 bool cam_is_fading(void);
-void cam_draw_fade(void);
-void cam_update_fade(void);
 void cam_start_fade_out(const int dir);
 void cam_start_fade_in(const int dir);
 void cam_clear_fade(void);
 void cam_complete_fade(void);
+void cam_draw_fade(void);
+
+void cam_start_quake_small(const int duration);
+void cam_start_quake_big(const int duration);
+void cam_stop_quake(void);
+
+void cam_start_flash(const int x, const int y, const int mode);
+void cam_stop_flash(void);
+void cam_draw_flash(void);

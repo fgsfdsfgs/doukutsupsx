@@ -480,10 +480,10 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       cam_target_npc(args[0], args[1]);
       return FALSE;
     case 0x29: // FLA
-      // SetFlash(0, 0, FLASH_MODE_FLASH);
+      cam_start_flash(0, 0, FLASH_MODE_FLASH);
       return FALSE;
     case 0x2A: // QUA
-      // SetQuake(args[0]);
+      cam_start_quake_small(args[0]);
       return FALSE;
     // npcs
     case 0x2B: // ANP

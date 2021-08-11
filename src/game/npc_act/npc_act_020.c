@@ -190,7 +190,7 @@ void npc_act_024(npc_t *npc) {
         npc->anim = 0;
         npc->act = 1;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
-        // SetQuake(30);
+        cam_start_quake_small(30);
       }
 
       break;
@@ -1017,7 +1017,7 @@ void npc_act_036(npc_t *npc) {
         npc->anim = 2;
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
         snd_play_sound(-1, 25, SOUND_MODE_PLAY);
-        // SetQuake(30);
+        cam_start_quake_small(30);
         npc->damage = 0;
 
         for (i = 0; i < 8; ++i)

@@ -867,7 +867,7 @@ void npc_act_067(npc_t *npc) {
 
       if (++npc->act_wait == 30) {
         snd_play_sound(-1, 101, SOUND_MODE_PLAY);
-        // SetFlash(0, 0, FLASH_MODE_FLASH);
+        cam_start_flash(0, 0, FLASH_MODE_FLASH);
         npc->act = 27;
         npc->anim = 7;
       }
@@ -998,7 +998,7 @@ void npc_act_068(npc_t *npc) {
       if (npc->flags & 8) {
         npc->act = 9;
         npc->anim = 8;
-        // SetQuake(30);
+        cam_start_quake_small(30);
         snd_play_sound(-1, 26, SOUND_MODE_PLAY);
       }
 
