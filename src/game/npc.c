@@ -270,22 +270,37 @@ void npc_act(void) {
   }
 }
 
-static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam_yv) {
-  // TODO: figure out a better way to cache texrects
-  if (npc->rect_prev != npc->rect) {
-    npc->rect_prev = npc->rect;
-    if (npc->rect) {
-      npc->texrect.r.x = npc->rect->x + npc->rect_delta.x;
-      npc->texrect.r.y = npc->rect->y + npc->rect_delta.y;
-      npc->texrect.r.w = npc->rect->w + npc->rect_delta.w;
-      npc->texrect.r.h = npc->rect->h + npc->rect_delta.h;
-      npc->rect_delta.x = 0;
-      npc->rect_delta.y = 0;
-      npc->rect_delta.w = 0;
-      npc->rect_delta.h = 0;
-      gfx_set_texrect(&npc->texrect, npc->surf);
+static inline void npc_update_texrects(npc_t *npc) {
+  npc->rect_prev = npc->rect;
+  if (npc->rect) {
+    npc->texrect.r.x = npc->rect->x + npc->rect_delta.x;
+    npc->texrect.r.y = npc->rect->y + npc->rect_delta.y;
+    npc->texrect.r.w = npc->rect->w + npc->rect_delta.w;
+    npc->texrect.r.h = npc->rect->h + npc->rect_delta.h;
+    npc->rect_delta.x = 0;
+    npc->rect_delta.y = 0;
+    npc->rect_delta.w = 0;
+    npc->rect_delta.h = 0;
+    npc->texrect_wide.tpage = 0;
+    npc->texrect_wide.r.w = 0;
+    gfx_set_texrect(&npc->texrect, npc->surf);
+    // if the sprite is so wide it intersects the texture page boundary, add a second texrect
+    if ((int)npc->texrect.u + npc->texrect.r.w > 256) {
+      const int part_w = (256 - (int)npc->texrect.u);
+      npc->texrect_wide.r.x = npc->texrect.r.x + part_w;
+      npc->texrect_wide.r.y = npc->texrect.r.y;
+      npc->texrect_wide.r.right = npc->texrect_wide.r.x + npc->texrect.r.w - part_w;
+      npc->texrect_wide.r.bottom = npc->texrect.r.y + npc->texrect.r.h;
+      gfx_set_texrect(&npc->texrect_wide, npc->surf);
+      npc->texrect.r.w = part_w;
     }
   }
+}
+
+static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam_yv) {
+  // TODO: figure out a better way to cache texrects
+  if (npc->rect_prev != npc->rect)
+    npc_update_texrects(npc);
 
   if (!npc->rect)
     return;
@@ -306,8 +321,12 @@ static inline void npc_draw_instance(npc_t *npc, const int cam_xv, const int cam
     }
   }
 
-  if (xv + npc->texrect.r.w + 8 >= 0 && xv < VID_WIDTH && yv + npc->texrect.r.h + 8 >= 0 && yv < VID_HEIGHT)
+  const int total_w = npc->texrect.r.w + npc->texrect_wide.r.w;
+  if (xv + total_w + 8 >= 0 && xv < VID_WIDTH && yv + npc->texrect.r.h + 8 >= 0 && yv < VID_HEIGHT) {
     gfx_draw_texrect(&npc->texrect, GFX_LAYER_BACK, xv + dx, yv);
+    if (npc->texrect_wide.tpage)
+      gfx_draw_texrect(&npc->texrect_wide, GFX_LAYER_BACK, xv + dx + npc->texrect.r.w, yv);
+  }
 }
 
 void npc_draw(int cam_x, int cam_y) {

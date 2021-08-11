@@ -56,6 +56,7 @@ enum npc_classnames {
 
 typedef struct npc {
   gfx_texrect_t texrect;
+  gfx_texrect_t texrect_wide;
   rect_t rect_delta;
   hitbox_t hit;
   hitbox_t view;
