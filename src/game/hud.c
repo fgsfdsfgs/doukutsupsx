@@ -206,8 +206,8 @@ static inline void hud_draw_air(void) {
 
   if (player.air_count) {
     if (player.air_count % 6 < 4)
-      hud_draw_number(player.air / 10, x + 48 + 8, y + 8);
-    gfx_draw_texrect(&hud_rc_air[player.air % 30 <= 10], GFX_LAYER_FRONT, x, y);
+      hud_draw_number(player.air / 10, x + 56, y);
+    gfx_draw_texrect(&hud_rc_air[player.air % 30 <= 10], GFX_LAYER_FRONT, x - 8, y - 8);
   }
 }
 
