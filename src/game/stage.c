@@ -51,6 +51,14 @@ void stage_init(void) {
     gfx_set_texrect(&rc_snack_tile, SURFACE_ID_NPC_SYM);
 }
 
+void stage_reset(void) {
+  bg_x = 0;
+  bg_y = 0;
+  music_prev = 0;
+  music_prev_pos = 0;
+  stage_free_stage_bank();
+}
+
 int stage_load_stage_bank(const u32 id) {
   // form path string
   // stages have to be separated into folders because dir headers are very small
@@ -108,8 +116,10 @@ void stage_free_stage_bank(void) {
     stages[stage->id] = NULL;
   }
 
-  mem_free_to_mark();
   stage_bank = NULL;
+  stage_data = NULL;
+
+  mem_free_to_mark(MEM_MARK_LO);
 }
 
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {

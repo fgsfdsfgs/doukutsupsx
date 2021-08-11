@@ -23,7 +23,6 @@ typedef struct {
 extern dmgnum_t dmgnum_list[DMGNUM_MAX];
 
 void dmgnum_init(void);
-void dmgnum_clear(void);
 void dmgnum_spawn(int *tgt_x, int *tgt_y, int val);
 void dmgnum_act(void);
 void dmgnum_draw(int cam_x, int cam_y);

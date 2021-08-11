@@ -82,6 +82,28 @@ static const struct phystab {
 void plr_init(void) {
   // init player struct
 
+  plr_reset();
+
+  // init texrects; player surfaces should already be loaded by now
+
+  for (u32 i = 0; i < sizeof(rc_left) / sizeof(*rc_left); ++i) {
+    gfx_set_texrect(&rc_left[i], SURFACE_ID_MY_CHAR);
+    gfx_set_texrect(&rc_right[i], SURFACE_ID_MY_CHAR);
+  }
+
+  for (u32 i = 0; i < PLR_MAX_ARMS; ++i) {
+    rc_arms[i].r.left = (i % ARMS_IMG_ROWS) * ARMS_FRAME_W;
+    rc_arms[i].r.right = rc_arms[i].r.left + ARMS_FRAME_W;
+    rc_arms[i].r.top = (i / ARMS_IMG_ROWS) * ARMS_IMG_COL_H;
+    rc_arms[i].r.bottom = rc_arms[i].r.top + ARMS_FRAME_H;
+    gfx_set_texrect(&rc_arms[i], SURFACE_ID_ARMS);
+  }
+
+  gfx_set_texrect(&rc_bubble[0], SURFACE_ID_CARET);
+  gfx_set_texrect(&rc_bubble[1], SURFACE_ID_CARET);
+}
+
+void plr_reset(void) {
   memset(&player, 0, sizeof(player));
 
   player.cond = PLRCOND_ALIVE;
@@ -103,24 +125,6 @@ void plr_init(void) {
 
   player.arm = 0;
   player.arms_x = 16;
-
-  // init texrects; player surfaces should already be loaded by now
-
-  for (u32 i = 0; i < sizeof(rc_left) / sizeof(*rc_left); ++i) {
-    gfx_set_texrect(&rc_left[i], SURFACE_ID_MY_CHAR);
-    gfx_set_texrect(&rc_right[i], SURFACE_ID_MY_CHAR);
-  }
-
-  for (u32 i = 0; i < PLR_MAX_ARMS; ++i) {
-    rc_arms[i].r.left = (i % ARMS_IMG_ROWS) * ARMS_FRAME_W;
-    rc_arms[i].r.right = rc_arms[i].r.left + ARMS_FRAME_W;
-    rc_arms[i].r.top = (i / ARMS_IMG_ROWS) * ARMS_IMG_COL_H;
-    rc_arms[i].r.bottom = rc_arms[i].r.top + ARMS_FRAME_H;
-    gfx_set_texrect(&rc_arms[i], SURFACE_ID_ARMS);
-  }
-
-  gfx_set_texrect(&rc_bubble[0], SURFACE_ID_CARET);
-  gfx_set_texrect(&rc_bubble[1], SURFACE_ID_CARET);
 }
 
 void plr_animate(const u32 btns) {

@@ -75,6 +75,7 @@ extern stage_t *stage_data;
 extern int stage_water_y;
 
 void stage_init(void);
+void stage_reset(void);
 void stage_update(void); // actually just updates the bg
 
 int stage_load_stage_bank(const u32 id);

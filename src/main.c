@@ -28,8 +28,9 @@ int main(int argc, char **argv) {
   timer_init();
   game_init();
 
-  // from now on, allocations persist until the end of the stage
-  mem_set_mark();
+  // lo mark: all allocations after game_init() are unloaded every stagebank change
+  // hi mark: dynamic allocations after stagebank load, if any
+  mem_set_mark(MEM_MARK_LO);
 
   u32 now = timer_ticks;
   u32 next_frame = now;

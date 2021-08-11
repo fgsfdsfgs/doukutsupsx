@@ -64,7 +64,7 @@ static gfx_texrect_t hud_rc_time[3] = {
   {{ 128, 104, 160, 112 }},
 };
 
-static gfx_texrect_t hud_rc_ammo[] = {
+gfx_texrect_t hud_rc_ammo[] = {
   {{ 72, 48, 80, 56 }}, // slash
   {{ 80, 80, 96, 88 }}, // Lv
   {{ 80, 48, 96, 56 }}, // "--"
@@ -128,6 +128,8 @@ void hud_init(void) {
 void hud_clear(void) {
   hud_boss_life = NULL;
   hud_boss_bar_count = 0;
+  map_name_time = 0;
+  map_name_xofs = 0;
 }
 
 void hud_update(void) {
@@ -137,7 +139,7 @@ void hud_update(void) {
 
 static const int numdiv[4] = { 1000, 100, 10, 1 };
 
-static inline void hud_draw_number(int val, int x, int y) {
+void hud_draw_number(int val, int x, int y) {
   // drawing right to left
   do {
     const int d = val % 10;

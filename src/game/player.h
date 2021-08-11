@@ -99,6 +99,7 @@ extern const int plr_arms_order_num;
 extern player_t player;
 
 void plr_init(void);
+void plr_reset(void);
 void plr_draw(int cam_x, int cam_y);
 void plr_set_pos(int x, int y);
 void plr_animate(const u32 btns);

@@ -42,8 +42,9 @@ void caret_init(void) {
 static inline void caret_draw_instance(caret_t *crt, const int cam_vx, const int cam_vy) {
   const int x = TO_INT(crt->x - crt->view_left);
   const int y = TO_INT(crt->y - crt->view_top);
-  // TODO: cache caret texrects
-  gfx_set_texrect(&crt->texrect, SURFACE_ID_CARET);
+  // TODO: properly cache caret texrects
+  if (!crt->texrect.tpage)
+    gfx_set_texrect(&crt->texrect, SURFACE_ID_CARET);
   gfx_draw_texrect(&crt->texrect, GFX_LAYER_FRONT, x - cam_vx, y - cam_vy);
 }
 
@@ -519,6 +520,7 @@ void caret_act(void) {
   for (int i = 0; i <= caret_list_max; ++i) {
     caret_t *crt = &caret_list[i];
     if (crt->cond) {
+      crt->texrect.tpage = 0; // force texrect update
       caret_functab[crt->class_num](crt);
       if (!crt->cond && i == caret_list_max)
         --caret_list_max;

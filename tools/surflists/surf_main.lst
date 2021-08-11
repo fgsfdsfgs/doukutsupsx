@@ -7,14 +7,14 @@
 
 SURF, 23, data/Npc/NpcRegu.pbm, 0,   SURFACE_ID_NPC_REGU (8bpp)
 SURF, 27, data/Face.pbm,        0,   SURFACE_ID_FACE (8bpp)
-SURF, 8,  data/ItemImage.pbm,   0,   SURFACE_ID_
-SURF, 11, data/Arms.pbm,        20,  SURFACE_ID_
-SURF, 12, data/ArmsImage.pbm,   0,   SURFACE_ID_
-SURF, 14, data/StageImage.pbm,  0,   SURFACE_ID_
-SURF, 16, data/MyChar.pbm,      0,   SURFACE_ID_
-SURF, 17, data/Bullet.pbm,      0,   SURFACE_ID_
-SURF, 19, data/Caret.pbm,       0,   SURFACE_ID_
-SURF, 26, data/TextBox.pbm,     0,   SURFACE_ID_
-SURF, 20, data/Npc/NpcSym.pbm,  0,   SURFACE_ID_
+SURF, 8,  data/ItemImage.pbm,   0,   SURFACE_ID_ITEM_IMAGE
+SURF, 11, data/Arms.pbm,        20,  SURFACE_ID_ARMS
+SURF, 12, data/ArmsImage.pbm,   0,   SURFACE_ID_ARMS_IMAGE
+SURF, 14, data/StageImage.pbm,  0,   SURFACE_ID_STAGE_IMAGE
+SURF, 16, data/MyChar.pbm,      0,   SURFACE_ID_MY_CHAR
+SURF, 17, data/Bullet.pbm,      0,   SURFACE_ID_BULLET
+SURF, 19, data/Caret.pbm,       0,   SURFACE_ID_CARET
+SURF, 26, data/TextBox4bpp.pbm, 0,   SURFACE_ID_TEXTBOX, updated for PSX
+SURF, 20, data/Npc/NpcSym.pbm,  0,   SURFACE_ID_NPC_SYM
 SURF, 38, data/FontAscii.pbm,   0,   SURFACE_ID_FONT1
 SURF, 6,  data/Fade4bpp.pbm,    0,   SURFACE_ID_FADE, but not 2bpp

@@ -15,6 +15,7 @@
 #include "game/camera.h"
 #include "game/npc.h"
 #include "game/hud.h"
+#include "game/menu.h"
 #include "game/tsc.h"
 
 #define FACE_SIZE 48
@@ -31,8 +32,6 @@ typedef struct {
 
 // currently executing text script
 tsc_state_t tsc_state;
-
-int tsc_mode;
 
 static char text[4][0x40];
 
@@ -105,9 +104,7 @@ static gfx_texrect_t rc_yesno = {{ 152, 48, 244, 80 }};
 static gfx_texrect_t rc_yesno_cur = {{ 112, 88, 128, 104 }};
 
 void tsc_init(void) {
-  memset(text, 0, sizeof(text));
-
-  game_flags &= ~4;
+  tsc_reset();
 
   // preload special scripts
 
@@ -120,7 +117,7 @@ void tsc_init(void) {
   for (int i = 0; i < TSC_MAX_LOADED_SCRIPTS - 1; ++i) {
     fs_file_t *f = fs_fopen(init_scripts[i], 0);
     ASSERT(f);
-    const u32 size = fs_ftell(f);
+    const u32 size = fs_fsize(f);
     tsc_script_t *data = mem_alloc(size + 1);
     fs_fread_or_die(data, size, 1, f);
     fs_fclose(f);
@@ -134,6 +131,12 @@ void tsc_init(void) {
     gfx_set_texrect(&rc_itembox[i], SURFACE_ID_TEXT_BOX);
   gfx_set_texrect(&rc_yesno, SURFACE_ID_TEXT_BOX);
   gfx_set_texrect(&rc_yesno_cur, SURFACE_ID_TEXT_BOX);
+}
+
+void tsc_reset(void) {
+  memset(text, 0, sizeof(text));
+  memset(&tsc_state, 0, sizeof(tsc_state));
+  game_flags &= ~4;
 }
 
 void tsc_set_stage_script(tsc_script_t *data, const u32 size) {
@@ -553,7 +556,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     // map
     case 0x3E: // MLP
-      // TODO: minimap
+      menu_open(MENU_MAP);
       return TRUE;
     case 0x3F: // MNA
       hud_show_map_name();
@@ -613,7 +616,8 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     case 0x50: // LDP
       printf("TODO: load game\n");
-      return FALSE;
+      game_reset(); // reset for now
+      return TRUE;
     case 0x51: // STC
       printf("TODO: save time\n");
       return FALSE;
@@ -631,14 +635,16 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       printf("TODO: credits hide illust\n");
       return FALSE;
     case 0x56: // ESC
-      return TRUE; // exit
-    case 0x57: // INI:
-      return TRUE; // restart
+    case 0x57: // INI
+      // can't exit, so we restart instead in both cases
+      game_reset();
+      game_start();
+      return TRUE;
     case 0x58: // PS+
       game_set_teleflag(args[0]);
       return FALSE;
     case 0x59: // SLP
-      printf("TODO: stage select\n");
+      menu_open(MENU_STAGESELECT);
       return TRUE;
     case 0x5A: // ZAM
       plr_arms_empty_all();
@@ -809,20 +815,20 @@ void tsc_draw(void) {
 
   // draw item
   if (tsc_state.item) {
-    gfx_draw_texrect(&rc_itembox[0], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 40, VID_HEIGHT - 112 - 16);
-    gfx_draw_texrect(&rc_itembox[1], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 40, VID_HEIGHT - 96 - 16);
-    gfx_draw_texrect(&rc_itembox[2], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 112 - 16);
-    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 104 - 16);
-    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 96 - 16);
-    gfx_draw_texrect(&rc_itembox[4], GFX_LAYER_FRONT, (VID_WIDTH / 2) + 32, VID_HEIGHT - 88 - 16);
+    gfx_draw_texrect(&rc_itembox[0], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 82, VID_HEIGHT - 112 - 16);
+    gfx_draw_texrect(&rc_itembox[1], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 82, VID_HEIGHT - 96 - 16);
+    gfx_draw_texrect(&rc_itembox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 112 - 16);
+    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 104 - 16);
+    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 96 - 16);
+    gfx_draw_texrect(&rc_itembox[4], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 88 - 16);
 
     if (tsc_state.item_y < VID_HEIGHT - 104)
       ++tsc_state.item_y;
 
     if (tsc_state.item < 1000)
-      gfx_draw_texrect_16x16(&hud_rc_arms[tsc_state.item], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 12 + 8, tsc_state.item_y + 8 - 16);
+      gfx_draw_texrect_16x16(&hud_rc_arms[tsc_state.item], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 110 + 8, tsc_state.item_y + 8 - 16);
     else
-      gfx_draw_texrect(&hud_rc_item[tsc_state.item - 1000], GFX_LAYER_FRONT, (VID_WIDTH / 2) - 20, tsc_state.item_y - 16);
+      gfx_draw_texrect(&hud_rc_item[tsc_state.item - 1000], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 102, tsc_state.item_y - 16);
   }
 
   // draw yes/no
@@ -830,8 +836,8 @@ void tsc_draw(void) {
     const int ty = (tsc_state.wait < 2) ?
       (VID_HEIGHT - 96 - 16) + (2 - tsc_state.wait) * 4 :
       (VID_HEIGHT - 96 - 16);
-    gfx_draw_texrect(&rc_yesno, GFX_LAYER_FRONT, (VID_WIDTH / 2 + 56 + 8), ty);
+    gfx_draw_texrect(&rc_yesno, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 178, ty);
     if (tsc_state.wait == 16)
-      gfx_draw_texrect(&rc_yesno_cur, GFX_LAYER_FRONT, tsc_state.yesno * 41 + (VID_WIDTH / 2 + 51 + 8), ty + 8);
+      gfx_draw_texrect(&rc_yesno_cur, GFX_LAYER_FRONT, tsc_state.yesno * 41 + TEXT_BOX_LEFT + 174, ty + 8);
   }
 }

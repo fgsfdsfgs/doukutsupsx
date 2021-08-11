@@ -21,6 +21,7 @@ typedef struct {
 extern cam_t camera;
 
 void cam_init(void);
+void cam_reset(void);
 void cam_update(void);
 void cam_center_on_player(void);
 void cam_target_player(const int delay);

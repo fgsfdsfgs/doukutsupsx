@@ -151,7 +151,8 @@ static inline void bullet_draw_instance(bullet_t *b, const int cam_vx, const int
   y = TO_INT(y);
 
   // TODO: cache bullet texrects
-  gfx_set_texrect(&b->texrect, SURFACE_ID_BULLET);
+  if (!b->texrect.tpage)
+    gfx_set_texrect(&b->texrect, SURFACE_ID_BULLET);
   gfx_draw_texrect(&b->texrect, GFX_LAYER_BACK, x - cam_vx, y - cam_vy);
 }
 
@@ -2096,6 +2097,7 @@ void bullet_act(void) {
           --bullet_list_max;
         continue;
       }
+      bul->texrect.tpage = 0; // force texrect update
       bullet_functab[bul->class_num](bul);
     }
   }

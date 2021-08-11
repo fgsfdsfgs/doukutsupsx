@@ -106,6 +106,7 @@ extern npc_t npc_boss[NPC_MAX_BOSS];
 extern int npc_boss_max;
 
 void npc_init(const char *tabpath);
+void npc_reset(void);
 void npc_parse_event_list(const stage_event_t *ev, const int numev);
 npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *parent, int startidx);
 void npc_delete(npc_t *npc);

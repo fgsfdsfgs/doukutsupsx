@@ -45,6 +45,10 @@ void cam_init(void) {
     gfx_set_texrect(&rc_fade[i], SURFACE_ID_FADE);
   }
 
+  cam_reset();
+}
+
+void cam_reset(void) {
   memset(&camera, 0, sizeof(camera));
   memset(&fade, 0, sizeof(fade));
   memset(&flash, 0, sizeof(flash));

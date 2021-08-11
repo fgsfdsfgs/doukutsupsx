@@ -19,14 +19,16 @@ static u32 binds[IN_NUM_ACTIONS] = {
   PAD_RIGHT,    // IN_RIGHT = 2
   PAD_UP,       // IN_UP = 4
   PAD_DOWN,     // IN_DOWN = 8
-  PAD_SQUARE,   // IN_JUMP = 16
-  PAD_CROSS,    // IN_FIRE = 32
+  PAD_CROSS,    // IN_JUMP = 16
+  PAD_SQUARE,   // IN_FIRE = 32
   PAD_TRIANGLE, // IN_SWAP_L = 64
   PAD_CIRCLE,   // IN_SWAP_R = 128
   PAD_R2,       // IN_INVENTORY = 256
   PAD_R1,       // IN_MAP = 512
   PAD_START,    // IN_PAUSE = 1024
   PAD_SELECT,   // IN_DEBUG = 2048
+  PAD_CROSS,    // IN_OK = 4096
+  PAD_CIRCLE,   // IN_CANCEL = 8192
 };
 
 void in_init(void) {
@@ -46,11 +48,6 @@ static inline u32 in_remap(const u32 held) {
     if (held & binds[i])
       in |= 1 << i;
   }
-  // TODO: ok/cancel switcheroo
-  if (in & IN_FIRE)
-    in |= IN_OK;
-  else if (in & IN_JUMP)
-    in |= IN_CANCEL;
   return in;
 }
 

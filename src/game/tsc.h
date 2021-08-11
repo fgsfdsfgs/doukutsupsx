@@ -8,8 +8,8 @@
 #define TSC_MAX_LOADED_SCRIPTS 4
 #define TSC_LINE_LEN 35
 
-#define TEXT_LEFT (VID_WIDTH / 2 - 108)
-#define TEXT_BOX_LEFT (VID_WIDTH / 2 - 122)
+#define TEXT_LEFT (VID_WIDTH / 2 - 116)
+#define TEXT_BOX_LEFT (VID_WIDTH / 2 - 130)
 #define TEXT_TOP (VID_HEIGHT - 56)
 
 enum tsc_script_id {
@@ -79,6 +79,7 @@ typedef struct {
 extern tsc_state_t tsc_state;
 
 void tsc_init(void);
+void tsc_reset(void);
 bool tsc_update(void);
 void tsc_draw(void);
 void tsc_set_stage_script(tsc_script_t *data, const u32 size);

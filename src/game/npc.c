@@ -26,12 +26,18 @@ npc_t npc_boss[NPC_MAX_BOSS];
 int npc_boss_max;
 
 void npc_init(const char *tabpath) {
+  // clear lists
+  npc_reset();
+  // load npc table
+  npc_load_classtab(tabpath);
+}
+
+void npc_reset(void) {
   npc_list_max = 0;
   memset(&npc_list, 0, sizeof(npc_list));
   npc_boss_max = -1;
   memset(&npc_boss, 0, sizeof(npc_boss));
-  // load npc table
-  npc_load_classtab(tabpath);
+  memset(npc_flags, 0, sizeof(npc_flags));
 }
 
 static inline void npc_set_class(npc_t *npc, const u32 class_num) {

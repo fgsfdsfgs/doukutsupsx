@@ -28,6 +28,7 @@ extern u8 map_flags[GAME_MAX_MAPFLAGS];
 extern u8 tele_flags[GAME_MAX_MAPFLAGS];
 
 void game_init(void);
+void game_reset(void);
 void game_start(void);
 void game_frame(void);
 
