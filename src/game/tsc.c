@@ -54,7 +54,7 @@ static const tsc_opcode_t tsc_optab[] = {
   { "FRE", 0 }, { "FAI", 1 }, { "FAO", 1 }, { "WAI", 1 },
   { "WAS", 0 }, { "KEY", 0 }, { "PRI", 0 }, { "NOD", 0 },
   { "CAT", 0 }, { "SAT", 0 }, { "TUR", 0 }, { "CLO", 0 },
-  { "CLR", 0 }, { "FAC", 1 }, { "GIT", 1 }, { "NUM", 0 },
+  { "CLR", 0 }, { "FAC", 1 }, { "GIT", 1 }, { "NUM", 1 },
   // player
   { "MM0", 0 }, { "HMC", 0 }, { "SMC", 0 }, { "UNI", 1 },
   { "MYB", 1 }, { "MYD", 1 }, { "MOV", 2 }, { "TRA", 4 },
@@ -535,8 +535,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       plr_item_take(args[0]);
       return FALSE;
     case 0x38: // AM+
-      tsc_state.num[0] = args[0];
-      tsc_state.num[1] = args[1];
+      tsc_state.num[0] = args[1];
       snd_play_sound(CHAN_ITEM, 38, SOUND_MODE_PLAY);
       plr_arm_give(args[0], args[1]);
       return FALSE;

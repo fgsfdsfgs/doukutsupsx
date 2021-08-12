@@ -35,7 +35,7 @@ static opcode_t op_table[] = {
   { "<FRE", 0  }, { "<FAI", 1  }, { "<FAO", 1  }, { "<WAI", 1  },
   { "<WAS", 0  }, { "<KEY", 0  }, { "<PRI", 0  }, { "<NOD", 0  },
   { "<CAT", 0  }, { "<SAT", 0  }, { "<TUR", 0  }, { "<CLO", 0  },
-  { "<CLR", 0  }, { "<FAC", 1  }, { "<GIT", 1  }, { "<NUM", 0  },
+  { "<CLR", 0  }, { "<FAC", 1  }, { "<GIT", 1  }, { "<NUM", 1  },
   // player
   { "<MM0", 0  }, { "<HMC", 0  }, { "<SMC", 0  }, { "<UNI", 1  },
   { "<MYB", 1  }, { "<MYD", 1  }, { "<MOV", 2  }, { "<TRA", 4  },
