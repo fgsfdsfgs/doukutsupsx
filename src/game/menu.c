@@ -560,7 +560,7 @@ static void menu_stagesel_draw(void) {
 
   int x = (VID_WIDTH - (tele_dest_num * 40)) / 2 - 4;
 
-  gfx_draw_texrect(&rc_cursor_items[stagesel.flash / 2 % 2], GFX_LAYER_FRONT, x, STAGESEL_TOP + 18);
+  gfx_draw_texrect(&rc_cursor_items[stagesel.flash / 2 % 2], GFX_LAYER_FRONT, x + stagesel.idx * 40, STAGESEL_TOP + 18);
 
   for (int i = 0; i < tele_dest_num; ++i, x += 40) {
     if (tele_dest[i].stage_num == 0)
