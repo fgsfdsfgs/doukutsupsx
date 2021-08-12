@@ -486,7 +486,7 @@ void hit_npc_bullet(void) {
             if (npc->bits & NPC_SHOW_DAMAGE)
               npc->damage_view -= bul->damage;
           }
-        } else if (!(bul->bits & 0x10) && !bullet_dissipates_in_npc(bul)) {
+        } else if (!(bul->bits & 0x10) && !bullet_dissipates_in_npc(bul->class_num)) {
           // Hit invulnerable NPC
           caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
           snd_play_sound(-1, 31, SOUND_MODE_PLAY);
