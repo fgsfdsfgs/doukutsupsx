@@ -441,6 +441,10 @@ void npc_change_class(npc_t *npc, const int class_num, const int dir, const u16 
   npc->count2 = 0;
   npc->rect = NULL;
   npc->rect_prev = NULL;
+  npc->rect_delta.x = 0;
+  npc->rect_delta.y = 0;
+  npc->rect_delta.w = 0;
+  npc->rect_delta.h = 0;
   npc->xvel = 0;
   npc->yvel = 0;
 
