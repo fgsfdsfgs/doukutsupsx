@@ -111,10 +111,14 @@ static void menu_pause_act(void) {
     plr_arm_give(7, 100);
     player.arm = 2;
     // heal
+    player.max_life = 50;
     player.life = player.life_bar = player.max_life;
     // give map
     player.items[2] = TRUE;
     player.equip |= EQUIP_MAP;
+    // give booster 2.0
+    player.items[23] = TRUE;
+    player.equip |= EQUIP_BOOSTER_2_0;
     // give arthur's key and set flags
     player.items[1] = TRUE;
     npc_set_flag(390);
