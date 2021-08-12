@@ -76,7 +76,7 @@ void game_reset(void) {
   cam_complete_fade();
   cam_target_player(16);
 
-  game_flags = GFLAG_INPUT_ENABLED;
+  game_flags = 1 | GFLAG_INPUT_ENABLED;
   game_tick = 0;
 }
 
@@ -91,6 +91,29 @@ static inline void game_draw_common(void) {
   cam_draw_flash();
   caret_draw(camera.x, camera.y);
   dmgnum_draw(camera.x, camera.y);
+}
+
+static inline void game_update_objects(const bool input_enabled, const u32 btns_held, const u32 btns_trig) {
+  plr_act(btns_held, btns_trig);
+  npc_act();
+  // boss_act();
+  stage_update();
+
+  // call `hit` on all entities
+  hit_player();
+  hit_npc_map();
+  hit_boss_map();
+  hit_bullet_map();
+  hit_npc_bullet();
+  hit_boss_bullet();
+
+  if (input_enabled)
+    plr_arm_shoot();
+
+  // bullets and particles update after other shit
+  bullet_act();
+  caret_act();
+  dmgnum_act();
 }
 
 void game_frame(void) {
@@ -117,27 +140,9 @@ void game_frame(void) {
     return;
   }
 
-  // call `act` on all entities (except bullets and particles for some reason)
-  plr_act(btns_held, btns_trig);
-  npc_act();
-  // boss_act();
-  stage_update();
-
-  // call `hit` on all entities
-  hit_player();
-  hit_npc_map();
-  hit_boss_map();
-  hit_bullet_map();
-  hit_npc_bullet();
-  hit_boss_bullet();
-
-  if (input_enabled)
-    plr_arm_shoot();
-
-  // bullets and particles update after other shit
-  bullet_act();
-  caret_act();
-  dmgnum_act();
+  // call `act` on all entities when game isn't frozen (except bullets and particles for some reason)
+  if (game_flags & 1)
+    game_update_objects(input_enabled, btns_held, btns_trig);
 
   // move camera and update fade/quake effects
   cam_update();
