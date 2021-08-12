@@ -76,11 +76,11 @@ void npc_act_001(npc_t *npc) {
       npc->act = 1;
       npc->anim = m_rand(0, 4);
 
-      // m_rand speed
+      // Random speed
       npc->xvel = m_rand(-0x200, 0x200);
       npc->yvel = m_rand(-0x400, 0);
 
-      // m_rand direction (reverse animation or not)
+      // Random direction (reverse animation or not)
       if (m_rand(0, 1) != 0)
         npc->dir = 0;
       else
@@ -100,16 +100,25 @@ void npc_act_001(npc_t *npc) {
     // Bounce off ceiling
     if (npc->flags & 2 && npc->yvel < 0) npc->yvel *= -1;
 
+    const int dx = TO_INT(npc->x - camera.x);
+    const int dy = TO_INT(npc->y - camera.y);
+
     // Bounce off floor
     if (npc->flags & 8) {
-      snd_play_sound(-1, 45, SOUND_MODE_PLAY);
+      // play the sound on a separate channel so they don't spam
+      // and only play it when they're close to the camera
+      if (dx > -64 && dx < VID_WIDTH + 64 && dy > -64 && dy < VID_HEIGHT + 64)
+        snd_play_sound(CHAN_MISC, 45, SOUND_MODE_PLAY);
       npc->yvel = -0x280;
       npc->xvel = 2 * npc->xvel / 3;
     }
 
-    // Play bounce song (and try to clip out of floor if stuck)
+    // Play bounce sound (and try to clip out of floor if stuck)
     if (npc->flags & 0xD) {
-      snd_play_sound(-1, 45, SOUND_MODE_PLAY);
+      // play the sound on a separate channel so they don't spam
+      // and only play it when they're close to the camera
+      if (dx > -64 && dx < VID_WIDTH + 64 && dy > -64 && dy < VID_HEIGHT + 64)
+        snd_play_sound(CHAN_MISC, 45, SOUND_MODE_PLAY);
       if (++npc->count2 > 2) npc->y -= 1 * 0x200;
     } else {
       npc->count2 = 0;
