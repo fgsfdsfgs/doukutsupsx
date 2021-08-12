@@ -496,7 +496,7 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
       SURFACE_ID_LEVEL_TILESET, SURFACE_ID_LEVEL_BACKGROUND,
     };
     for (int s = 0; s < 4; ++s) {
-      if (tmpsurf[s][0] && find_string(tmpsurf[s], surf_list, num_surf) < 0) {
+      if (tmpsurf[s][0] && find_id(tmpid[s], surf_id_list, num_surf) < 0) {
         surf_id_list[num_surf] = tmpid[s];
         surf_list[num_surf++] = tmpsurf[s];
       }
@@ -581,7 +581,6 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   uint32_t fsize = 0;
   uint8_t *fdata = NULL;
   for (uint32_t i = 0; i < num_songs; ++i) {
-    printf("* music '%s' id %02x\n", music_names[song_list[i]], song_list[i]);
     hdr->songs[i].music_id = song_list[i];
     hdr->songs[i].bank_ofs = ftell(f);
     // read bank
