@@ -333,6 +333,7 @@ static void menu_inventory_draw(void) {
 
 static struct {
   gfx_texrect_t texrect;
+  gfx_texrect_t texrect_wide;
   u32 mode;
   s32 count;
   u32 title_w;
@@ -349,7 +350,7 @@ static const u16 map_clut[] = {
   GFX_RGB(0x00, 0xFF, 0x00),
 };
 
-static const int map_scaletab[] = { 4, 2, 2, 1, 1 };
+static const int map_scaletab[] = { 4, 3, 2, 2, 1, 1, 1, 1 };
 
 static inline u8 map_get_color(const u8 atrb) {
   // fuck
@@ -377,33 +378,47 @@ static void menu_map_open(void) {
 
   const int xscale = stage_data->width / MAP_XSTEP;
   const int yscale = stage_data->height / MAP_YSTEP;
-  map.scale = map_scaletab[((xscale < yscale) ? xscale : yscale)];
+  map.scale = map_scaletab[((xscale > yscale) ? xscale : yscale)];
 
   // unfortunately rendering the map in real time every frame is SLOW
   // even if you render line by line instead of pixel by pixel
   // as such, we just pre-render the motherfucker
   // TODO: maybe pre-render on map load
 
-  // pad with 1px border prevent quad cutoff
-  const int aw = ALIGN(stage_data->width + 2, 16);
-  const int ah = stage_data->height + 2;
+  // pad with 1 word border to prevent quad cutoff
+  // massive alignment required for some reason, or else LoadImage shits itself
+  const int aw = ALIGN(stage_data->width + 2, 32);
+  const int ah = stage_data->height + 1;
   u8 *data = mem_zeroalloc(aw * (ah + 1));
-  u8 *ptr = data;
-  for (u32 ty = 1; ty < stage_data->height; ++ty) {
-    ptr = data + ty * aw + 1;
-    for (u32 tx = 1; tx < stage_data->width; ++tx, ++ptr)
+  u8 *ptr;
+  for (u32 ty = 0; ty < stage_data->height; ++ty) {
+    ptr = data + ty * aw;
+    for (u32 tx = 0; tx < stage_data->width; ++tx, ++ptr)
       *ptr = map_get_color(stage_get_atrb(tx, ty));
   }
   // append CLUT
   memcpy(data + aw * ah, map_clut, sizeof(map_clut));
   // upload for later
+  gfx_upload_image(data, aw, ah, 1, SURFACE_ID_MAP);
+  mem_free(data);
+
   map.texrect.r.left = 0;
   map.texrect.r.top = 0;
   map.texrect.r.right = stage_data->width;
   map.texrect.r.bottom = stage_data->height;
-  gfx_upload_image(data, aw, ah, 1, SURFACE_ID_MAP);
   gfx_set_texrect(&map.texrect, SURFACE_ID_MAP);
-  mem_free(data);
+
+  // if the map is too wide to fit into one texture page, add another texrect
+  map.texrect_wide.tpage = 0;
+  if ((int)map.texrect.u + map.texrect.r.w > 256) {
+    const int part_w = (256 - (int)map.texrect.u);
+    map.texrect_wide.r.x = map.texrect.r.x + part_w;
+    map.texrect_wide.r.y = map.texrect.r.y;
+    map.texrect_wide.r.right = map.texrect_wide.r.x + map.texrect.r.w - part_w;
+    map.texrect_wide.r.bottom = map.texrect.r.y + map.texrect.r.h;
+    gfx_set_texrect(&map.texrect_wide, SURFACE_ID_MAP);
+    map.texrect.r.w = part_w;
+  }
 }
 
 static void menu_map_act(void) {
@@ -456,13 +471,16 @@ static void menu_map_draw(void) {
       xofs = (VID_WIDTH - cw) / 2;
       yofs = (VID_HEIGHT - ch) / 2;
       // draw background
-      gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs - map.scale, yofs - map.scale, cw + 2 * map.scale, ch + 2 * map.scale);
+      gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs - 4, yofs - 4, cw + 8, ch + 8);
       // draw map
       map.texrect.r.h = map.count;
-      if (map.scale == 1)
+      if (map.scale == 1) {
         gfx_draw_texrect(&map.texrect, GFX_LAYER_FRONT, xofs - 8, yofs - 8);
-      else
+        if (map.texrect_wide.tpage)
+          gfx_draw_texrect(&map.texrect_wide, GFX_LAYER_FRONT, xofs - 8 + map.texrect.r.w, yofs - 8);
+      } else {
         gfx_draw_texrect_scaled(&map.texrect, GFX_LAYER_FRONT, xofs, yofs, map.scale);
+      }
       // draw player
       if ((map.mode == 2) && ((++map.wait / 8) % 2)) {
         xofs += map.player_x * map.scale - map.scale / 2;
@@ -476,7 +494,6 @@ static void menu_map_draw(void) {
 /* stage select */
 
 #define STAGESEL_TOP ((VID_HEIGHT / 2) - 82)
-#define STAGESEL_
 
 static struct {
   s32 idx;

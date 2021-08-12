@@ -362,7 +362,7 @@ void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id)
   w >>= shift;
   if (shift) ++h; // CLUT underneath image
   // upload into bottom right corner of VRAM and hope it doesn't hit anything
-  RECT rect = { 1024 - w, 512 - h, w, h };
+  RECT rect = { 1024 - ALIGN(w, 16), 512 - h, w, h };
   gfx_surf[surf_id].clut = shift ? getClut(rect.x, rect.y + h - 1) : 0;
   gfx_surf[surf_id].mode = mode;
   gfx_surf[surf_id].id = surf_id;

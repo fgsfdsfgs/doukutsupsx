@@ -50,6 +50,9 @@ void game_start(void) {
   game_set_skipflag(5);
   // load start point
   stage_transition(13, 200, 10, 8);
+  // stage_transition(62, 90, 80, 9);
+  // stage_transition(56, 90, 80, 9);
+  // stage_transition(2, 90, 5, 6);
 }
 
 void game_reset(void) {
