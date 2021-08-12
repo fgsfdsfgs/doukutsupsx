@@ -2131,3 +2131,11 @@ int bullet_count_by_class(const int class_num) {
   }
   return count;
 }
+
+bool bullet_any_exist(void) {
+  for (int i = 0; i <= bullet_list_max; ++i) {
+    if (bullet_list[i].cond)
+      return TRUE;
+  }
+  return FALSE;
+}

@@ -104,4 +104,8 @@ static inline void stage_shift_tile(const int x, const int y) {
   --stage_data->map_data[y * stage_data->width + x];
 }
 
+static inline void stage_delete_tile(const int x, const int y) {
+  stage_data->map_data[y * stage_data->width + x] = 0;
+}
+
 int stage_set_tile(const int x, const int y, const int t);

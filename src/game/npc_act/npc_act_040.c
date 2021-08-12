@@ -250,15 +250,15 @@ void npc_act_042(npc_t *npc) {
       npc->anim = 0;
       // Fallthrough
     case 16:
-      // gSuperXpos = npc->x - (24 * 0x200);
-      // gSuperYpos = npc->y - (8 * 0x200);
+      npc_doctor_state.crystal_x = npc->x - (24 * 0x200);
+      npc_doctor_state.crystal_y = npc->y - (8 * 0x200);
       break;
 
     case 17:
       npc->xvel = 0;
       npc->anim = 12;
-      // gSuperXpos = npc->x;
-      // gSuperYpos = npc->y - (8 * 0x200);
+      npc_doctor_state.crystal_x = npc->x;
+      npc_doctor_state.crystal_y - (8 * 0x200);
       break;
 
     case 20:

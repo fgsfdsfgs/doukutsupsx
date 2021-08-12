@@ -100,11 +100,27 @@ typedef struct npc {
   u8 surf;
 } npc_t;
 
+typedef struct {
+  s32 shoot_wait;
+  s32 shoot_x;
+  s32 shoot_y;
+} npc_curly_t;
+
+typedef struct {
+  s32 crystal_x;
+  s32 crystal_y;
+} npc_doctor_t;
+
 extern u8 npc_flags[NPC_MAX_FLAGS];
+
 extern npc_t npc_list[NPC_MAX];
 extern int npc_list_max;
+
 extern npc_t npc_boss[NPC_MAX_BOSS];
 extern int npc_boss_max;
+
+extern npc_curly_t npc_curly_state;
+extern npc_doctor_t npc_doctor_state;
 
 void npc_init(const char *tabpath);
 void npc_reset(void);

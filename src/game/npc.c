@@ -25,6 +25,11 @@ npc_t npc_boss[NPC_MAX_BOSS];
 // highest live npc in the boss list
 int npc_boss_max;
 
+// Curly-related stuff, dunno where else to put it
+npc_curly_t npc_curly_state;
+// Doctor boss battle globals, same here
+npc_doctor_t npc_doctor_state;
+
 void npc_init(const char *tabpath) {
   // clear lists
   npc_reset();
