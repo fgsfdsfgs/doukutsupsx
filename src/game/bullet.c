@@ -2090,7 +2090,7 @@ void bullet_act(void) {
   for (int i = 0; i <= bullet_list_max; ++i) {
     bullet_t *bul = &bullet_list[i];
     if (bul->cond & BULLETCOND_ALIVE) {
-      if (bul->life < 0) {
+      if (bul->life < 1) {
         bul->cond = 0;
         // there are other places where a bullet might get destroyed, but whatever
         if (i == bullet_list_max)

@@ -410,6 +410,20 @@ void hit_npc_map(void) {
   }
 }
 
+static inline bool bullet_dissipates_in_npc(const int class_num) {
+  switch (class_num) {
+    case 13:
+    case 14:
+    case 15:
+    case 28:
+    case 29:
+    case 30:
+      return TRUE;
+    default:
+      return FALSE;
+  }
+}
+
 void hit_npc_bullet(void) {
   bool hit;
 
@@ -469,11 +483,10 @@ void hit_npc_bullet(void) {
               snd_play_sound(-1, npc->snd_hit, SOUND_MODE_PLAY);
               npc->shock = 16;
             }
-
             if (npc->bits & NPC_SHOW_DAMAGE)
               npc->damage_view -= bul->damage;
           }
-        } else if (!(bul->bits & 0x10)) {
+        } else if (!(bul->bits & 0x10) && !bullet_dissipates_in_npc(bul)) {
           // Hit invulnerable NPC
           caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
           snd_play_sound(-1, 31, SOUND_MODE_PLAY);
@@ -620,20 +633,6 @@ void hit_boss_map(void) {
   }
 }
 
-static inline bool bullet_dissipates_in_boss(const int class_num) {
-  switch (class_num) {
-    case 13:
-    case 14:
-    case 15:
-    case 28:
-    case 29:
-    case 30:
-      return TRUE;
-    default:
-      return FALSE;
-  }
-}
-
 void hit_boss_bullet(void) {
   bool hit;
 
@@ -707,14 +706,13 @@ void hit_boss_bullet(void) {
           --bul->life;
           if (bul->life < 1)
             bul->cond = 0;
-        } else if (bullet_dissipates_in_boss(bul->class_num)) {
+        } else if (bullet_dissipates_in_npc(bul->class_num)) {
           --bul->life;
         } else if (!(bul->bits & 0x10)) {
           // Hit invulnerable NPC
           caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
           snd_play_sound(-1, 31, SOUND_MODE_PLAY);
           bul->life = 0;
-          continue;
         }
       }
     }
