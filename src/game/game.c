@@ -24,7 +24,7 @@ u8 skip_flags[GAME_MAX_SKIPFLAGS];
 u8 map_flags[GAME_MAX_MAPFLAGS];
 
 // teleport destinations
-tele_dest_t tele_dest[GAME_MAX_MAPFLAGS];
+tele_dest_t tele_dest[GAME_MAX_TELEDEST];
 int tele_dest_num;
 
 void game_init(void) {

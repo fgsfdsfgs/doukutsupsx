@@ -23,8 +23,10 @@ stage_t *stage_data;
 // water level
 int stage_water_y;
 
-// currently loaded stage bank
-static stage_bank_t *stage_bank;
+// currently loaded stage bank and its id
+stage_bank_t *stage_bank;
+u32 stage_bank_id;
+
 // pointers to loaded stages indexed by id, or NULL if unloaded
 static stage_t *stages[MAX_STAGES];
 
@@ -93,6 +95,7 @@ int stage_load_stage_bank(const u32 id) {
   }
 
   stage_bank = bank;
+  stage_bank_id = id;
 
   // set background texrect
   rc_back.r.left = 0;
@@ -118,6 +121,7 @@ void stage_free_stage_bank(void) {
 
   stage_bank = NULL;
   stage_data = NULL;
+  stage_bank_id = 0;
 
   mem_free_to_mark(MEM_MARK_LO);
 }
@@ -177,11 +181,18 @@ static inline void stage_load_music(const u32 id) {
     }
   }
 
-  if (!sng)
-    panic("music %02x is not in stage bank", id);
-
   // free previous track
   org_free();
+
+  // bail if this song is from a different stage bank
+  // this can theoretically happen if we load into a stage bank different than where the music started
+  if (!sng) {
+    printf("stage_load_music(): music %02x is not in stage bank %02x", id, stage_bank_id);
+    // ensure that next time the proper music does start
+    music_prev = 0;
+    music_prev_pos = 0;
+    return;
+  }
 
   // copy new track
   sfx_bank_t *orgbank = (sfx_bank_t *)((u8 *)stage_bank + sng->bank_ofs);

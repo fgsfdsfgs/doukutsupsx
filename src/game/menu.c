@@ -11,6 +11,7 @@
 #include "game/game.h"
 #include "game/hud.h"
 #include "game/tsc.h"
+#include "game/profile.h"
 #include "game/menu.h"
 
 static int menu_id = MENU_NONE;
@@ -93,8 +94,11 @@ static void menu_null(void) {
 static void menu_pause_act(void) {
   if (input_trig & IN_OK) {
     menu_id = MENU_NONE;
-    game_reset();
-    game_start();
+    // TODO: when there's a title menu, just reset instead
+    if (!profile_read()) {
+      game_reset();
+      game_start();
+    }
   } else if (input_trig & (IN_CANCEL | IN_PAUSE)) {
     menu_id = MENU_NONE;
   }

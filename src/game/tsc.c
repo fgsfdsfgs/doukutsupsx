@@ -16,6 +16,7 @@
 #include "game/npc.h"
 #include "game/hud.h"
 #include "game/menu.h"
+#include "game/profile.h"
 #include "game/tsc.h"
 
 #define FACE_SIZE 48
@@ -612,11 +613,13 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     // other
     case 0x4F: // SVP
-      printf("TODO: save game\n");
+      profile_write();
       return FALSE;
     case 0x50: // LDP
-      printf("TODO: load game\n");
-      game_reset(); // reset for now
+      if (!profile_read()) {
+        game_reset();
+        game_start();
+      }
       return TRUE;
     case 0x51: // STC
       printf("TODO: save time\n");

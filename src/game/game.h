@@ -6,6 +6,7 @@
 
 #define GAME_MAX_SKIPFLAGS 8
 #define GAME_MAX_MAPFLAGS 0x10
+#define GAME_MAX_TELEDEST 8
 
 enum dir {
   DIR_LEFT = 0,
@@ -31,7 +32,7 @@ extern u32 game_flags;
 extern u8 skip_flags[GAME_MAX_SKIPFLAGS];
 extern u8 map_flags[GAME_MAX_MAPFLAGS];
 
-extern tele_dest_t tele_dest[GAME_MAX_MAPFLAGS];
+extern tele_dest_t tele_dest[GAME_MAX_TELEDEST];
 extern int tele_dest_num;
 
 void game_init(void);

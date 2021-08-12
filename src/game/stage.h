@@ -71,6 +71,9 @@ enum bktype {
   BACKGROUND_TYPE_CLOUDS       = 7  // Fancy parallax scrolling (used by bkFog)
 };
 
+extern stage_bank_t *stage_bank;
+extern u32 stage_bank_id;
+
 extern stage_t *stage_data;
 extern int stage_water_y;
 
