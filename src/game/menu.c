@@ -101,6 +101,26 @@ static void menu_pause_act(void) {
     }
   } else if (input_trig & (IN_CANCEL | IN_PAUSE)) {
     menu_id = MENU_NONE;
+  } else if (input_trig & IN_DEBUG) {
+    // debug cheat
+    snd_play_sound(-1, 1, SOUND_MODE_PLAY);
+    // give weapons
+    plr_arm_give(2, 0);
+    plr_arm_give(3, 0);
+    plr_arm_give(5, 100);
+    plr_arm_give(7, 100);
+    player.arm = 2;
+    // heal
+    player.life = player.life_bar = player.max_life;
+    // give map
+    player.items[2] = TRUE;
+    player.equip |= EQUIP_MAP;
+    // give arthur's key and set flags
+    player.items[1] = TRUE;
+    npc_set_flag(390);
+    npc_set_flag(320);
+    npc_set_flag(321);
+    npc_set_flag(302);
   }
 }
 

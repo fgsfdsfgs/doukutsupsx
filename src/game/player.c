@@ -650,26 +650,6 @@ void plr_act(const u32 btns, const u32 trig) {
     player.exp_count = 0;
   }
 
-  if (trig & IN_DEBUG) {
-    // give weapons
-    plr_arm_give(2, 0);
-    plr_arm_give(3, 0);
-    plr_arm_give(5, 100);
-    plr_arm_give(7, 100);
-    player.arm = 2;
-    // heal
-    player.life = player.life_bar = player.max_life;
-    // give map
-    player.items[2] = TRUE;
-    player.equip |= EQUIP_MAP;
-    // give arthur's key and set flags
-    player.items[1] = TRUE;
-    npc_set_flag(390);
-    npc_set_flag(320);
-    npc_set_flag(321);
-    npc_set_flag(302);
-  }
-
   if (player.unit == 1)
     plr_act_stream(btns, trig);
   else
