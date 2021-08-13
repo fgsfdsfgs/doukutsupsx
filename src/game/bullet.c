@@ -475,7 +475,7 @@ static void bullet_act_fireball(bullet_t *bul) {
   if (do_break) {
     bul->cond = 0;
     caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
-    snd_play_sound(-1, 28, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 28, FALSE);
     return;
   }
 
@@ -533,7 +533,7 @@ static void bullet_act_fireball(bullet_t *bul) {
     bul->x += bul->xvel;
     bul->y += bul->yvel;
 
-    if (bul->flags & 0xD) snd_play_sound(-1, 34, SOUND_MODE_PLAY);
+    if (bul->flags & 0xD) snd_play_sound(PRIO_NORMAL, 34, FALSE);
   }
 
   static const rect_t rect_left1[4] = {
@@ -879,7 +879,7 @@ static void bullet_act_explosion(bullet_t *bul) {
           break;
       }
 
-      snd_play_sound(-1, 44, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 44, FALSE);
       // Fallthrough
     case 1:
       switch (level) {
@@ -1106,7 +1106,7 @@ static void bullet_act_superexplosion(bullet_t *bul) {
           break;
       }
 
-      snd_play_sound(-1, 44, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 44, FALSE);
       // Fallthrough
     case 1:
       switch (level) {
@@ -1284,7 +1284,7 @@ static void bullet_act_bubble3(bullet_t *bul) {
   if (++bul->act_wait > 100 || !(input_held & IN_FIRE)) {
     bul->cond = 0;
     caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
-    snd_play_sound(-1, 100, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 100, FALSE);
 
     if (player.up)
       bullet_spawn(22, bul->x, bul->y, DIR_UP);
@@ -1491,7 +1491,7 @@ static void bullet_act_sword1(bullet_t *bul) {
 
   if (bul->count1 == 3) bul->bits &= ~4;
 
-  if (bul->count1 % 5 == 1) snd_play_sound(-1, 34, SOUND_MODE_PLAY);
+  if (bul->count1 % 5 == 1) snd_play_sound(PRIO_NORMAL, 34, FALSE);
 
   if (bul->act == 0) {
     bul->act = 1;
@@ -1551,7 +1551,7 @@ static void bullet_act_sword2(bullet_t *bul) {
 
   if (bul->count1 == 3) bul->bits &= ~4;
 
-  if (bul->count1 % 7 == 1) snd_play_sound(-1, 106, SOUND_MODE_PLAY);
+  if (bul->count1 % 7 == 1) snd_play_sound(PRIO_NORMAL, 106, FALSE);
 
   if (bul->act == 0) {
     bul->act = 1;
@@ -1653,7 +1653,7 @@ static void bullet_act_sword3(bullet_t *bul) {
       }
 
       if (++bul->act_wait % 4 == 1) {
-        snd_play_sound(-1, 106, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 106, FALSE);
 
         if (++bul->count1 % 2)
           bullet_spawn(23, bul->x, bul->y, DIR_LEFT);
@@ -1677,7 +1677,7 @@ static void bullet_act_sword3(bullet_t *bul) {
       ++bul->act_wait;
 
       if (m_rand(-1, 1) == 0) {
-        snd_play_sound(-1, 106, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 106, FALSE);
 
         if (m_rand(0, 1) % 2)
           bullet_spawn(23, bul->x + (m_rand(-0x40, 0x40) * 0x200), bul->y + (m_rand(-0x40, 0x40) * 0x200), DIR_LEFT);
@@ -2105,7 +2105,7 @@ void bullet_act(void) {
 
 void bullet_destroy(bullet_t *bul) {
   if (bul->class_num < 37 || bul->class_num > 39) {
-    snd_play_sound(-1, 28, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 28, FALSE);
   } else {
     caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_UP);
   }

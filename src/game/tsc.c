@@ -242,7 +242,7 @@ void tsc_print_number(const int id) {
   char *buf = &text[line][tsc_state.writepos];
   const int len = snprintf(buf, TSC_LINE_LEN - tsc_state.writepos + 1, "%d", x);
 
-  snd_play_sound(CHAN_MISC, 2, SOUND_MODE_PLAY);
+  snd_play_sound(PRIO_HIGH, 2, FALSE);
   tsc_state.blink = 0;
 
   tsc_state.writepos += len;
@@ -301,7 +301,7 @@ static inline bool tsc_parse_string(const char in_ch) {
     if (ch[1]) text[line][tsc_state.writepos++] = ch[1];
     text[line][tsc_state.writepos] = 0; // terminate for now
 
-    snd_play_sound(CHAN_MISC, 2, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_HIGH, 2, FALSE);
     tsc_state.blink = 0;
 
     if (tsc_state.writepos >= TSC_LINE_LEN) {
@@ -378,7 +378,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       tsc_state.mode = TSC_MODE_YESNO;
       tsc_state.wait = 0;
       tsc_state.yesno = 0;
-      snd_play_sound(-1, 5, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 5, FALSE);
       return TRUE;
     case 0x08: // NCJ
       return tsc_op_condjmp((npc_find_by_class(args[0]) != NULL), args[1]);
@@ -528,7 +528,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       plr_item_equip(args[0], (opcode == 0x34));
       return FALSE;
     case 0x36: // IT+
-      snd_play_sound(CHAN_ITEM, 38, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 38, FALSE);
       plr_item_give(args[0]);
       return FALSE;
     case 0x37: // IT-
@@ -536,7 +536,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     case 0x38: // AM+
       tsc_state.num[0] = args[1];
-      snd_play_sound(CHAN_ITEM, 38, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 38, FALSE);
       plr_arm_give(args[0], args[1]);
       return FALSE;
     case 0x39: // AM-
@@ -585,21 +585,21 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     // sound and music
     case 0x47: // SOU
-      snd_play_sound(-1, args[0], SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_HIGH, args[0], FALSE);
       return FALSE;
     case 0x48: // SSS
-      snd_play_sound_freq(CHAN_LOOP1, 40, args[0], SOUND_MODE_PLAY_LOOP);
-      snd_play_sound_freq(CHAN_LOOP2, 41, args[0] + 100, SOUND_MODE_PLAY_LOOP);
+      snd_play_sound_freq(PRIO_HIGH, 40, args[0], TRUE);
+      snd_play_sound_freq(PRIO_HIGH, 41, args[0] + 100, TRUE);
       return FALSE;
     case 0x49: // CSS
-      snd_play_sound(CHAN_LOOP1, 40, SOUND_MODE_STOP);
-      snd_play_sound(CHAN_LOOP2, 41, SOUND_MODE_STOP);
+      snd_stop_sound(40);
+      snd_stop_sound(41);
       return FALSE;
     case 0x4A: // SPS
-      snd_play_sound(CHAN_LOOP2, 58, SOUND_MODE_PLAY_LOOP);
+      snd_play_sound(PRIO_HIGH, 58, TRUE);
       return FALSE;
     case 0x4B: // CPS
-      snd_play_sound(CHAN_LOOP2, 58, SOUND_MODE_STOP);
+      snd_stop_sound(58);
       return FALSE;
     case 0x4C: // CMU
       stage_change_music(args[0]);
@@ -666,7 +666,7 @@ static inline void tsc_yesno_prompt(void) {
 
   if (input_trig & IN_OK) {
     // confirm
-    snd_play_sound(-1, 18, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 18, FALSE);
     if (tsc_state.yesno == 1) {
       tsc_jump_event(tsc_state.next_event);
     } else {
@@ -676,11 +676,11 @@ static inline void tsc_yesno_prompt(void) {
   } else if (input_trig & IN_LEFT) {
     // yes
     tsc_state.yesno = 0;
-    snd_play_sound(-1, 1, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 1, FALSE);
   } else if (input_trig & IN_RIGHT) {
     // no
     tsc_state.yesno = 1;
-    snd_play_sound(-1, 1, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 1, FALSE);
   }
 }
 

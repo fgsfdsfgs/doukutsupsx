@@ -531,7 +531,7 @@ void npc_act_231(npc_t *npc) {
 
       for (i = 0; i < 10; ++i) {
         npc_spawn(4, npc->x + (m_rand(-16, 16) * 0x200), npc->y + (m_rand(-8, 8) * 0x200), 0, 0, 0, NULL, 0x100);
-        snd_play_sound(-1, 12, SOUND_MODE_PLAY);  // Wait, it does this in a loop?
+        snd_play_sound(PRIO_NORMAL, 12, FALSE);  // Wait, it does this in a loop?
       }
       // Fallthrough
     case 13:
@@ -542,7 +542,7 @@ void npc_act_231(npc_t *npc) {
       if (npc->act_wait % 2 == 0) caret_spawn(npc->x - (10 * 0x200), npc->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
       if (npc->act_wait % 2 == 1) caret_spawn(npc->x + (10 * 0x200), npc->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
 
-      if (npc->act_wait % 4 == 1) snd_play_sound(-1, 34, SOUND_MODE_PLAY);
+      if (npc->act_wait % 4 == 1) snd_play_sound(PRIO_NORMAL, 34, FALSE);
 
       if (npc->flags & 2 || player.flags & 2 || npc->act_wait > 450) {
         if (npc->flags & 2 || player.flags & 2) npc->yvel = 0;
@@ -551,7 +551,7 @@ void npc_act_231(npc_t *npc) {
 
         for (i = 0; i < 6; ++i) {
           npc_spawn(4, npc->x + (m_rand(-16, 16) * 0x200), npc->y + (m_rand(-8, 8) * 0x200), 0, 0, 0, NULL, 0x100);
-          snd_play_sound(-1, 12, SOUND_MODE_PLAY);  // Here it does it again...
+          snd_play_sound(PRIO_NORMAL, 12, FALSE);  // Here it does it again...
         }
       }
 
@@ -564,7 +564,7 @@ void npc_act_231(npc_t *npc) {
       if (npc->yvel < 0) {
         if (npc->act_wait % 8 == 0) caret_spawn(npc->x - (10 * 0x200), npc->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
         if (npc->act_wait % 8 == 4) caret_spawn(npc->x + (10 * 0x200), npc->y + (8 * 0x200), CARET_EXHAUST, DIR_DOWN);
-        if (npc->act_wait % 16 == 1) snd_play_sound(-1, 34, SOUND_MODE_PLAY);
+        if (npc->act_wait % 16 == 1) snd_play_sound(PRIO_NORMAL, 34, FALSE);
       }
 
       if (npc->flags & 8) {
@@ -937,7 +937,7 @@ void npc_act_236(npc_t *npc) {
       }
 
       if (npc->act_wait % 10 == 3) {
-        snd_play_sound(-1, 39, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 39, FALSE);
 
         if (npc->dir == 0)
           npc_spawn(237, npc->x - (8 * 0x200), npc->y - (8 * 0x200), -0x400, -0x400, 0, NULL, 0x100);
@@ -994,7 +994,7 @@ void npc_act_237(npc_t *npc) {
       if (hit) {
         for (i = 0; i < 5; ++i) caret_spawn(npc->x, npc->y, CARET_BUBBLE, DIR_LEFT);
 
-        snd_play_sound(-1, 21, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 21, FALSE);
         npc->cond = 0;
         return;
       }
@@ -1060,7 +1060,7 @@ void npc_act_238(npc_t *npc) {
 
         for (i = 0; i < 4; ++i) {
           npc_spawn(4, npc->x + (m_rand(-16, 16) * 0x200), npc->y + (m_rand(-8, 8) * 0x200), 0, 0, 0, NULL, 0x100);
-          snd_play_sound(-1, 12, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 12, FALSE);
         }
       }
 

@@ -11,7 +11,7 @@
 
 static inline void star_particle(void) {
   if (!(player.cond & 2) && player.yvel < -0x200) {
-    snd_play_sound(CHAN_STEP, 3, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_LOW, 3, FALSE);
     caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
     caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
   }
@@ -77,7 +77,7 @@ static inline int hit_check_player_block(int x, int y) {
     player.y = ((y * 0x10 - 8) * 0x200) - player.hit.bottom;
 
     // halt momentum
-    if (player.yvel > 0x400) snd_play_sound(CHAN_STEP, 23, SOUND_MODE_PLAY);
+    if (player.yvel > 0x400) snd_play_sound(PRIO_LOW, 23, FALSE);
     if (player.yvel > 0) player.yvel = 0;
 
     // set that a floor was hit
@@ -184,7 +184,7 @@ static inline int hit_check_player_slope_e(int x, int y) {
                0x800 - player.hit.bottom;
 
     // halt momentum
-    if (player.yvel > 0x400) snd_play_sound(CHAN_STEP, 23, SOUND_MODE_PLAY);
+    if (player.yvel > 0x400) snd_play_sound(PRIO_LOW, 23, FALSE);
     if (player.yvel > 0) player.yvel = 0;
 
     // set that hit this slope
@@ -207,7 +207,7 @@ static inline int hit_check_player_slope_f(int x, int y) {
                0x800 - player.hit.bottom;
 
     // halt momentum
-    if (player.yvel > 0x400) snd_play_sound(CHAN_STEP, 23, SOUND_MODE_PLAY);
+    if (player.yvel > 0x400) snd_play_sound(PRIO_LOW, 23, FALSE);
     if (player.yvel > 0) player.yvel = 0;
 
     // set that hit this slope
@@ -230,7 +230,7 @@ static inline int hit_check_player_slope_g(int x, int y) {
                0x800 - player.hit.bottom;
 
     // halt momentum
-    if (player.yvel > 0x400) snd_play_sound(CHAN_STEP, 23, SOUND_MODE_PLAY);
+    if (player.yvel > 0x400) snd_play_sound(PRIO_LOW, 23, FALSE);
     if (player.yvel > 0) player.yvel = 0;
 
     // set that hit this slope
@@ -253,7 +253,7 @@ static inline int hit_check_player_slope_h(int x, int y) {
                0x800 - player.hit.bottom;
 
     // halt momentum
-    if (player.yvel > 0x400) snd_play_sound(CHAN_STEP, 23, SOUND_MODE_PLAY);
+    if (player.yvel > 0x400) snd_play_sound(PRIO_LOW, 23, FALSE);
     if (player.yvel > 0) player.yvel = 0;
 
     // set that hit this slope
@@ -612,7 +612,7 @@ static inline int hit_check_player_npc_solid(const npc_t *npc) {
 
       if (player.y + player.hit.bottom > npc->y - npc->hit.top && player.hit.bottom + player.y < npc->y + TO_FIX(3)) {
         if (player.yvel - npc->yvel > TO_FIX(2))
-          snd_play_sound(-1, 23, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 23, FALSE);
 
         if (player.unit == 1) {
           player.y = npc->y - npc->hit.top - player.hit.bottom + FIX_SCALE;
@@ -677,19 +677,19 @@ static inline void hit_player_npc(void) {
 
     // Special NPCs (pickups)
     if (hit != 0 && npc->class_num == 1) {
-      snd_play_sound(CHAN_ITEM, 14, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 14, FALSE);
       plr_add_exp(npc->exp);
       npc->cond = 0;
     }
 
     if (hit != 0 && npc->class_num == 86) {
-      snd_play_sound(CHAN_ITEM, 42, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 42, FALSE);
       plr_add_ammo(npc->event_num, npc->exp);
       npc->cond = 0;
     }
 
     if (hit != 0 && npc->class_num == 87) {
-      snd_play_sound(CHAN_ITEM, 20, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 20, FALSE);
       plr_add_life(npc->exp);
       npc->cond = 0;
     }

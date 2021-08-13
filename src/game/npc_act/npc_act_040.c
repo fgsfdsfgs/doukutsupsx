@@ -151,7 +151,7 @@ void npc_act_042(npc_t *npc) {
       break;
 
     case 6:
-      snd_play_sound(-1, 50, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 50, FALSE);
       npc->act_wait = 0;
       npc->act = 7;
       npc->anim = 7;
@@ -162,7 +162,7 @@ void npc_act_042(npc_t *npc) {
       break;
 
     case 8:
-      snd_play_sound(-1, 50, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 50, FALSE);
       npc->act_wait = 0;
       npc->act = 9;
       npc->anim = 7;
@@ -479,7 +479,7 @@ void npc_act_044(npc_t *npc) {
     for (i = 0; i < 10; ++i) npc_spawn(45, npc->x, npc->y, 0, 0, 0, NULL, 0x100);
 
     npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
-    snd_play_sound(-1, 25, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 25, FALSE);
     npc->cond = 0;
   }
 
@@ -599,7 +599,7 @@ void npc_act_047(npc_t *npc) {
           player.y < npc->y + (8 * 0x200)) {
         npc->act = 2;
         npc->act_wait = 0;
-        snd_play_sound(-1, 102, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 102, FALSE);
       }
 
       if (npc->x < player.x) npc->x += 2 * 0x200;
@@ -804,7 +804,7 @@ void npc_act_049(npc_t *npc) {
         ym = m_sin(deg) * 2;
         xm = m_cos(deg) * 2;
         npc_spawn(50, npc->x, npc->y, xm, ym, 0, NULL, 0x100);
-        snd_play_sound(-1, 39, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 39, FALSE);
       }
 
       if (npc->act_wait > 50) {
@@ -1183,7 +1183,7 @@ void npc_act_054(npc_t *npc) {
       if (npc->act_wait > 50) {
         npc_show_death_damage(npc);
         npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
-        snd_play_sound(-1, 25, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 25, FALSE);
       }
 
       break;
@@ -1597,7 +1597,7 @@ void npc_act_058(npc_t *npc) {
         ym = m_sin(deg) * 2;
         xm = m_cos(deg) * 2;
         npc_spawn(84, npc->x, npc->y, xm, ym, 0, NULL, 0x100);
-        snd_play_sound(-1, 39, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 39, FALSE);
       }
 
       if (npc->count2 > 8) {

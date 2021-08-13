@@ -82,7 +82,7 @@ void npc_kill(npc_t *npc, bool show_damage) {
   int val;
 
   // Play death sound
-  snd_play_sound(-1, npc->snd_die, SOUND_MODE_PLAY);
+  snd_play_sound(PRIO_NORMAL, npc->snd_die, FALSE);
 
   // Create smoke
   switch (npc->size) {
@@ -172,7 +172,7 @@ void npc_delete_by_class(const int class_num, const int spawn_smoke) {
     if ((npc->cond & NPCCOND_ALIVE) && npc->class_num == class_num) {
       npc_delete(npc);
       if (spawn_smoke) {
-        snd_play_sound(-1, npc->snd_die, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, npc->snd_die, FALSE);
         npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 1 << (1 + npc->size), 0);
       }
     }

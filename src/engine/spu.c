@@ -9,6 +9,7 @@
 #define SPU_KEY_ON_HI ((volatile u16 *)(0x1F801D8A))
 #define SPU_KEY_OFF_LO ((volatile u16 *)(0x1F801D8C))
 #define SPU_KEY_OFF_HI ((volatile u16 *)(0x1F801D8E))
+#define SPU_KEY_END ((volatile u32 *)(0x1F801D9C))
 #define DMA_BASE ((volatile u32 *)(0x1F801080))
 
 struct spu_voice {
@@ -106,6 +107,10 @@ void spu_set_voice_pitch(const u32 v, const u32 pitch) {
 void spu_set_voice_addr(const u32 v, const u32 addr) {
   voice_state[v].addr = (addr >> 3);
   voice_state[v].dirty = 1;
+}
+
+u32 spu_get_voice_end_mask(void) {
+  return *SPU_KEY_END;
 }
 
 static inline void spu_update_voice_volume(const u32 v) {

@@ -22,7 +22,7 @@ static inline int hit_check_bullet_block(int x, int y, bullet_t *bul, const u8 a
     if (!(bul->bits & 0x40)) bul->cond = 0;
 
     caret_spawn(bul->x, bul->y, CARET_PROJECTILE_DISSIPATION, DIR_LEFT);
-    snd_play_sound(-1, 12, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 12, FALSE);
 
     for (i = 0; i < 4; ++i)
       npc_spawn(4, x * 0x200 * 0x10, y * 0x200 * 0x10, m_rand(-0x200, 0x200), m_rand(-0x200, 0x200), 0, NULL, 0x100);

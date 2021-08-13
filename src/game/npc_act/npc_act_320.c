@@ -127,7 +127,7 @@ void npc_act_321(npc_t *npc) {
   if (game_flags & GFLAG_INPUT_ENABLED && bullet_count_by_class(43) < 2 && input_trig & IN_FIRE) {
     bullet_spawn(43, npc->parent->x, npc->parent->y, dir);
     caret_spawn(npc->parent->x, npc->parent->y, CARET_SHOOT, DIR_LEFT);
-    snd_play_sound(-1, 117, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 117, FALSE);
   }
 
   if (player.dir == 0)
@@ -149,7 +149,7 @@ void npc_act_322(npc_t *npc) {
     npc->act_wait = 0;
     npc->bits &= ~NPC_SHOOTABLE;
     npc->bits |= NPC_INVULNERABLE;
-    snd_play_sound(-1, 22, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 22, FALSE);
   }
 
   switch (npc->act) {
@@ -202,7 +202,7 @@ void npc_act_322(npc_t *npc) {
           npc->hit.top = 48 * 0x200;
           npc->hit.bottom = 48 * 0x200;
           npc->damage = 12;
-          snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 26, FALSE);
           npc_spawn_death_fx(npc->x, npc->y, 0x6000, 40, 0);
           cam_start_quake_small(10);
 
@@ -331,7 +331,7 @@ void npc_act_325(npc_t *npc) {
   switch (npc->act) {
     case 0:
       npc->act = 1;
-      snd_play_sound(-1, 29, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 29, FALSE);
       // Fallthrough
     case 1:
       if (++npc->anim_wait > 0) {
@@ -348,7 +348,7 @@ void npc_act_325(npc_t *npc) {
         npc->damage = 10;
         npc->view.front = 8 * 0x200;
         npc->view.top = 12 * 0x200;
-        snd_play_sound(-1, 101, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 101, FALSE);
         npc_spawn_death_fx(npc->x, npc->y + (84 * 0x200), 0, 3, 0);
       }
 
@@ -672,7 +672,7 @@ void npc_act_332(npc_t *npc) {
 
   switch (npc->act) {
     case 0:
-      snd_play_sound(-1, 44, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 44, FALSE);
       npc->act = 1;
 
       if (npc->dir == 0)
@@ -695,7 +695,7 @@ void npc_act_332(npc_t *npc) {
 
         npc_spawn(331, npc->x, npc->y, xvel, -0x400, 0, 0, 0x100);
 
-        snd_play_sound(-1, 12, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 12, FALSE);
       }
 
       break;
@@ -721,7 +721,7 @@ void npc_act_333(npc_t *npc) {
       npc->act = 1;
       npc->tgt_x = npc->x;
       npc->tgt_y = npc->y;
-      snd_play_sound(-1, 103, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 103, FALSE);
       npc->y = player.y;
       // Fallthrough
     case 1:

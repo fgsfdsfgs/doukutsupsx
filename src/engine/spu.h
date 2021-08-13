@@ -18,6 +18,7 @@ void spu_set_voice_pan(const u32 v, const s16 pan);
 void spu_set_voice_freq(const u32 v, const u32 hz);
 void spu_set_voice_pitch(const u32 v, const u32 pitch);
 void spu_set_voice_addr(const u32 v, const u32 addr);
+u32 spu_get_voice_end_mask(void);
 void spu_flush_voices(void);
 void spu_play_sample(const u32 ch, const u32 addr, const u32 freq);
 void spu_wait_for_transfer(void);

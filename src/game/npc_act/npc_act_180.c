@@ -142,7 +142,7 @@ void npc_act_180(npc_t *npc) {
     npc->count1 = 0;
     npc->yvel = -0x600;
     npc->anim = 1;
-    snd_play_sound(-1, 15, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 15, FALSE);
 
     if (npc->x > npc->tgt_x)
       npc->act = 210;
@@ -187,7 +187,7 @@ void npc_act_180(npc_t *npc) {
         npc->yvel = -0x600;
         npc->act += 10;
         npc->anim = 1;
-        snd_play_sound(-1, 15, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 15, FALSE);
       }
     } else {
       npc->act = 100;
@@ -477,7 +477,7 @@ void npc_act_184(npc_t *npc) {
           break;
       }
 
-      if ((++npc->act_wait % 8) == 0) snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+      if ((++npc->act_wait % 8) == 0) snd_play_sound(PRIO_NORMAL, 26, FALSE);
 
       cam_start_quake_small(20);
       break;
@@ -814,7 +814,7 @@ void npc_act_190(npc_t *npc) {
       break;
 
     case 10:
-      snd_play_sound(-1, 72, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 72, FALSE);
 
       for (i = 0; i < 8; ++i)
         npc_spawn(4, npc->x, npc->y + (m_rand(-8, 8) * 0x200), m_rand(-8, -2) * 0x200, m_rand(-3, 3) * 0x200, 0, NULL, 0x100);
@@ -949,7 +949,7 @@ void npc_act_192(npc_t *npc) {
       npc->xvel = -0x800;
       npc->x = npc->tgt_x;
       npc->y = npc->tgt_y;
-      snd_play_sound(-1, 44, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 44, FALSE);
       // Fallthrough
     case 31:
       npc->xvel += 0x20;
@@ -982,7 +982,7 @@ void npc_act_192(npc_t *npc) {
   }
 
   if (npc->act_wait % 4 == 0 && npc->act >= 20) {
-    snd_play_sound(-1, 34, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 34, FALSE);
     if (npc->dir == 0)
       caret_spawn(npc->x + (10 * 0x200), npc->y + (10 * 0x200), CARET_EXHAUST, DIR_RIGHT);
     else
@@ -1152,7 +1152,7 @@ void npc_act_198(npc_t *npc) {
 
   if (++npc->count1 > 100) npc->cond = 0;
 
-  if (npc->count1 % 4 == 1) snd_play_sound(-1, 46, SOUND_MODE_PLAY);
+  if (npc->count1 % 4 == 1) snd_play_sound(PRIO_NORMAL, 46, FALSE);
 }
 
 // Water/wind particles

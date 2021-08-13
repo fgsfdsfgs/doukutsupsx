@@ -105,7 +105,7 @@ void npc_act_103(npc_t *npc) {
 
   if (++npc->count1 > 100) npc->cond = 0;
 
-  if (npc->count1 % 4 == 1) snd_play_sound(-1, 46, SOUND_MODE_PLAY);
+  if (npc->count1 % 4 == 1) snd_play_sound(PRIO_NORMAL, 46, FALSE);
 }
 
 // Frog
@@ -233,7 +233,7 @@ void npc_act_104(npc_t *npc) {
     npc->anim = 2;
     npc->yvel = -0x5FF;
 
-    if (!(player.cond & 2)) snd_play_sound(-1, 30, SOUND_MODE_PLAY);
+    if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
 
     if (npc->dir == 0)
       npc->xvel = -0x200;
@@ -299,7 +299,7 @@ void npc_act_107(npc_t *npc) {
       // Fallthrough
     case 11:
       if (++npc->anim_wait > 1) {
-        snd_play_sound(-1, 43, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 43, FALSE);
         npc->anim_wait = 0;
         ++npc->anim;
       }
@@ -327,7 +327,7 @@ void npc_act_107(npc_t *npc) {
     case 15:
       if (npc->act_wait / 2 % 2) {
         npc->x += 1 * 0x200;
-        snd_play_sound(-1, 11, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 11, FALSE);
       } else {
         npc->x -= 1 * 0x200;
       }
@@ -340,7 +340,7 @@ void npc_act_107(npc_t *npc) {
       npc->act = 17;
       npc->act_wait = 0;
       npc->anim = 2;
-      snd_play_sound(-1, 12, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 12, FALSE);
 
       for (i = 0; i < 8; ++i) npc_spawn(4, npc->x, npc->y, m_rand(-341, 341), m_rand(-0x600, 0), 0, NULL, 0x100);
 
@@ -363,13 +363,13 @@ void npc_act_107(npc_t *npc) {
       }
 
       if (npc->anim > 4) {
-        snd_play_sound(-1, 11, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 11, FALSE);
         npc->anim = 3;
       }
 
       if (++npc->act_wait > 100) {
         npc->act = 20;
-        snd_play_sound(-1, 12, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 12, FALSE);
 
         for (i = 0; i < 4; ++i) npc_spawn(4, npc->x, npc->y, m_rand(-341, 341), m_rand(-0x600, 0), 0, NULL, 0x100);
       }
@@ -383,7 +383,7 @@ void npc_act_107(npc_t *npc) {
     case 21:
       npc->act = 22;
       npc->anim = 5;
-      snd_play_sound(-1, 51, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 51, FALSE);
       break;
 
     case 100:
@@ -494,7 +494,7 @@ void npc_act_109(npc_t *npc) {
 
     case 10:
       npc->act = 0;
-      snd_play_sound(-1, 12, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 12, FALSE);
 
       for (i = 0; i < 8; ++i)
         npc_spawn(4, npc->x, npc->y, m_rand(-341, 341), m_rand(-0x600, 0), 0, NULL, 0x100);
@@ -638,7 +638,7 @@ void npc_act_110(npc_t *npc) {
     npc->act = 10;
     npc->anim = 2;
     npc->yvel = -0x2FF;
-    snd_play_sound(-1, 6, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 6, FALSE);
 
     if (npc->dir == 0)
       npc->xvel = -0x100;
@@ -702,7 +702,7 @@ void npc_act_111(npc_t *npc) {
       if (++npc->act_wait > 40) {
         npc->act = 4;
         npc->act_wait = 64;
-        snd_play_sound(-1, 29, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 29, FALSE);
       }
 
       break;
@@ -758,7 +758,7 @@ void npc_act_112(npc_t *npc) {
       npc->anim_wait = 0;
       npc->x += 16 * 0x200;
       npc->y += 8 * 0x200;
-      snd_play_sound(-1, 29, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 29, FALSE);
       // Fallthrough
     case 1:
       if (++npc->act_wait == 64) {
@@ -876,7 +876,7 @@ void npc_act_113(npc_t *npc) {
       npc->hit.bottom = 16 * 0x200;
       npc->x -= 16 * 0x200;
       npc->y += 8 * 0x200;
-      snd_play_sound(-1, 29, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 29, FALSE);
       // Fallthrough
     case 31:
       if (++npc->act_wait == 64) {
@@ -967,7 +967,7 @@ void npc_act_114(npc_t *npc) {
         if (npc->anim > 1) {
           for (i = 0; i < 4; ++i)
             npc_spawn(4, npc->x, npc->y, m_rand(-341, 341), m_rand(-0x600, 0), 0, NULL, 0x100);
-          snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 26, FALSE);
           cam_start_quake_small(10);
         }
 
@@ -1060,11 +1060,11 @@ void npc_act_115(npc_t *npc) {
           npc->yvel = -0x400;
           npc->xvel *= 2;
           npc->damage = 5;
-          snd_play_sound(-1, 102, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 102, FALSE);
         } else {
           npc->act = 21;
           npc->yvel = -0x400;
-          snd_play_sound(-1, 30, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 30, FALSE);
         }
       }
 
@@ -1072,7 +1072,7 @@ void npc_act_115(npc_t *npc) {
 
     case 21:
       if (npc->flags & 8) {
-        snd_play_sound(-1, 23, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 23, FALSE);
         npc->act = 20;
         npc->anim = 1;
         npc->anim_wait = 0;
@@ -1101,11 +1101,11 @@ void npc_act_115(npc_t *npc) {
       npc->damage = 0;
       npc->yvel = -0x200;
       npc->bits &= ~(NPC_SOLID_SOFT | NPC_SHOOTABLE);
-      snd_play_sound(-1, 51, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 51, FALSE);
       // Fallthrough
     case 51:
       if (npc->flags & 8) {
-        snd_play_sound(-1, 23, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 23, FALSE);
         npc->act = 52;
         npc->anim = 5;
         npc->xvel = 0;
@@ -1372,7 +1372,7 @@ void npc_act_118(npc_t *npc) {
         npc->bits |= NPC_SHOOTABLE;
         npc->act = 20;
         npc->act_wait = 0;
-        snd_play_sound(-1, 103, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 103, FALSE);
       }
 
       break;

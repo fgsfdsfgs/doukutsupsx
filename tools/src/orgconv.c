@@ -112,7 +112,7 @@ static inline int lcm(const int a, const int b) {
 // this is basically MakeSoundObject8 from Organya.cpp
 static void build_track_samples(const int idx, const int8_t *wavep, const bool pipi) {
   for (int j = 0; j < NUM_OCT; ++j) {
-    // generate unsigned 8-bit PCM sample
+    // generate signed 16-bit PCM sample
     const uint32_t wave_size = oct_wave[j].wave_size;
     const uint32_t num_samples = lcm(wave_size, 28);
     int16_t *wp = malloc(num_samples * sizeof(int16_t));

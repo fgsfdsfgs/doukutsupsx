@@ -108,17 +108,17 @@ void npc_act_001(npc_t *npc) {
       // play the sound on a separate channel so they don't spam
       // and only play it when they're close to the camera
       if (dx > -64 && dx < VID_WIDTH + 64 && dy > -64 && dy < VID_HEIGHT + 64)
-        snd_play_sound(CHAN_MISC, 45, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 45, FALSE);
       npc->yvel = -0x280;
       npc->xvel = 2 * npc->xvel / 3;
     }
 
     // Play bounce sound (and try to clip out of floor if stuck)
     if (npc->flags & 0xD) {
-      // play the sound on a separate channel so they don't spam
+      // play the sound with a low priority so they don't spam
       // and only play it when they're close to the camera
       if (dx > -64 && dx < VID_WIDTH + 64 && dy > -64 && dy < VID_HEIGHT + 64)
-        snd_play_sound(CHAN_MISC, 45, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 45, FALSE);
       if (++npc->count2 > 2) npc->y -= 1 * 0x200;
     } else {
       npc->count2 = 0;
@@ -262,7 +262,7 @@ void npc_act_002(npc_t *npc) {
         npc->anim = 5;
         // These three lines are missing in the Linux port, because it's based on v1.0.0.4:
         // https://www.cavestory.org/forums/threads/version-1-0-0-5-really-different-than-1-0-0-6.102/#post-3231
-        snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 26, FALSE);
         npc_spawn(4, npc->x, npc->y + (3 * 0x200), 0, 0, 0, NULL, 0x100);
         cam_start_quake_small(8);
       }
@@ -406,7 +406,7 @@ void npc_act_005(npc_t *npc) {
 
         // Jump
         npc->yvel = -0x5FF;
-        snd_play_sound(-1, 30, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 30, FALSE);
 
         // Jump in facing direction
         if (npc->dir == 0)
@@ -424,7 +424,7 @@ void npc_act_005(npc_t *npc) {
         npc->act_wait = 0;
         npc->anim = 0;
         npc->act = 1;
-        snd_play_sound(-1, 23, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 23, FALSE);
       }
 
       break;
@@ -753,7 +753,7 @@ void npc_act_009(npc_t *npc) {
         npc->act = 2;
         npc->anim = 1;
         npc->act_wait = 0;
-        snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 26, FALSE);
         cam_start_quake_small(30);
       }
 
@@ -822,7 +822,7 @@ void npc_act_010(npc_t *npc) {
 
         npc_spawn(11, npc->x, npc->y + (4 * 0x200), m_sin(deg), m_cos(deg), 0, NULL, 0x100);
 
-        snd_play_sound(-1, 39, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 39, FALSE);
 
         if (npc->count1 == 0) {
           npc->act = 3;
@@ -855,7 +855,7 @@ void npc_act_010(npc_t *npc) {
         npc->act = 5;
         npc->act_wait = 0;
         npc->anim = 2;
-        snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 26, FALSE);
         cam_start_quake_small(30);
         npc->damage = 0;
       }
@@ -998,7 +998,7 @@ void npc_act_012(npc_t *npc) {
 
       if (npc->y < 0) {
         npc->class_num = 0;
-        snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 26, FALSE);
         cam_start_quake_small(30);
       }
 
@@ -1027,7 +1027,7 @@ void npc_act_012(npc_t *npc) {
         );
       }
 
-      snd_play_sound(-1, 72, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 72, FALSE);
       // Fallthrough
     case 21:
       npc->tgt_x = 1;
@@ -1115,7 +1115,7 @@ void npc_act_012(npc_t *npc) {
         npc->anim_wait = 0;
 
         if (++npc->anim == 10 || npc->anim == 11)
-          snd_play_sound(-1, 23, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 23, FALSE);
       }
 
       if (npc->anim > 12) npc->anim = 9;
@@ -1130,7 +1130,7 @@ void npc_act_012(npc_t *npc) {
     case 70:
       npc->act = 71;
       npc->act_wait = 64;
-      snd_play_sound(-1, 29, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 29, FALSE);
       npc->anim = 13;
       // Fallthrough
     case 71:
@@ -1181,7 +1181,7 @@ void npc_act_012(npc_t *npc) {
       if (y >= 0 && y < 35 && stage_set_tile(x, y, 0)) {
         stage_set_tile(x - 1, y, 0);
         stage_set_tile(x + 1, y, 0);
-        snd_play_sound(-1, 44, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 44, FALSE);
         cam_start_quake_big(10);
       }
 
@@ -1518,8 +1518,8 @@ void npc_act_019(npc_t *npc) {
       npc->act = 1;
       npc->anim = 3;
       npc->yvel = -0x100;
-      snd_play_sound(-1, 12, SOUND_MODE_PLAY);
-      snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 12, FALSE);
+      snd_play_sound(PRIO_NORMAL, 26, FALSE);
       cam_start_quake_small(30);
       // Fallthrough
     case 1:
@@ -1529,7 +1529,7 @@ void npc_act_019(npc_t *npc) {
         npc->act = 2;
         npc->anim = 2;
         npc->act_wait = 0;
-        snd_play_sound(-1, 26, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 26, FALSE);
         cam_start_quake_small(30);
       }
 

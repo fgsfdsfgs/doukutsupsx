@@ -7,23 +7,18 @@
 #define SFX_NUM_CHANNELS 8
 #define SFX_MAIN_BANK "\\MAIN\\MAIN.SFX;1"
 
-typedef enum {
-  SOUND_MODE_PLAY_LOOP = -1,
-  SOUND_MODE_STOP = 0,
-  SOUND_MODE_PLAY = 1
-} sound_mode_t;
 
 typedef enum {
-  CHAN_STEP  = 0, // footsteps, jump sounds, etc
-  CHAN_ARMS  = 1, // gun
-  CHAN_ITEM  = 2, // item pickups
-  CHAN_MISC  = 3, // other player-related sounds
-  CHAN_ALLOC = 4, // channels from this to CHAN_MUSIC are allocated dynamically
-  CHAN_LOOP1 = 6, // channel for special looping noises, normally used by other sounds too
-  CHAN_LOOP2 = 7, // channel for special looping noises, normally used by other sounds too
+  CHAN_SOUND = 0, // sfx channels from this to CHAN_MUSIC
   CHAN_MUSIC = 8, // music channels from this to CHAN_COUNT
   CHAN_COUNT = 24
 } sound_channel_t;
+
+typedef enum {
+  PRIO_LOW = 1,
+  PRIO_NORMAL = 2,
+  PRIO_HIGH = 3,
+} sound_priority_t;
 
 typedef struct {
   u32 data_size;   // size of raw SPU data at the end
@@ -46,10 +41,16 @@ sfx_bank_t *snd_load_sfx_bank(const char *path);
 void snd_free_sfx_bank(sfx_bank_t *bank);
 void snd_free_sfx_bank_data(sfx_bank_t *bank);
 
-// plays/stops a sample from the main sample bank
-// if ch is -1, plays on next available channel
-int snd_play_sound(int ch, const int no, const sound_mode_t mode);
+// plays a sample from the main sample bank
+// samples with higher `prio` override samples with lower `prio`
+int snd_play_sound(int prio, const int no, const bool loop);
 
-// plays/stops a sample from the main sample bank with specified frequency
-// if ch is -1, plays on next available channel
-int snd_play_sound_freq(int ch, const int no, const int freq, const sound_mode_t mode);
+// plays a sample from the main sample bank with specified frequency
+// samples with higher `prio` override samples with lower `prio`
+int snd_play_sound_freq(int prio, const int no, const int freq, const bool loop);
+
+// stop sample `no` if it's playing
+void snd_stop_sound(const int no);
+
+// stops channel `ch` if something's playing on it
+void snd_stop_channel(const int ch);

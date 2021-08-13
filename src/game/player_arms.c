@@ -98,7 +98,7 @@ static void arm_act_snake(int level) {
         }
       }
 
-      snd_play_sound(CHAN_ARMS, 33, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 33, FALSE);
     }
   }
 }
@@ -124,7 +124,7 @@ static void arm_act_polarstar(int level) {
 
   if (input_trig & IN_FIRE) {
     if (!plr_arm_use_ammo(1)) {
-      snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 37, FALSE);
     } else {
       if (player.up) {
         if (player.dir == 0) {
@@ -153,9 +153,9 @@ static void arm_act_polarstar(int level) {
       }
 
       if (level == 3)
-        snd_play_sound(CHAN_ARMS, 49, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 49, FALSE);
       else
-        snd_play_sound(CHAN_ARMS, 32, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 32, FALSE);
     }
   }
 }
@@ -213,7 +213,7 @@ static void arm_act_fireball(int level) {
         }
       }
 
-      snd_play_sound(CHAN_ARMS, 34, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 34, FALSE);
     }
   }
 }
@@ -246,7 +246,7 @@ static void arm_act_machinegun(int level) {
     player.cooldown = 0;
 
     if (!plr_arm_use_ammo(1)) {
-      snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 37, FALSE);
 
       if (empty_cooldown == 0) {
         caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
@@ -294,9 +294,9 @@ static void arm_act_machinegun(int level) {
     }
 
     if (level == 3)
-      snd_play_sound(CHAN_ARMS, 49, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 49, FALSE);
     else
-      snd_play_sound(CHAN_ARMS, 32, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 32, FALSE);
   } else {
     ++wait;
 
@@ -397,7 +397,7 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
   if (input_trig & IN_FIRE) {
     if (level < 3) {
       if (!plr_arm_use_ammo(1)) {
-        snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 37, FALSE);
 
         if (empty_cooldown == 0) {
           caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
@@ -434,7 +434,7 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
       }
     } else {
       if (!plr_arm_use_ammo(1)) {
-        snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_NORMAL, 37, FALSE);
 
         if (empty_cooldown == 0) {
           caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
@@ -483,7 +483,7 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
       }
     }
 
-    snd_play_sound(CHAN_ARMS, 32, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 32, FALSE);
   }
 }
 
@@ -502,7 +502,7 @@ static void arm_act_bubbler1(void) {
 
   if (input_trig & IN_FIRE) {
     if (!plr_arm_use_ammo(1)) {
-      snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 37, FALSE);
 
       if (empty_cooldown == 0) {
         caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
@@ -538,7 +538,7 @@ static void arm_act_bubbler1(void) {
       }
     }
 
-    snd_play_sound(CHAN_ARMS, 48, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 48, FALSE);
   } else if (++wait > 20) {
     wait = 0;
     plr_arm_charge_ammo(1);
@@ -560,7 +560,7 @@ static void arm_act_bubbler2(int level) {
     player.cooldown = 0;
 
     if (!plr_arm_use_ammo(1)) {
-      snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 37, FALSE);
 
       if (empty_cooldown == 0) {
         caret_spawn(player.x, player.y, CARET_EMPTY, DIR_LEFT);
@@ -596,7 +596,7 @@ static void arm_act_bubbler2(int level) {
       }
     }
 
-    snd_play_sound(CHAN_ARMS, 48, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 48, FALSE);
   } else if (++wait > 1) {
     wait = 0;
     plr_arm_charge_ammo(1);
@@ -640,7 +640,7 @@ static void arm_act_sword(int level) {
         bullet_spawn(bul_no, player.x - (6 * 0x200), player.y - (3 * 0x200), 2);
     }
 
-    snd_play_sound(CHAN_ARMS, 34, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_NORMAL, 34, FALSE);
   }
 }
 
@@ -676,7 +676,7 @@ static void arm_act_nemesis(int level) {
 
   if (input_trig & IN_FIRE) {
     if (!plr_arm_use_ammo(1)) {
-      snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 37, FALSE);
     } else {
       if (player.up) {
         if (player.dir == 0) {
@@ -706,15 +706,15 @@ static void arm_act_nemesis(int level) {
 
       switch (level) {
         case 1:
-          snd_play_sound(CHAN_ARMS, 117, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 117, FALSE);
           break;
 
         case 2:
-          snd_play_sound(CHAN_ARMS, 49, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 49, FALSE);
           break;
 
         case 3:
-          snd_play_sound(CHAN_ARMS, 60, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 60, FALSE);
           break;
       }
     }
@@ -735,15 +735,15 @@ static void arm_act_spur(int level) {
     if (++spur_charge / 2 % 2) {
       switch (level) {
         case 1:
-          snd_play_sound(CHAN_ARMS, 59, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 59, FALSE);
           break;
 
         case 2:
-          snd_play_sound(CHAN_ARMS, 60, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 60, FALSE);
           break;
 
         case 3:
-          if (!plr_arm_at_max_exp()) snd_play_sound(CHAN_ARMS, 61, SOUND_MODE_PLAY);
+          if (!plr_arm_at_max_exp()) snd_play_sound(PRIO_NORMAL, 61, FALSE);
 
           break;
       }
@@ -757,7 +757,7 @@ static void arm_act_spur(int level) {
   if (plr_arm_at_max_exp()) {
     if (!max) {
       max = TRUE;
-      snd_play_sound(CHAN_ARMS, 65, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 65, FALSE);
     }
   } else {
     max = FALSE;
@@ -788,7 +788,7 @@ static void arm_act_spur(int level) {
 
   if (input_trig & IN_FIRE || shot) {
     if (!plr_arm_use_ammo(1)) {
-      snd_play_sound(CHAN_ARMS, 37, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 37, FALSE);
     } else {
       if (player.up) {
         if (player.dir == 0) {
@@ -818,19 +818,19 @@ static void arm_act_spur(int level) {
 
       switch (bul_no) {
         case 6:
-          snd_play_sound(CHAN_ARMS, 49, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 49, FALSE);
           break;
 
         case 37:
-          snd_play_sound(CHAN_ARMS, 62, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 62, FALSE);
           break;
 
         case 38:
-          snd_play_sound(CHAN_ARMS, 63, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 63, FALSE);
           break;
 
         case 39:
-          snd_play_sound(CHAN_ARMS, 64, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 64, FALSE);
           break;
       }
     }
@@ -878,7 +878,7 @@ void plr_arm_add_exp(int val) {
         ++player.arms[player.arm].level;
         player.arms[player.arm].exp = 0;
         if (player.arm != 13) {
-          snd_play_sound(CHAN_MISC, 27, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 27, FALSE);
           caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
         }
       }
@@ -933,7 +933,7 @@ void plr_arm_swap_to_first(void) {
     if (player.arms[plr_arms_order[i]].owned) {
       player.arm = plr_arms_order[i];
       player.arms_x = 32;
-      snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 4, FALSE);
       return;
     }
   }
@@ -947,7 +947,7 @@ int plr_arm_swap_to_next(void) {
 
   // original game always plays the change effects
   player.arms_x = 32;
-  snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
+  snd_play_sound(PRIO_NORMAL, 4, FALSE);
 
   for (int i = 1; i < plr_arms_order_num; ++i) {
     const int arm = plr_arms_order[(start + i) % plr_arms_order_num];
@@ -966,14 +966,14 @@ int plr_arm_swap_to_prev(void) {
 
   // original game always plays the change effects
   player.arms_x = 32;
-  snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
+  snd_play_sound(PRIO_NORMAL, 4, FALSE);
 
   for (int i = 1; i < plr_arms_order_num - 1; ++i) {
     const int arm = plr_arms_order[(start + plr_arms_order_num - i) % plr_arms_order_num];
     if (player.arms[arm].owned) {
       player.arm = arm;
       player.arms_x = 0;
-      snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_NORMAL, 4, FALSE);
       return arm;
     }
   }

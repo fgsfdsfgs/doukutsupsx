@@ -140,7 +140,7 @@ void plr_animate(const u32 btns) {
       if (++player.anim_wait > 4) {
         player.anim_wait = 0;
         if (++player.anim == 7 || player.anim == 9)
-          snd_play_sound(CHAN_STEP, 24, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_LOW, 24, FALSE);
       }
 
       if (player.anim > 9 || player.anim < 6)
@@ -151,20 +151,20 @@ void plr_animate(const u32 btns) {
       if (++player.anim_wait > 4) {
         player.anim_wait = 0;
         if (++player.anim == 2 || player.anim == 4)
-          snd_play_sound(CHAN_STEP, 24, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_LOW, 24, FALSE);
       }
 
       if (player.anim > 4 || player.anim < 1)
         player.anim = 1;
     } else if (btns & IN_UP) {
       if (player.cond & PLRCOND_UNKNOWN04)
-        snd_play_sound(CHAN_STEP, 24, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 24, FALSE);
 
       player.cond &= ~PLRCOND_UNKNOWN04;
       player.anim = 5;
     } else {
       if (player.cond & PLRCOND_UNKNOWN04)
-        snd_play_sound(CHAN_STEP, 24, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 24, FALSE);
 
       player.cond &= ~PLRCOND_UNKNOWN04;
       player.anim = 0;
@@ -466,7 +466,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
         // There probably used to be some commented-out code here.
       } else {
         player.yvel = -phys->jump;
-        snd_play_sound(CHAN_STEP, 15, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 15, FALSE);
       }
     }
   }
@@ -501,7 +501,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
           caret_spawn(player.x + (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST, DIR_RIGHT);
         if (player.dir == 2)
           caret_spawn(player.x - (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST, DIR_LEFT);
-        snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 113, FALSE);
       }
     } else if (player.boost_sw == 2) {
       // Move upwards
@@ -510,12 +510,12 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
       // Boost particles (and sound)
       if (trig & IN_JUMP || player.boost_cnt % 3 == 1) {
         caret_spawn(player.x, player.y + (6 * 0x200), CARET_EXHAUST, DIR_DOWN);
-        snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 113, FALSE);
       }
     } else if (player.boost_sw == 3 && (trig & IN_JUMP || player.boost_cnt % 3 == 1)) {
       // Boost particles (and sound)
       caret_spawn(player.x, player.y - (6 * 0x200), CARET_EXHAUST, DIR_UP);
-      snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_LOW, 113, FALSE);
     }
   } else if (player.flags & 0x2000) {
     // Upwards wind/current
@@ -527,7 +527,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
     if (player.boost_cnt % 3 == 0) {
       caret_spawn(player.x, player.y + (player.hit.bottom / 2), CARET_EXHAUST, DIR_DOWN);
-      snd_play_sound(CHAN_STEP, 113, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_LOW, 113, FALSE);
     }
 
     // Bounce off of ceiling
@@ -577,14 +577,14 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
         x = player.x + (m_rand(-8, 8) * 0x200);
         npc_spawn(73, x, player.y, player.xvel + m_rand(-0x200, 0x200), m_rand(-0x200, 0x80) - (player.yvel / 2), dir, NULL, 0);
       }
-      snd_play_sound(CHAN_STEP, 56, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_LOW, 56, FALSE);
     } else {
       if (player.xvel > 0x200 || player.xvel < -0x200) {
         for (a = 0; a < 8; ++a) {
           x = player.x + (m_rand(-8, 8) * 0x200);
           npc_spawn(73, x, player.y, player.xvel + m_rand(-0x200, 0x200), m_rand(-0x200, 0x80), dir, NULL, 0);
         }
-        snd_play_sound(CHAN_STEP, 56, SOUND_MODE_PLAY);
+        snd_play_sound(PRIO_LOW, 56, FALSE);
       }
     }
 
@@ -666,7 +666,7 @@ void plr_damage(int val) {
     return;
 
   // Damage player
-  snd_play_sound(CHAN_MISC, 16, SOUND_MODE_PLAY);
+  snd_play_sound(PRIO_HIGH, 16, FALSE);
   player.cond &= ~1;
   player.shock = 128;
 
@@ -704,7 +704,7 @@ void plr_damage(int val) {
 
   // Death
   if (player.life <= 0) {
-    snd_play_sound(CHAN_MISC, 17, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_HIGH, 17, FALSE);
     player.cond = 0;
     npc_spawn_death_fx(player.x, player.y, TO_FIX(10), 0x40, 0);
     tsc_start_event(40);
@@ -744,7 +744,7 @@ void plr_add_exp(int val) {
         ++player.arms[player.arm].level;
         player.arms[player.arm].exp = 0;
         if (player.arm != 13) {
-          snd_play_sound(CHAN_MISC, 27, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 27, FALSE);
           caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
         }
       }

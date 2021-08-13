@@ -480,7 +480,7 @@ void hit_npc_bullet(void) {
               caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
               caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
               caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_HURT_PARTICLES, DIR_LEFT);
-              snd_play_sound(-1, npc->snd_hit, SOUND_MODE_PLAY);
+              snd_play_sound(PRIO_NORMAL, npc->snd_hit, FALSE);
               npc->shock = 16;
             }
             if (npc->bits & NPC_SHOW_DAMAGE)
@@ -489,7 +489,7 @@ void hit_npc_bullet(void) {
         } else if (!(bul->bits & 0x10) && !bullet_dissipates_in_npc(bul->class_num)) {
           // Hit invulnerable NPC
           caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
-          snd_play_sound(-1, 31, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 31, FALSE);
           bul->life = 0;
           continue;
         }
@@ -678,7 +678,7 @@ void hit_boss_bullet(void) {
             if ((player.cond & PLRCOND_ALIVE) && target->bits & NPC_EVENT_WHEN_KILLED) {
               tsc_start_event(target->event_num);
             } else {
-              snd_play_sound(-1, target->snd_die, SOUND_MODE_PLAY);
+              snd_play_sound(PRIO_NORMAL, target->snd_die, FALSE);
               switch (target->size) {
                 case 1:
                   npc_spawn_death_fx(target->x, target->y, target->view.back, 4, 0);
@@ -697,7 +697,7 @@ void hit_boss_bullet(void) {
               caret_spawn(bul->x, bul->y, CARET_HURT_PARTICLES, DIR_LEFT);
               caret_spawn(bul->x, bul->y, CARET_HURT_PARTICLES, DIR_LEFT);
               caret_spawn(bul->x, bul->y, CARET_HURT_PARTICLES, DIR_LEFT);
-              snd_play_sound(-1, target->snd_hit, SOUND_MODE_PLAY);
+              snd_play_sound(PRIO_NORMAL, target->snd_hit, FALSE);
             }
             target->shock = 8;
             npc->shock = 8;
@@ -711,7 +711,7 @@ void hit_boss_bullet(void) {
         } else if (!(bul->bits & 0x10)) {
           // Hit invulnerable NPC
           caret_spawn((bul->x + npc->x) / 2, (bul->y + npc->y) / 2, CARET_PROJECTILE_DISSIPATION, DIR_RIGHT);
-          snd_play_sound(-1, 31, SOUND_MODE_PLAY);
+          snd_play_sound(PRIO_NORMAL, 31, FALSE);
           bul->life = 0;
         }
       }

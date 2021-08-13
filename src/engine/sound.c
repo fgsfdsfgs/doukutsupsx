@@ -14,12 +14,16 @@ sfx_bank_t *snd_main_bank;
 
 // channel each sample last played on
 static s16 sample_chan[MAX_SFX];
-// sample playing (or last played) on each SFX channel
-static s16 chan_sample[SFX_NUM_CHANNELS];
-// whether each SFX channel is looping
-static u8 chan_looping[SFX_NUM_CHANNELS];
-// channel to play next sample on
-static s16 chan_next = CHAN_ALLOC;
+
+// last channel a sample was played on
+static int last_chan = CHAN_SOUND;
+
+// sfx channel state
+static struct {
+  s32 sample; // sample playing (or last played) on this channel
+  s16 prio;   // priority of the sample playing (or last played) on this channel
+  u16 loop;   // is this channel looping?
+} chan_state[SFX_NUM_CHANNELS];
 
 int snd_init(const char *mainbankpath) {
   spu_init();
@@ -30,6 +34,11 @@ int snd_init(const char *mainbankpath) {
   // turn up all the SFX channels
   for (int i = 0; i < SFX_NUM_CHANNELS; ++i)
     spu_set_voice_volume(i, SPU_MAX_VOLUME);
+
+  // clear sfx->channel mapping
+  for (int i = 0; i < MAX_SFX; ++i)
+    sample_chan[i] = -1;
+
   spu_flush_voices();
 }
 
@@ -90,36 +99,69 @@ void snd_free_sfx_bank(sfx_bank_t *bank) {
   mem_free(bank);
 }
 
-int snd_play_sound_freq(int ch, const int no, const int freq, const sound_mode_t mode) {
-  if (mode != SOUND_MODE_STOP) {
-    // play or loop
-    ASSERT(snd_main_bank);
-    if (no < 0 || no >= snd_main_bank->num_sfx)
-      panic("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
-    if (ch < 0) {
-      ch = chan_next;
-      if (++chan_next == CHAN_MUSIC || chan_looping[chan_next])
-        chan_next = CHAN_ALLOC;
-    }
-    spu_play_sample(ch, snd_main_bank->sfx_addr[no], freq);
-    sample_chan[no] = ch;
-    chan_sample[ch] = no;
-    if (mode == SOUND_MODE_PLAY_LOOP)
-      chan_looping[ch] = TRUE;
-  } else {
-    // stop
-    if (ch < 0) {
-      ASSERT(no > 0 && no < MAX_SFX);
-      spu_key_off(SPU_VOICECH(sample_chan[no]));
-      chan_looping[sample_chan[no]] = FALSE;
-    } else {
-      spu_key_off(SPU_VOICECH(ch));
-      chan_looping[ch] = FALSE;
-    }
+static inline int snd_find_chan(const int start_idx, const int prio, const int sfx) {
+  // check if the sample is already playing somewhere; if so, override it like in the original game
+  const int sample_ch = sample_chan[sfx];
+  if (sample_ch >= 0 && chan_state[sample_ch].sample == sfx)
+    return sample_ch;
+
+  // otherwise scan through channels and see what we can override
+  const u32 endmask = spu_get_voice_end_mask();
+  for (int n = start_idx; n < start_idx + SFX_NUM_CHANNELS; ++n) {
+    const int i = n % SFX_NUM_CHANNELS;
+    // nothing ever played here OR channel was stopped OR playback complete; can be used
+    if (chan_state[i].sample == 0 || ((endmask & SPU_VOICECH(i)) && !chan_state[i].loop))
+      return i;
   }
+
+  for (int n = start_idx; n < start_idx + SFX_NUM_CHANNELS; ++n) {
+    const int i = n % SFX_NUM_CHANNELS;
+    // lower priority; can be overridden
+    if (prio > chan_state[i].prio)
+      return i;
+  }
+
+  // nothing found
+  return -1;
+}
+
+int snd_play_sound_freq(int prio, const int no, const int freq, const bool loop) {
+  ASSERT(snd_main_bank);
+
+  if (no < 0 || no >= snd_main_bank->num_sfx)
+    panic("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
+
+  int ch = snd_find_chan(last_chan + 1, prio, no);
+  if (ch < 0) {
+    if (prio > PRIO_LOW)
+      ch = (last_chan + 1) % SFX_NUM_CHANNELS; // just override whatever
+    else
+      return -1; // don't play low priority sounds when out of channels
+  }
+
+  spu_play_sample(ch, snd_main_bank->sfx_addr[no], freq);
+
+  sample_chan[no] = ch;
+  chan_state[ch].sample = no;
+  chan_state[ch].loop = loop;
+  chan_state[ch].prio = prio;
+  last_chan = ch;
+
   return ch;
 }
 
-int snd_play_sound(int ch, const int no, const sound_mode_t mode) {
-  return snd_play_sound_freq(ch, no, SFX_FREQ, mode);
+int snd_play_sound(int prio, const int no, const bool loop) {
+  return snd_play_sound_freq(prio, no, SFX_FREQ, loop);
+}
+
+void snd_stop_sound(const int no) {
+  ASSERT(no > 0 && no < MAX_SFX);
+  snd_stop_channel(sample_chan[no]);
+}
+
+void snd_stop_channel(const int ch) {
+  spu_key_off(SPU_VOICECH(ch));
+  chan_state[ch].loop = FALSE;
+  chan_state[ch].sample = 0;
+  chan_state[ch].prio = 0;
 }

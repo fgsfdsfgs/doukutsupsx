@@ -103,7 +103,7 @@ static void menu_pause_act(void) {
     menu_id = MENU_NONE;
   } else if (input_trig & IN_DEBUG) {
     // debug cheat
-    snd_play_sound(-1, 1, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_HIGH, 1, FALSE);
     // give weapons
     plr_arm_give(2, 0);
     plr_arm_give(3, 0);
@@ -268,11 +268,11 @@ static inline void menu_inventory_controls(void) {
   if (changed) {
     if (inventory.in_items) {
       // change item and display new item's name
-      snd_play_sound(CHAN_MISC, 1, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_HIGH, 1, FALSE);
       tsc_start_event(5000 + inventory.items_owned[inventory.item_idx]);
     } else {
       // change weapon and display new weapon's name
-      snd_play_sound(CHAN_MISC, 4, SOUND_MODE_PLAY);
+      snd_play_sound(PRIO_HIGH, 4, FALSE);
       player.arm = inventory.arms_owned[inventory.arm_idx];
       tsc_start_event(1000 + inventory.arms_owned[inventory.arm_idx]);
     }
@@ -551,7 +551,7 @@ static inline void menu_stagesel_controls(void) {
     stagesel.idx = 0;
 
   if (input_trig & (IN_LEFT | IN_RIGHT)) {
-    snd_play_sound(CHAN_MISC, 1, SOUND_MODE_PLAY);
+    snd_play_sound(PRIO_HIGH, 1, FALSE);
     tsc_start_event(1000 + tele_dest[stagesel.idx].stage_num);
   }
 }
