@@ -145,9 +145,9 @@ void spu_play_sample(const u32 ch, const u32 addr, const u32 freq) {
   voice_state[ch].addr = (addr >> 3);
   SPU_VOICE(ch)->sample_rate = voice_state[ch].freq;
   SPU_VOICE(ch)->sample_startaddr = voice_state[ch].addr;
-  spu_key_on(SPU_VOICECH(ch));  // this restarts the channel on the new address
-  // now restore volume
-  spu_update_voice_volume(ch);
+  spu_update_voice_volume(ch); // restore volume
+  spu_key_on(SPU_VOICECH(ch)); // this restarts the channel on the new address
+  voice_state[ch].dirty = 0; // make sure next flush call doesn't touch it
 }
 
 void spu_wait_for_transfer(void) {
