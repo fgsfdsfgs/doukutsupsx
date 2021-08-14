@@ -90,13 +90,14 @@ int main(int argc, char **argv) {
     if (sfx[i].data == NULL)
       continue;
     const int loop_start = is_sfx_looping(i) ? 0 : -1;
-    const int adpcm_len = psx_audio_spu_encode_simple(sfx[i].data, sfx[i].len, spuram + spuram_ptr, loop_start);
+    // 16 NULL bytes of lead-in to avoid pops
+    const int adpcm_len = psx_audio_spu_encode_simple(sfx[i].data, sfx[i].len, spuram + spuram_ptr + 16, loop_start);
     if (adpcm_len <= 0) {
       fprintf(stderr, "error: could not encode sfx %d\n", i);
       return -3;
     }
     sfx[i].addr = spuram_ptr;
-    spuram_ptr += ALIGN(adpcm_len, 8);
+    spuram_ptr += ALIGN(adpcm_len + 16, 8);
     if (spuram_ptr >= SPURAM_SIZE) {
       fprintf(stderr, "error: ran out of SPU RAM packing sfx %d\n", i);
       return -4;
