@@ -353,7 +353,9 @@ u32 org_set_mute_mask(const u32 mask) {
     if (org.tracks[i].mute)
       oldmask |= (1 << i);
     org.tracks[i].mute = !!(mask & (1 << i));
+    org_set_vol(i, org.tracks[i].mute ? 0 : (org.tracks[i].vol * org.vol / 0x7F));
   }
+  spu_flush_voices();
   spu_key_off(mask << ORG_START_CH);
   return oldmask;
 }
