@@ -10,7 +10,7 @@
     />
     <directory_tree>
       <file name="system.cnf" type="data" source="system.cnf"/>
-      <file name="doukutsu.exe" type="data" source="doukutsu.exe"/>
+      <file name="doukutsu.exe" type="data" source="doukutsu.ps-exe"/>
       <dir name="main" srcdir="data/main">
         <file name="main.sfx" type="data"/>
         <file name="main.gfx" type="data"/>

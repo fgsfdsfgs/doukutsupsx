@@ -92,6 +92,43 @@ static void save_track_sample(const int i, const int j, const char *fmask) {
     drwav_uninit(&wav);
   }
 }
+
+static void save_vag(const void *data, const int datalen, const char *fname) {
+  FILE *f = fopen(fname, "wb");
+  if (!f) return;
+
+  struct {
+    char magic[4];
+    uint8_t ver[4];
+    uint32_t reserved1;
+    uint32_t size;
+    uint32_t freq;
+    uint32_t reserved2[3];
+    char name[16];
+  } hdr;
+
+  memset(&hdr, 0, sizeof(hdr));
+  memcpy(hdr.magic, "VAGp", 4);
+  hdr.size = __builtin_bswap32(datalen);
+  hdr.ver[3] = 3;
+  hdr.freq = __builtin_bswap32(22050);
+  memcpy(hdr.name, "ORGCONV", 8);
+
+  fwrite(&hdr, sizeof(hdr), 1, f);
+  fwrite(data, datalen, 1, f);
+
+  fclose(f);
+}
+
+static void save_track_adpcm(const int i, const int j, const char *fmask) {
+  char path[2048];
+  snprintf(path, sizeof(path), "%s%d.vag", fmask, i * NUM_OCT + j);
+  save_vag(spuram + inst[i][j].addr, inst[i][j].len, path);
+}
+
+static void save_spuram(const char *path) {
+  save_vag(spuram, spuram_ptr, path);
+}
 #endif
 
 static inline int lcm(const int a, const int b) {
@@ -115,7 +152,7 @@ static void build_track_samples(const int idx, const int8_t *wavep, const bool p
     // generate signed 16-bit PCM sample
     const uint32_t wave_size = oct_wave[j].wave_size;
     const uint32_t num_samples = lcm(wave_size, 28);
-    int16_t *wp = malloc(num_samples * sizeof(int16_t));
+    int16_t *wp = calloc(1, num_samples * sizeof(int16_t));
     assert(wp);
     uint32_t wav_tp = 0;
     int16_t *wp_sub = wp;
@@ -220,20 +257,29 @@ int main(int argc, char **argv) {
 
   for (int i = 0; i < MAX_MELODY_TRACKS; ++i) {
     for (int j = 0; j < NUM_OCT; ++j) {
-      const int adpcm_len = psx_audio_spu_encode_simple(inst[i][j].data, inst[i][j].len, spuram + spuram_ptr, 0);
+      // 16 NULL bytes of lead-in to avoid pops
+      const int adpcm_len = psx_audio_spu_encode_simple(inst[i][j].data, inst[i][j].len, spuram + spuram_ptr + 16, 0);
       if (adpcm_len <= 0) {
         fprintf(stderr, "error: could not encode instrument sample %d/%d\n", i, j);
         return -4;
       }
       inst[i][j].addr = spuram_ptr;
-      spuram_ptr += ALIGN(adpcm_len, 8);
+      inst[i][j].len = adpcm_len + 16;
+      spuram_ptr += ALIGN(inst[i][j].len, 8);
       if (spuram_ptr >= SPURAM_SIZE) {
         fprintf(stderr, "error: ran out of SPU RAM packing instrument sample %d/%d\n", i, j);
         return -5;
       }
+#ifdef SAVE_WAVS
+      save_track_adpcm(i, j, "orgwave/");
+#endif
       // printf(" * instrument [%d][%d]: addr=%05x pcmlen=%06u adpcmlen=%06d\n", i, j, inst[i][j].addr, inst[i][j].len, adpcm_len);
     }
   }
+
+#ifdef SAVE_WAVS
+  save_spuram("orgwave/spuram.vag");
+#endif
 
   bank_hdr.num_sfx = MAX_MELODY_TRACKS * NUM_OCT;
   bank_hdr.data_size = spuram_ptr - spuram_start;

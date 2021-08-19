@@ -22,5 +22,3 @@ int fs_feof(fs_file_t *f);
 u8 fs_fread_u8(fs_file_t *f);
 u16 fs_fread_u16(fs_file_t *f);
 u32 fs_fread_u32(fs_file_t *f);
-
-int fs_scan_dir(const char *dir, char out[][CD_MAX_FILENAME], const char *filter);

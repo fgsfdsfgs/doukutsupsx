@@ -10,6 +10,7 @@
 #include "engine/graphics.h"
 #include "engine/filesystem.h"
 #include "engine/input.h"
+#include "engine/mcrd.h"
 #include "game/game.h"
 
 int main(int argc, char **argv) {
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
   snd_init(SFX_MAIN_BANK);
   org_init();
   in_init();
+  mcrd_init();
 
   // load main graphics bank
   gfx_load_gfx_bank(GFX_MAIN_BANK);
@@ -36,7 +38,7 @@ int main(int argc, char **argv) {
   u32 next_frame = now;
   timer_next_orgtick = now;
 
-  game_start();
+  game_start_intro();
 
   while (1) {
     now = timer_ticks;
@@ -48,10 +50,13 @@ int main(int argc, char **argv) {
       next_frame = now + 2; 
     }
 
-    const u32 orgwait = org_get_wait() / 10;
-    if (now >= timer_next_orgtick && orgwait) {
-      org_tick();
-      timer_next_orgtick = now + orgwait;
+    // tick music only if timer isn't already doing it
+    if (timer_callback != timer_cb_music) {
+      const u32 orgwait = org_get_wait() / 10;
+      if (now >= timer_next_orgtick && orgwait) {
+        org_tick();
+        timer_next_orgtick = now + orgwait;
+      }
     }
   }
 

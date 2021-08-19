@@ -44,7 +44,7 @@ static inline int parse_bktype(const char *token) {
   return -1;
 }
 
-static inline bool parse_stage_entry(char **args, stage_list_t *list) {
+static inline bool parse_stage_entry(char **args, stage_list_t *list, const int id) {
   char empty = '\0';
 
   for (int i = 0; i < NUM_STAGE_ARGS; ++i) {
@@ -88,6 +88,12 @@ static inline bool parse_stage_entry(char **args, stage_list_t *list) {
     return false;
   }
   strncpy(list->title, title, sizeof(list->title) - 1);
+
+  // HACK: add extra title sheet to the title stage
+  if (id == 72 || !strcmp(list->title, "u"))
+    strncpy(list->titlesheet, "Title", sizeof(list->titlesheet) - 1);
+  else
+    list->titlesheet[0] = 0;
 
   return true;
 }
@@ -183,7 +189,7 @@ int read_stagelist(stage_list_t *list, FILE *f) {
     }
 
     if (!strncasecmp(token[0], "STAGE", 5) && i >= NUM_STAGE_ARGS && num < MAX_STAGES)
-      num += (int)parse_stage_entry(&token[1], &list[num]);
+      num += (int)parse_stage_entry(&token[1], &list[num], num);
     else if (!strncasecmp(token[0], "BANK", 4) && i >= NUM_BANK_ARGS)
       parse_bank_entry(&token[1], list, num);
     else if (!strncasecmp(token[0], "SURFSET", 7) && i >= NUM_RECT_ARGS)
@@ -469,8 +475,8 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   uint32_t song_list[MAX_STAGE_SONGS * num_stages];
 
   uint32_t num_surf = 0;
-  const char *surf_list[(1 + root->numlinks) * 4]; // (npc, boss, tile, bk) * num
-  uint32_t surf_id_list[(1 + root->numlinks) * 4];
+  const char *surf_list[(1 + root->numlinks) * 5]; // (npc, boss, tile, bk, title) * num
+  uint32_t surf_id_list[(1 + root->numlinks) * 5];
   int bg_width = 0;
   int bg_height = 0;
 
@@ -490,12 +496,13 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
         song_list[num_songs++] = list->songs[s];
     }
     // merge the surface list
-    const char *tmpsurf[] = { list->npcsheet, list->bosssheet, list->tilesheet, list->bksheet };
+    const char *tmpsurf[] = { list->npcsheet, list->bosssheet, list->tilesheet, list->bksheet, list->titlesheet };
     const uint32_t tmpid[] = {
       SURFACE_ID_LEVEL_SPRITESET_1, SURFACE_ID_LEVEL_SPRITESET_2,
       SURFACE_ID_LEVEL_TILESET, SURFACE_ID_LEVEL_BACKGROUND,
+      SURFACE_ID_TITLE,
     };
-    for (int s = 0; s < 4; ++s) {
+    for (uint32_t s = 0; s < sizeof(tmpsurf) / sizeof(*tmpsurf); ++s) {
       if (tmpsurf[s][0] && find_id(tmpid[s], surf_id_list, num_surf) < 0) {
         surf_id_list[num_surf] = tmpid[s];
         surf_list[num_surf++] = tmpsurf[s];
@@ -510,7 +517,7 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
   for (uint32_t i = 0; i < num_surf; ++i) {
     if (surf_id_list[i] == SURFACE_ID_LEVEL_SPRITESET_1 || surf_id_list[i] == SURFACE_ID_LEVEL_SPRITESET_2)
       prefix = "Npc/Npc";
-    else if (surf_id_list[i] == SURFACE_ID_LEVEL_BACKGROUND)
+    else if (surf_id_list[i] == SURFACE_ID_LEVEL_BACKGROUND || surf_id_list[i] == SURFACE_ID_TITLE)
       prefix = "";
     else
       prefix = "Stage/Prt";

@@ -1,9 +1,16 @@
-#include <psxapi.h>
-#include <psxetc.h>
+#include <sys/types.h>
+#include <libapi.h>
+#include <libetc.h>
 
 #include "engine/common.h"
 #include "engine/org.h"
 #include "engine/timer.h"
+
+// these are undeclared in psyq
+extern void *InterruptCallback(int irq, void (*func)(void));
+extern void ChangeClearRCnt(int t, int m);
+
+timer_func_t timer_callback = NULL;
 
 volatile u32 timer_ticks;
 volatile u32 timer_next_orgtick;
@@ -38,4 +45,5 @@ void timer_set_callback(timer_func_t cb) {
   timer_orgwait = org_get_wait() / 10;
   InterruptCallback(5, cb); // IRQ5 is RCNT1
   ExitCriticalSection();
+  timer_callback = cb;
 }

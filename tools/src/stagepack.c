@@ -79,6 +79,9 @@ int main(int argc, char **argv) {
 
     //scan for songs used by the stage
     stages[i].numsongs = tsc_scan_music(tsc_src, stages[i].songs, MAX_STAGE_SONGS);
+    // HACK: add extra title song if this is the intro stage
+    if (stages[i].titlesheet[0] && stages[i].numsongs < MAX_STAGE_SONGS)
+      stages[i].songs[stages[i].numsongs++] = 0x18;
 
     // scan for transitions if they weren't specified manually with a BANK directive
     if (stages[i].numlinks < 0)

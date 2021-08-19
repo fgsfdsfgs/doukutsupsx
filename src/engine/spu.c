@@ -1,8 +1,11 @@
-#include "spu.h"
-
-#include <psxspu.h>
+#include <sys/types.h>
+#include <libspu.h>
 
 #include "engine/common.h"
+#include "engine/spu.h"
+
+// still faster to operate the voices using the registers
+// than to get through libspu's attribute bullshit
 
 #define SPU_VOICE_BASE ((volatile u16 *)(0x1F801C00))
 #define SPU_KEY_ON_LO ((volatile u16 *)(0x1F801D88))
@@ -10,7 +13,6 @@
 #define SPU_KEY_OFF_LO ((volatile u16 *)(0x1F801D8C))
 #define SPU_KEY_OFF_HI ((volatile u16 *)(0x1F801D8E))
 #define SPU_KEY_END ((volatile u32 *)(0x1F801D9C))
-#define DMA_BASE ((volatile u32 *)(0x1F801080))
 
 struct spu_voice {
   volatile s16 vol_left;
@@ -23,15 +25,6 @@ struct spu_voice {
   volatile u16 sample_repeataddr;
 };
 #define SPU_VOICE(x) (((volatile struct spu_voice *)SPU_VOICE_BASE) + (x))
-
-struct dma_regs {
-  volatile u32 madr;
-  volatile u32 bcr;
-  volatile u32 chcr;
-  volatile u32 pad;
-};
-#define DMA_CTRL(x) (((volatile struct dma_regs *)DMA_BASE) + (x))
-#define DMA_CTRL_SPU 4
 
 #define PAN_SHIFT 8
 
@@ -48,6 +41,8 @@ static struct {
 
 void spu_init(void) {
   SpuInit();
+  SpuSetTransferMode(SpuTransByDMA);
+  SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
   spu_clear_all_voices();
   spuram_ptr = SPU_RAM_START;
 }
@@ -126,7 +121,6 @@ static inline void spu_update_voice_volume(const u32 v) {
 }
 
 void spu_flush_voices(void) {
-  SpuWait();
   for (int v = 0; v < SPU_NUM_VOICES; ++v) {
     if (voice_state[v].dirty) {
       voice_state[v].dirty = 0;
@@ -151,6 +145,9 @@ void spu_play_sample(const u32 ch, const u32 addr, const u32 freq) {
 }
 
 void spu_wait_for_transfer(void) {
-  while ((DMA_CTRL(DMA_CTRL_SPU)->chcr & 0x01000000) != 0) { }
-  SpuWait();
+  SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
+}
+
+u32 spu_set_transfer_addr(u32 addr) {
+  return SpuSetTransferStartAddr(addr);
 }

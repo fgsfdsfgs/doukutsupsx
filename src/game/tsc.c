@@ -175,7 +175,7 @@ void tsc_start_event(const int num) {
 
   tsc_state.readptr = tsc_find_event(num);
   if (!tsc_state.readptr)
-    panic("started unknown event #%04d\n", num);
+    PANIC("started unknown event #%04d\n", num);
 }
 
 void tsc_jump_event(const int num) {
@@ -188,7 +188,7 @@ void tsc_jump_event(const int num) {
 
   tsc_state.readptr = tsc_find_event(num);
   if (!tsc_state.readptr)
-    panic("jumped to unknown event #%04d", num);
+    PANIC("jumped to unknown event #%04d", num);
 }
 
 void tsc_stop_event(void) {
@@ -236,16 +236,30 @@ void tsc_set_item(const int item) {
 }
 
 void tsc_print_number(const int id) {
-  const int x = tsc_state.num[id % TSC_MAX_NUMBERS];
+  int x = tsc_state.num[id % TSC_MAX_NUMBERS];
 
   const int line = tsc_state.line % TSC_MAX_LINES;
   char *buf = &text[line][tsc_state.writepos];
-  const int len = snprintf(buf, TSC_LINE_LEN - tsc_state.writepos + 1, "%d", x);
+  const int left = TSC_LINE_LEN - tsc_state.writepos + 1;
+
+  // do a shitty reverse print since psyq has no snprintf()
+  // numbers are all 16-bit, so 8 should be enough
+  char dig[8];
+  int firstdig = 7;
+  int numdig = 0;
+  do {
+    dig[--firstdig] = x % 10;
+    x /= 10;
+    ++numdig;
+  } while (x && firstdig);
+  dig[7] = 0;
+
+  strncpy(buf, dig + firstdig, left);
 
   snd_play_sound(PRIO_HIGH, 2, FALSE);
   tsc_state.blink = 0;
 
-  tsc_state.writepos += len;
+  tsc_state.writepos += numdig;
   if (tsc_state.writepos >= TSC_LINE_LEN) {
     tsc_state.writepos = 0;
     ++tsc_state.line;
@@ -322,7 +336,7 @@ static inline bool tsc_op_condjmp(const bool cond, const u16 tgt) {
 
 static inline bool tsc_exec_opcode(const u8 opcode) {
   if (opcode > NUM_OPCODES)
-    panic("unknown TSC opcode %02x", opcode);
+    PANIC("unknown TSC opcode %02x", opcode);
 
   npc_t *npc;
   u16 args[MAX_OP_ARGS];
@@ -612,12 +626,13 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     // other
     case 0x4F: // SVP
-      profile_write();
-      return FALSE;
+      profile_save();
+      menu_open(MENU_SAVE);
+      return TRUE;
     case 0x50: // LDP
-      if (!profile_read()) {
+      if (!profile_load()) {
         game_reset();
-        game_start();
+        game_start_new();
       }
       return TRUE;
     case 0x51: // STC
@@ -637,10 +652,14 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       printf("TODO: credits hide illust\n");
       return FALSE;
     case 0x56: // ESC
+      // can't exit, so we restart instead in both cases
+      game_reset();
+      game_start_intro();
+      return TRUE;
     case 0x57: // INI
       // can't exit, so we restart instead in both cases
       game_reset();
-      game_start();
+      game_start_new();
       return TRUE;
     case 0x58: // PS+
       game_add_tele_dest(args[0], args[1]);
@@ -715,6 +734,7 @@ bool tsc_update(void) {
         } else {
           // regular opcode
           stop = tsc_exec_opcode(opcode);
+          tsc_state.last_opcode = opcode;
         }
       }
       break;
@@ -749,6 +769,9 @@ bool tsc_update(void) {
       if (!cam_is_fading()) {
         tsc_state.mode = TSC_MODE_PARSE;
         tsc_state.blink = 0;
+        // HACK: if this is the title stage, open menu after fade out is done
+        if (stage_data && stage_data->id == STAGE_OPENING_ID && tsc_state.last_opcode == 0x10)
+          menu_open(MENU_TITLE);
       }
       break;
 

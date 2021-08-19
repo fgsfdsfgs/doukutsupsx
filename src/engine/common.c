@@ -2,23 +2,20 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <psxgpu.h>
+#include <sys/types.h>
+#include <libetc.h>
+#include <libgte.h>
+#include <libgpu.h>
 
 #include "engine/common.h"
 #include "spu.h"
 
-#define MAX_ERROR 512
+// error message buffer
+char error_msg[MAX_ERROR];
 
-void panic(const char *error, ...) {
-  char buf[MAX_ERROR];
-
-  va_list args;
-  va_start(args, error);
-  vsnprintf(buf, sizeof(buf), error, args);
-  va_end(args);
-
+void do_panic(void) {
   // spew to TTY
-  printf("ERROR: %s\n", buf);
+  printf("ERROR: %s\n", error_msg);
 
   // setup graphics viewport and clear screen
   SetDispMask(0);
@@ -35,7 +32,7 @@ void panic(const char *error, ...) {
   FntOpen(0, 8, 320, 224, 0, MAX_ERROR);
 
   // draw
-  FntPrint(-1, "ERROR:\n%s", buf);
+  FntPrint(-1, "ERROR:\n%s", error_msg);
   FntFlush(-1);
   DrawSync(0);
   VSync(0);

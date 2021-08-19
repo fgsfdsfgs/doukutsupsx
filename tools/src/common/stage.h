@@ -19,6 +19,8 @@
 #define MIN_STAGE_WIDTH 21
 #define MIN_STAGE_HEIGHT 16
 
+#define START_STAGE_ID 72
+
 #pragma pack(push, 1)
 
 typedef struct {
@@ -87,6 +89,7 @@ typedef struct {
   char npcsheet[MAX_RES_NAME];
   char bosssheet[MAX_RES_NAME];
   char bksheet[MAX_RES_NAME];
+  char titlesheet[MAX_RES_NAME];
   uint32_t songs[MAX_STAGE_SONGS];
   uint32_t links[MAX_STAGELIST_LINKS];
   int bktype;

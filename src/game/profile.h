@@ -5,6 +5,9 @@
 #include "game/player.h"
 #include "game/game.h"
 #include "game/npc.h"
+#include "game/stage.h"
+
+#define PROFILE_FILENAME "BIDOUKUTSU"
 
 #pragma pack(push, 1)
 
@@ -29,7 +32,9 @@ typedef struct {
   u8 map_flags[GAME_MAX_MAPFLAGS];
   u8 skip_flags[GAME_MAX_SKIPFLAGS];
   profile_player_t player;
+  char stage_title[MAX_STAGE_TITLE];
   u32 game_tick;
+  u32 clock_tick;
   u16 stage_id;
   u16 stage_bank_id;
   u16 music_id;
@@ -39,7 +44,8 @@ typedef struct {
 #pragma pack(pop)
 
 extern profile_t profile;
+extern int profile_slot;
 
 void profile_reset(void);
-bool profile_write(void);
-bool profile_read(void);
+void profile_save(void);
+bool profile_load(void);

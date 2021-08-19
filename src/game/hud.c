@@ -137,8 +137,6 @@ void hud_update(void) {
     hud_boss_life = NULL;
 }
 
-static const int numdiv[4] = { 1000, 100, 10, 1 };
-
 void hud_draw_number(int val, int x, int y) {
   // drawing right to left
   do {

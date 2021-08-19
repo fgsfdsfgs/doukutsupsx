@@ -74,6 +74,7 @@ typedef struct {
   s8 mode;              // current mode (e.g. NOD, WAI)
   s8 yesno;             // selection in yes/no prompt
   u8 blink;             // cursor blink
+  u8 last_opcode;       // last executed opcode
 } tsc_state_t;
 
 extern tsc_state_t tsc_state;

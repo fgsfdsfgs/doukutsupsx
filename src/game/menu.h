@@ -9,6 +9,9 @@ enum menu_type {
   MENU_INVENTORY,
   MENU_MAP,
   MENU_STAGESELECT,
+  MENU_SAVE,
+  MENU_LOAD,
+  MENU_OPTIONS,
 };
 
 void menu_init(void);
@@ -16,3 +19,5 @@ int menu_active(void);
 void menu_act(void);
 void menu_draw(void);
 void menu_open(const int type);
+
+bool menu_uses_tsc(void);

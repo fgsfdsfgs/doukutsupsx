@@ -6,12 +6,14 @@ tools/data/*
 tools/out/*
 !tools/data/FontAscii.pbm
 !tools/data/Fade4bpp.pbm
+!tools/data/SaveIcon.pbm
 *.o
 *.elf
 *.exe
 *.iso
 *.psb
 *.bsp
+*.dep
 .vscode
 compile_flags.txt
 compile_commands.json

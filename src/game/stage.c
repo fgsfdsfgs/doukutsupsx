@@ -73,7 +73,7 @@ int stage_load_stage_bank(const u32 id) {
 
   fs_file_t *f = fs_fopen(bank_path, 0);
   if (!f)
-    panic("could not load stage bank\n%s", bank_path);
+    PANIC("could not load stage bank\n%s", bank_path);
 
   // just load the entire fucking thing at once
   const u32 bank_len = fs_fsize(f);
@@ -162,7 +162,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
     stage_data->ev_offset, stage_data->tsc_offset, (u8 *)&stage_data->map_data[stage_data->tsc_offset] - (u8 *)stage_bank);
   printf("tileset (%d, %d, %02x, %04x)\n", gfx_surf[2].tex_x, gfx_surf[2].tex_y, gfx_surf[2].mode, gfx_surf[2].clut);
 
-  return true;
+  return TRUE;
 }
 
 static inline void stage_load_music(const u32 id) {

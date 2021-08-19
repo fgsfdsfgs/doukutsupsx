@@ -2,12 +2,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <psxgpu.h>
+#include <libetc.h>
+#include <libgte.h>
+#include <libgpu.h>
 
 #include "engine/common.h"
 #include "engine/memory.h"
 #include "engine/filesystem.h"
 #include "engine/graphics.h"
+
+// block fill primitive
+// taken from psn00bsdk
+typedef struct _FILL {
+  u_long tag;
+  u_char r0, g0, b0, code;
+  u_short x0, y0;
+  u_short w, h;
+} FILL;
+
+#define setFill(p) setlen(p, 3), setcode(p, 0x02)
+
+// shut up compiler
+#undef termPrim
+#define termPrim(p) setaddr(p, 0xFFFFFF)
 
 #define GPU_BUF_SIZE 32768
 
@@ -289,8 +306,8 @@ void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x,
     const int n = *ch - ' ';
     SPRT *prim = (SPRT *)primptr;
     setSprt(prim);
-    setRGB0(prim, rgb[0], rgb[1], rgb[2]);
     setSemiTrans(prim, 0);
+    setRGB0(prim, rgb[0] >> 1, rgb[1] >> 1, rgb[2] >> 1);
     setXY0(prim, x, y);
     setUV0(prim, fnt8_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt8_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
     setWH(prim, GFX_FONT_WIDTH, GFX_FONT_HEIGHT);
@@ -321,14 +338,14 @@ void gfx_draw_fillrect(const u8 *rgb, const int layer, const int x, const int y,
 void gfx_push_cliprect(const int layer, const int x, const int y, const int w, const int h) {
   DR_AREA *prim = (DR_AREA *)primptr;
   const RECT *curclip = &fb[!cur_fb_num].draw.clip;
-  const RECT tmprect = { x + curclip->x, y + curclip->y, w, h };
-  setDrawArea(prim, &tmprect);
+  RECT tmprect = { x + curclip->x, y + curclip->y, w, h };
+  SetDrawArea(prim, &tmprect);
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
 void gfx_pop_cliprect(const int layer) {
   DR_AREA *prim = (DR_AREA *)primptr;
-  setDrawArea(prim, &fb[!cur_fb_num].draw.clip);
+  SetDrawArea(prim, &fb[!cur_fb_num].draw.clip);
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
@@ -457,7 +474,7 @@ int gfx_read_gfx_bank(fs_file_t *f) {
 
 int gfx_load_gfx_bank(const char *path) {
   fs_file_t *f = fs_fopen(path, 0);
-  if (!f) panic("could not open\n%s", path);
+  if (!f) PANIC("could not open\n%s", path);
   const int ret = gfx_read_gfx_bank(f);
   fs_fclose(f);
   return ret;

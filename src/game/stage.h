@@ -6,6 +6,8 @@
 #define STAGE_PATH_PREFIX "\\"
 #define STAGE_PATH_START  1
 
+#define STAGE_OPENING_ID 72
+
 #define MAX_TILESET_SIZE 16
 #define MAX_STAGE_LINKS 4
 #define MAX_STAGE_TITLE 32

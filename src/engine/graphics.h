@@ -1,7 +1,8 @@
 #pragma once
 
 #include <sys/types.h>
-#include <psxgpu.h>
+#include <libgte.h>
+#include <libgpu.h>
 
 #include "engine/filesystem.h"
 #include "engine/surfacelist.h"

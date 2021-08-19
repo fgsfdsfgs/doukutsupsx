@@ -43,18 +43,18 @@ static inline int hit_check_bullet_block2(int x, int y, unsigned char *atrb, bul
   if (bul->bits & 0x40) {
     for (i = 0; i < 4; ++i) {
       if (*atrb == 0x41 || *atrb == 0x61)
-        block[i] = true;
+        block[i] = TRUE;
       else
-        block[i] = false;
+        block[i] = FALSE;
 
       ++atrb;
     }
   } else {
     for (i = 0; i < 4; ++i) {
       if (*atrb == 0x41 || *atrb == 0x43 || *atrb == 0x61)
-        block[i] = true;
+        block[i] = TRUE;
       else
-        block[i] = false;
+        block[i] = FALSE;
 
       ++atrb;
     }

@@ -9,7 +9,7 @@ npc_class_t *npc_classtab;
 
 void npc_load_classtab(const char *tabpath) {
   fs_file_t *f = fs_fopen(tabpath, 0);
-  if (!f) panic("could not open\n%s", tabpath);
+  if (!f) PANIC("could not open\n%s", tabpath);
 
   const int size = fs_fsize(f);
   const int count = size / sizeof(npc_class_t);

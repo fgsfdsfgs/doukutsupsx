@@ -1,6 +1,12 @@
 #pragma once
 
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 // some common constants and macros
+
+#define MAX_ERROR 512
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -37,7 +43,11 @@ typedef unsigned   int u32;
 typedef   signed   int s32;
 
 typedef int bool;
-enum { FALSE, TRUE };
+
+#ifndef FALSE
+#define FALSE 0
+#define TRUE 1
+#endif
 
 // RECT-compatible rect type
 typedef union {
@@ -62,9 +72,15 @@ typedef struct {
 
 // utilities
 
-void panic(const char *fmt, ...) __attribute__((noreturn));
+// since psyq lacks vs(n)printf, we'll have to replace PANIC() with a shitty macro
+extern char error_msg[MAX_ERROR];
+
+#define PANIC(...) \
+  do { sprintf(error_msg, __VA_ARGS__); do_panic(); } while (0)
+
+void do_panic(void) __attribute__((noreturn));
 
 static inline void do_assert(const int expr, const char *strexpr, const char *file, const int line) {
   if (!expr)
-    panic("ASSERTION FAILED: %s:%d:\n%s", file, line, strexpr);
+    PANIC("ASSERTION FAILED: %s:%d:\n%s", file, line, strexpr);
 }

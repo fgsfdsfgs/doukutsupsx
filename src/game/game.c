@@ -45,14 +45,21 @@ void game_init(void) {
   game_tick = 0;
 }
 
-void game_start(void) {
-  // skip intro cutscene
-  game_set_skipflag(5);
-  // load start point
-  stage_transition(13, 200, 10, 8);
+void game_start_intro(void) {
+  // load title map
+  stage_transition(STAGE_OPENING_ID, 100, 3, 3);
+  // set player to be invisible and intangible
+  player.cond |= PLRCOND_INVISIBLE;
+  game_flags = GFLAG_INPUT_ENABLED | 1;
+  // stage_transition(13, 200, 10, 8);
   // stage_transition(62, 90, 80, 9);
   // stage_transition(56, 90, 80, 9);
   // stage_transition(2, 90, 5, 6);
+}
+
+void game_start_new(void) {
+  // load starting point
+  stage_transition(13, 200, 10, 8);
 }
 
 void game_reset(void) {
@@ -133,7 +140,7 @@ void game_frame(void) {
     menu_act();
     game_draw_common();
     menu_draw();
-    if (cur_menu != MENU_PAUSE) {
+    if (menu_uses_tsc()) {
       tsc_update();
       tsc_draw();
     }

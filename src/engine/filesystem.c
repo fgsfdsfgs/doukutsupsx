@@ -1,12 +1,12 @@
-#include "engine/filesystem.h"
-
-#include <psxcd.h>
-#include <psxgpu.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <libcd.h>
+#include <libetc.h>
 
 #include "engine/common.h"
+#include "engine/filesystem.h"
 
 #define SECSIZE 2048
 #define BUFSECS 4
@@ -29,12 +29,9 @@ static fs_file_t fhandle;
 static int num_fhandles = 0;
 
 void cd_init(void) {
-  // psn00b's CdInit always returns 1, so we'll have to check for success below
-  CdInit();
-
   // see if there was a CD in the drive during init, die if there wasn't
-  if (CdSync(1, NULL) == CdlDiskError)
-    panic("bad CD or no CD in drive");
+  if (!CdInit())
+    PANIC("bad CD or no CD in drive");
 
   // look alive
   CdControl(CdlNop, 0, 0);
@@ -60,7 +57,8 @@ fs_file_t *fs_fopen(const char *fname, const int reopen) {
   fs_file_t *f = &fhandle;
   memset(f, 0, sizeof(*f));
 
-  if (CdSearchFile(&f->cdf, fname) == NULL) {
+  // good bye const
+  if (CdSearchFile(&f->cdf, (char *)fname) == NULL) {
     printf("fs_fopen(%s): file not found\n", fname);
     return NULL;
   }
@@ -143,7 +141,7 @@ int fs_fread(void *ptr, int size, int num, fs_file_t *f) {
 
 void fs_fread_or_die(void *ptr, int size, int num, fs_file_t *f) {
   if (fs_fread(ptr, size, num, f) < 0)
-    panic("fs_fread_or_die(%.16s, %d, %d): fucking died", f->cdf.name, size, num);
+    PANIC("fs_fread_or_die(%.16s, %d, %d): fucking died", f->cdf.name, size, num);
 }
 
 int fs_fseek(fs_file_t *f, int ofs, int whence) {
@@ -216,17 +214,3 @@ u32 fs_fread_u32(fs_file_t *f) {
   return res;
 }
 
-int fs_scan_dir(const char *dir, char out[][CD_MAX_FILENAME], const char *filter) {
-  CdlFILE cdf;
-  CdlDIR *cddir = CdOpenDir(dir);
-  if (!cddir) return -1;
-  int n = 0;
-  while (CdReadDir(cddir, &cdf)) {
-    if (cdf.name[0] && cdf.name[0] != '.' &&
-        (!filter || strstr(cdf.name, filter))) {
-      strncpy(out[n], cdf.name, CD_MAX_FILENAME);
-      ++n;
-    }
-  }
-  return n;
-}

@@ -8,17 +8,20 @@
 #include "game/player.h"
 #include "game/npc.h"
 #include "game/camera.h"
+#include "game/menu.h"
 #include "game/profile.h"
 
 #define PROFILE_MAGIC "CSPF"
 
 profile_t profile;
+int profile_slot = -1;
 
 void profile_reset(void) {
   memset(&profile, 0, sizeof(profile));
+  profile_slot = -1;
 }
 
-static void profile_save(void) {
+void profile_save(void) {
   memcpy(profile.magic, PROFILE_MAGIC, 4);
   profile.game_tick = game_tick;
 
@@ -27,6 +30,7 @@ static void profile_save(void) {
   memcpy(profile.map_flags, map_flags, sizeof(profile.map_flags));
   memcpy(profile.skip_flags, skip_flags, sizeof(profile.skip_flags));
   memcpy(profile.tele_dest, tele_dest, sizeof(profile.tele_dest));
+  memcpy(profile.stage_title, stage_data->title, sizeof(profile.stage_title));
   profile.tele_dest_num = tele_dest_num;
   profile.stage_id = stage_data->id;
   profile.stage_bank_id = stage_bank_id;
@@ -48,7 +52,7 @@ static void profile_save(void) {
   printf("profile_save(): stage=%02x stage_bank=%02x\n", profile.stage_id, profile.stage_bank_id);
 }
 
-static bool profile_load(void) {
+bool profile_load(void) {
   if (memcmp(profile.magic, PROFILE_MAGIC, 4))
     return FALSE;
 
@@ -88,15 +92,4 @@ static bool profile_load(void) {
   cam_clear_fade();
 
   return TRUE;
-}
-
-bool profile_write(void) {
-  profile_save();
-  // TODO: memcard stuff
-  return TRUE;
-}
-
-bool profile_read(void) {
-  // TODO: memcard stuff
-  return profile_load();
 }

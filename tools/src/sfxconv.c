@@ -29,7 +29,7 @@ static bool load_wav(struct sfx *sfx, const char *fname) {
     return false;
   }
 
-  int16_t *pcm = malloc(sizeof(int16_t) * wav.totalPCMFrameCount);
+  int16_t *pcm = calloc(1, sizeof(int16_t) * wav.totalPCMFrameCount);
   assert(pcm);
 
   const uint32_t total_read = drwav_read_pcm_frames_s16(&wav, wav.totalPCMFrameCount, pcm);

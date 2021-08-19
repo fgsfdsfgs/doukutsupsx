@@ -134,11 +134,11 @@ bool org_load(const u32 id, u8 *data, sfx_bank_t *bank) {
     return TRUE; // already loaded
 
   if (memcmp(data, ORG_MAGIC, ORG_MAGICLEN))
-    panic("org_load: invalid Org magic: %02x%02x%02x%02x", data[0], data[1], data[2], data[3], data[4]);
+    PANIC("org_load: invalid Org magic: %02x%02x%02x%02x", data[0], data[1], data[2], data[3], data[4]);
 
   const int ver = (char)data[ORG_MAGICLEN] - '0';
   if (ver != 1 && ver != 2)
-    panic("org_load: expected version 1 or 2, got %d\n", ver);
+    PANIC("org_load: expected version 1 or 2, got %d\n", ver);
 
   memcpy(&org.info, &data[ORG_MAGICLEN + 1], sizeof(org.info));
 

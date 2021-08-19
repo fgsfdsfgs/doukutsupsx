@@ -5,6 +5,9 @@
 #include "engine/memory.h"
 #include "engine/sound.h"
 #include "engine/input.h"
+#include "engine/timer.h"
+#include "engine/org.h"
+#include "engine/mcrd.h"
 
 #include "game/player.h"
 #include "game/stage.h"
@@ -35,6 +38,12 @@ static gfx_texrect_t rc_cursor_items[2] = {
   {{ 80, 88,  112, 104 }},
   {{ 80, 104, 112, 120 }},
 };
+static gfx_texrect_t rc_cursor_menu[4] = {
+  {{ 0,  16, 16, 32 }},
+  {{ 16, 16, 32, 32 }},
+  {{ 0,  16, 16, 32 }},
+  {{ 32, 16, 48, 32 }},
+};
 
 static gfx_texrect_t rc_title[2] = {
   {{ 80, 48, 144, 56 }},
@@ -44,6 +53,16 @@ static gfx_texrect_t rc_title[2] = {
 static gfx_texrect_t rc_stage[8];
 
 static gfx_texrect_t rc_stagesel_title = {{ 80, 64, 144, 72 }};
+static gfx_texrect_t rc_main_title = {{ 0, 0, 144, 40 }};
+
+// common variables used by simple multiple-choice menus
+static int main_sel = 0;
+static int main_count = 0;
+static int main_tick = 0;
+static const char *main_title = NULL;
+static const char **main_choices;
+static const u8 main_bg_rgb[] = { 32, 32, 32 };
+static const u8 main_title_rgb[] = { 243, 226, 152 };
 
 void menu_init(void) {
   menu_id = MENU_NONE;
@@ -65,6 +84,9 @@ void menu_init(void) {
     gfx_set_texrect(&rc_title[i], SURFACE_ID_TEXT_BOX);
   }
 
+  for (int i = 0; i < 4; ++i)
+    gfx_set_texrect(&rc_cursor_menu[i], SURFACE_ID_MY_CHAR);
+
   for (int i = 0; i < 8; ++i) {
     rc_stage[i].r.left =  i * 32;
     rc_stage[i].r.top = 0;
@@ -83,10 +105,84 @@ static inline void menu_close(void) {
   menu_id = MENU_NONE;
 }
 
+static inline u32 menu_generic_control(void) {
+  if (input_trig & IN_UP) {
+    snd_play_sound(PRIO_HIGH, 1, FALSE);
+    if (--main_sel < 0)
+      main_sel = main_count - 1;
+  } else if (input_trig & IN_DOWN) {
+    snd_play_sound(PRIO_HIGH, 1, FALSE);
+    if (++main_sel >= main_count)
+      main_sel = 0;
+  }
+  if (input_trig & IN_OK)
+    return IN_OK;
+  if (input_trig & IN_CANCEL)
+    return IN_CANCEL;
+  return 0;
+}
+
+static inline void menu_generic_draw(int x, int y) {
+  int yofs = 8;
+  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, x - 16, y + 5 + 8 + main_sel * 20);
+  for (int i = 0; i < main_count; ++i, yofs += 20)
+    gfx_draw_string(main_choices[i], GFX_LAYER_FRONT, x + 8, y + 8 + yofs);
+}
+
+static inline void draw_string_centered(const char *str, const u8 *rgb, int x, int y) {
+  const int w = strlen(str) * GFX_FONT_WIDTH;
+  if (rgb)
+    gfx_draw_string_rgb(str, rgb, GFX_LAYER_FRONT, x - w / 2, y);
+  else
+    gfx_draw_string(str, GFX_LAYER_FRONT, x - w / 2, y);
+}
+
 /* default func */
 
 static void menu_null(void) {
   // nada
+}
+
+/* main menu */
+
+#define MAIN_LEFT ((VID_WIDTH / 2) - 72 - 8)
+#define MAIN_TOP (40 - 8)
+
+static void menu_title_open(void) {
+  static const char *submenu_text[3] = { "New", "Load", "Options" };
+  main_count = 3;
+  main_sel = 0;
+  main_choices = submenu_text;
+  main_title = "";
+  // the title surface is only loaded in one specific map, so we can't do this in init
+  gfx_set_texrect(&rc_main_title, SURFACE_ID_TITLE);
+  // set title music (should be loaded with the "u" stagebank)
+  stage_change_music(0x18);
+}
+
+static void menu_title_act(void) {
+  static const int submenus[] = {
+    -1, MENU_LOAD, MENU_OPTIONS,
+  };
+  const u32 btn = menu_generic_control();
+  if (btn == IN_OK) {
+    snd_play_sound(PRIO_HIGH, 18, FALSE);
+    menu_id = 0;
+    if (submenus[main_sel] == -1) {
+      game_reset();
+      game_start_new();
+    } else {
+      menu_open(submenus[main_sel]);
+    }
+  }
+}
+
+static void menu_title_draw(void) {
+  // clear the screen
+  gfx_draw_clear(main_bg_rgb, GFX_LAYER_FRONT);
+  // draw the menu
+  gfx_draw_texrect(&rc_main_title, GFX_LAYER_FRONT, MAIN_LEFT, MAIN_TOP);
+  menu_generic_draw(MAIN_LEFT + 48, MAIN_TOP + 80);
 }
 
 /* pause */
@@ -94,11 +190,8 @@ static void menu_null(void) {
 static void menu_pause_act(void) {
   if (input_trig & IN_OK) {
     menu_id = MENU_NONE;
-    // TODO: when there's a title menu, just reset instead
-    if (!profile_read()) {
-      game_reset();
-      game_start();
-    }
+    game_reset();
+    game_start_intro();
   } else if (input_trig & (IN_CANCEL | IN_PAUSE)) {
     menu_id = MENU_NONE;
   } else if (input_trig & IN_DEBUG) {
@@ -593,19 +686,229 @@ static void menu_stagesel_draw(void) {
   }
 }
 
+/* save/load menu */
+
+enum saveload_menu_state {
+  SLSTATE_SELECT_MEMCARD,
+  SLSTATE_SELECT_SAVE,
+  SLSTATE_NO_MEMCARDS,
+  SLSTATE_ERROR,
+  SLSTATE_OVERWRITE,
+  SLSTATE_FORMAT,
+};
+
+static struct {
+  s32 state;
+  mcrd_id_t cards[MCRD_CARDS_PER_PORT * MCRD_NUM_PORTS];
+  s32 num_cards;
+  u32 slot_mask;
+  const char *title;
+} saveload;
+
+static const char *str_yesno[] = { "Yes", "No" };
+static const char *str_ok[] = { "OK" };
+static const char *str_memcard[] = { "Memory Card 1", "Memory Card 2" };
+
+static void menu_saveload_open(void) {
+  main_sel = 0;
+
+  // tick music in the timer callback because all memcard processing is synchronous
+  timer_set_callback(timer_cb_music);
+
+  mcrd_start();
+
+  saveload.num_cards = mcrd_cards_available(saveload.cards);
+
+  if (saveload.num_cards) {
+    saveload.state = SLSTATE_SELECT_MEMCARD;
+    saveload.title = "Select Memory Card";
+    main_count = saveload.num_cards;
+    // skip memcard 1 if we don't have it
+    main_choices = &str_memcard[(saveload.cards[0].port == 1)];
+  } else {
+    saveload.state = SLSTATE_NO_MEMCARDS;
+    saveload.title = "No Memory Cards detected.";
+    main_count = 1; // "OK"
+  }
+}
+
+static inline void menu_saveload_close(void) {
+  mcrd_stop();
+  timer_set_callback(timer_cb_ticker);
+  menu_id = 0;
+  // if we're in the intro stage, re-open the main menu
+  if (!stage_data || stage_data->id == STAGE_OPENING_ID)
+    menu_open(MENU_TITLE);
+}
+
+static inline void menu_saveload_act_select_memcard(const u32 btn) {
+  if (btn == 0)
+    return;
+
+  // btn can be either OK or CANCEL at this point
+  snd_play_sound(PRIO_HIGH, 18, FALSE);
+
+  if (btn == IN_CANCEL) {
+    menu_saveload_close();
+    return;
+  }
+
+  mcrd_result_t res = mcrd_card_open(saveload.cards[main_sel]);
+
+  if (res == MCRD_UNFORMATTED) {
+    // card is unformatted
+    if (menu_id == MENU_SAVE) {
+      // offer to format since we're saving
+      saveload.state = SLSTATE_FORMAT;
+      saveload.title = "Card is not formatted. Format?";
+      main_count = 2; // "Yes"/"No"
+    } else {
+      // can't really do shit at this point
+      saveload.state = SLSTATE_ERROR;
+      saveload.title = "Card is not formatted.";
+      main_count = 1; // "OK"
+    }
+    main_sel = 0;
+    return;
+  }
+
+  if (res != MCRD_SUCCESS) {
+    // error deteecting card
+    saveload.state = SLSTATE_ERROR;
+    saveload.title = "Could not read card.";
+    main_count = 1; // "OK"
+    main_sel = 0;
+    return;
+  }
+
+  // success; try opening save file
+  res = mcrd_save_open(PROFILE_FILENAME);
+  if (res != MCRD_SUCCESS) {
+      // if we're in SAVE mode, create new save file if one doesn't exist
+    if (menu_id == MENU_SAVE)
+      res = mcrd_save_create(PROFILE_FILENAME);
+  }
+
+  if (res != MCRD_SUCCESS) {
+    saveload.state = SLSTATE_ERROR;
+    saveload.title = (menu_id == MENU_SAVE) ?
+      "Could not write save file." : "No save file on this card.";
+    main_count = 1; // "OK"
+    main_sel = 0;
+    return;
+  }
+
+  saveload.state = SLSTATE_SELECT_SAVE;
+  saveload.title = "Select File";
+  main_count = MCRD_MAX_SAVES;
+  main_sel = 0;
+}
+
+static inline void menu_saveload_act_select_save(const u32 btn) {
+  if (btn == 0)
+    return;
+
+  // btn can be either OK or CANCEL at this point
+  snd_play_sound(PRIO_HIGH, 18, FALSE);
+
+  if (btn == IN_CANCEL) {
+    // go back to memcard selection
+    saveload.state = SLSTATE_SELECT_MEMCARD;
+    saveload.title = "Select Memory Card";
+    main_count = saveload.num_cards;
+    // skip memcard 1 if we don't have it
+    main_choices = &str_memcard[(saveload.cards[0].port == 1)];
+    return;
+  }
+}
+
+static void menu_saveload_act(void) {
+  const u32 btn = menu_generic_control();
+
+  switch (saveload.state) {
+    case SLSTATE_SELECT_MEMCARD:
+      menu_saveload_act_select_memcard(btn);
+      break;
+    case SLSTATE_SELECT_SAVE:
+      menu_saveload_act_select_save(btn);
+      break;
+    case SLSTATE_OVERWRITE:
+      break;
+    case SLSTATE_FORMAT:
+      if (btn == IN_OK && main_sel == 0) {
+        // user pressed yes, format that shit
+        mcrd_result_t res = mcrd_card_format();
+        if (res != MCRD_SUCCESS) {
+          saveload.state = SLSTATE_ERROR;
+          saveload.title = "Error formatting card.";
+          main_sel = 0;
+          main_count = 1; // "OK"
+        } else {
+          saveload.state = SLSTATE_SELECT_SAVE;
+          saveload.title = "Select File";
+          main_count = MCRD_MAX_SAVES;
+          main_sel = 0;
+        }
+      } else if (btn == IN_CANCEL || (btn == IN_OK && main_sel == 1)) {
+        // go back to memcard selection
+        saveload.state = SLSTATE_SELECT_MEMCARD;
+        saveload.title = "Select Memory Card";
+        main_count = saveload.num_cards;
+        // skip memcard 1 if we don't have it
+        main_choices = &str_memcard[(saveload.cards[0].port == 1)];
+      }
+      break;
+    default: // all the other "OK" message prompts, etc
+      if (btn) {
+        snd_play_sound(PRIO_HIGH, 18, FALSE);
+        menu_saveload_close();
+      }
+      break;
+  }
+}
+
+static inline void menu_saveload_draw_select_save(void) {
+  draw_string_centered(saveload.title, main_title_rgb, VID_WIDTH / 2, 36);
+}
+
+static void menu_saveload_draw(void) {
+  gfx_draw_clear(main_bg_rgb, GFX_LAYER_FRONT);
+
+  int xofs;
+  switch (saveload.state) {
+    case SLSTATE_SELECT_SAVE:
+      menu_saveload_draw_select_save();
+      break;
+    default:
+      main_choices = (main_count == 1) ? str_ok : str_yesno;
+      /* fallthrough */
+    case SLSTATE_SELECT_MEMCARD:
+      xofs = (strlen(main_choices[0]) * GFX_FONT_WIDTH - 8) / 2;
+      draw_string_centered(saveload.title, main_title_rgb, VID_WIDTH / 2, VID_HEIGHT / 2 - 48);
+      menu_generic_draw(VID_WIDTH / 2 - xofs, MAIN_TOP + 80 - 24);
+      break;
+  }
+}
+
+/* -------------- */
+
 typedef void (*menu_func_t)(void);
 
 static const struct menu_desc {
   menu_func_t openfunc;
   menu_func_t actfunc;
   menu_func_t drawfunc;
+  bool need_tsc;
 } menu_desctab[] = {
-  { menu_null,           menu_null,          menu_null           }, // NONE
-  { menu_null,           menu_null,          menu_null           }, // TITLE
-  { menu_null,           menu_pause_act,     menu_pause_draw     }, // PAUSE
-  { menu_inventory_open, menu_inventory_act, menu_inventory_draw }, // INVENTORY
-  { menu_map_open,       menu_map_act,       menu_map_draw       }, // MAP
-  { menu_stagesel_open,  menu_stagesel_act,  menu_stagesel_draw  }, // STAGESELECT
+  { menu_null,           menu_null,          menu_null,           FALSE }, // NONE
+  { menu_title_open,     menu_title_act,     menu_title_draw,     FALSE }, // TITLE
+  { menu_null,           menu_pause_act,     menu_pause_draw,     FALSE }, // PAUSE
+  { menu_inventory_open, menu_inventory_act, menu_inventory_draw, TRUE  }, // INVENTORY
+  { menu_map_open,       menu_map_act,       menu_map_draw,       TRUE  }, // MAP
+  { menu_stagesel_open,  menu_stagesel_act,  menu_stagesel_draw,  TRUE  }, // STAGESELECT
+  { menu_saveload_open,  menu_saveload_act,  menu_saveload_draw,  FALSE }, // SAVE
+  { menu_saveload_open,  menu_saveload_act,  menu_saveload_draw,  FALSE }, // LOAD
+  { menu_null,           menu_null,          menu_null,           FALSE }, // OPTIONS
 };
 
 void menu_open(const int menu) {
@@ -623,4 +926,8 @@ void menu_act(void) {
 
 void menu_draw(void) {
   menu_desctab[menu_id].drawfunc();
+}
+
+bool menu_uses_tsc(void) {
+  return menu_desctab[menu_id].need_tsc;
 }

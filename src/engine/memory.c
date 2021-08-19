@@ -27,12 +27,11 @@ static struct {
   u32 mem_numallocs;
 } mem_mark[MEM_MARK_COUNT];
 
-void mem_init(void) {
-  // fuck the heap, but we'll leave some in case libc needs it
-  SetHeapSize(MALLOC_HEAP_SIZE);
+// this should be defined somewhere
+extern u32 __bss_end;
 
-  // the 4 is for the malloc magic I think
-  mem_base = (u8 *)GetBSSend() + 4 + MALLOC_HEAP_SIZE;
+void mem_init(void) {
+  mem_base = (u8 *)&__bss_end + MALLOC_HEAP_SIZE;
   mem_base = (u8 *)ALIGN((u32)mem_base, MEM_ALIGNMENT);
   mem_size = mem_left = (u8 *)RAM_END - mem_base - STACK_SIZE;
   mem_ptr = mem_lastptr = mem_base;
@@ -44,11 +43,11 @@ void mem_init(void) {
 void *mem_alloc(const u32 size) {
   const u32 asize = ALIGN(size, MEM_ALIGNMENT);
   if (size == 0)
-    panic("mem_alloc: size == 0");
+    PANIC("mem_alloc: size == 0");
   if (mem_left < asize)
-    panic("mem_alloc: failed to alloc %u bytes", size);
+    PANIC("mem_alloc: failed to alloc %u bytes", size);
   if (mem_numallocs == MEM_MAX_ALLOCS)
-    panic("mem_alloc: MAX_ALLOCS reached");
+    PANIC("mem_alloc: MAX_ALLOCS reached");
   mem_lastptr = mem_ptr;
   mem_ptr += asize;
   mem_left -= asize;
@@ -68,9 +67,9 @@ void *mem_realloc(void *ptr, const u32 newsize) {
   const u32 anewsize = ALIGN(newsize, MEM_ALIGNMENT);
   const u32 oldsize = mem_allocs[mem_numallocs - 1];
   if (ptr != mem_lastptr || !mem_numallocs)
-    panic("mem_realloc: this is a stack allocator you dolt");
+    PANIC("mem_realloc: this is a stack allocator you dolt");
   if (mem_left < anewsize)
-    panic("mem_realloc: failed to realloc %p from %u to %u bytes", oldsize, anewsize);
+    PANIC("mem_realloc: failed to realloc %p from %u to %u bytes", oldsize, anewsize);
   mem_left += newsize - oldsize;
   mem_ptr = mem_lastptr + newsize;
   mem_allocs[mem_numallocs - 1] = newsize;
@@ -81,9 +80,9 @@ void mem_free(void *ptr) {
   if (!ptr)
     return;  // NULL free is a no-op
   if (ptr != mem_lastptr)
-    panic("mem_free: this is a stack allocator you dolt");
+    PANIC("mem_free: this is a stack allocator you dolt");
   if (mem_numallocs == 0)
-    panic("mem_free: nothing to free");
+    PANIC("mem_free: nothing to free");
   const u32 size = mem_allocs[--mem_numallocs];
   mem_left += size;
   mem_ptr = mem_lastptr;

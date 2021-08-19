@@ -5,6 +5,7 @@
 #define TIMER_RATE 100
 
 typedef void (*timer_func_t)(void);
+extern timer_func_t timer_callback;
 
 // global timer; ticks at 100hz
 extern volatile u32 timer_ticks;

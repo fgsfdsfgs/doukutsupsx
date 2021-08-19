@@ -29,7 +29,7 @@ int snd_init(const char *mainbankpath) {
   spu_init();
 
   snd_main_bank = snd_load_sfx_bank(mainbankpath);
-  if (!snd_main_bank) panic("could not load\n%s", mainbankpath);
+  if (!snd_main_bank) PANIC("could not load\n%s", mainbankpath);
 
   // turn up all the SFX channels
   for (int i = 0; i < SFX_NUM_CHANNELS; ++i)
@@ -79,7 +79,7 @@ sfx_bank_t *snd_read_sfx_bank(fs_file_t *f) {
 
 sfx_bank_t *snd_load_sfx_bank(const char *path) {
   fs_file_t *f = fs_fopen(path, 0);
-  if (!f) panic("could not open\n%s", path);
+  if (!f) PANIC("could not open\n%s", path);
   sfx_bank_t *ret = snd_read_sfx_bank(f);
   fs_fclose(f);
   return ret;
@@ -129,7 +129,7 @@ int snd_play_sound_freq(int prio, const int no, const int freq, const bool loop)
   ASSERT(snd_main_bank);
 
   if (no < 0 || no >= snd_main_bank->num_sfx)
-    panic("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
+    PANIC("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
 
   int ch = snd_find_chan(last_chan + 1, prio, no);
   if (ch < 0) {
