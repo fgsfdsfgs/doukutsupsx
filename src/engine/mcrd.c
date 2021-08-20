@@ -6,6 +6,7 @@
 #include <libetc.h>
 
 #include "engine/common.h"
+#include "engine/timer.h"
 #include "engine/mcrd.h"
 
 #define MCRD_SAVE_MAGIC "CSS\x01"
@@ -56,10 +57,8 @@ static u32 mcrd_wait_event(const int desc_num) {
 
   while (timeout--) {
     for (int i = 0; i < MCRD_NUM_EVSPEC; ++i) {
-      if (TestEvent(mcrd_ev[desc_num][i]) == 1) {
-        printf("mcrd_wait_event(%d): event %d / %08x / %08x\n", desc_num, i, mcrd_ev[desc_num][i], mcrd_ev_spectab[i]);
+      if (TestEvent(mcrd_ev[desc_num][i]))
         return mcrd_ev_spectab[i];
-      }
     }
   }
 
@@ -73,9 +72,7 @@ static inline void mcrd_clear_events(const int desc_num) {
 }
 
 static mcrd_result_t mcrd_card_check(const int chan) {
-  EnterCriticalSection();
   _card_info(chan);
-  ExitCriticalSection();
 
   mcrd_result_t ret;
 
@@ -83,8 +80,7 @@ static mcrd_result_t mcrd_card_check(const int chan) {
     case EvSpNEW:
       // freshly connected card; do dummy write
       mcrd_clear_events(MCRD_EV_HW);
-      _new_card();
-      _card_write(chan, 0x3F, NULL);
+      _card_clear(chan);
       mcrd_wait_event(MCRD_EV_HW);
       /* fallthrough */
     case EvSpIOE:
@@ -98,8 +94,6 @@ static mcrd_result_t mcrd_card_check(const int chan) {
       break;
   }
 
-  printf("mcrd_card_check(0x%02x) = %d\n", chan, ret);
-
   return ret;
 }
 
@@ -107,13 +101,12 @@ void mcrd_init(void) {
   VSync(0);
 
   EnterCriticalSection();
+
   InitCARD(TRUE);
   StartCARD();
   ChangeClearPAD(0);
   _bu_init();
-  ExitCriticalSection();
 
-  EnterCriticalSection();
   for (int i = 0; i < MCRD_NUM_EVDESC; ++i) {
     for (int j = 0; j < MCRD_NUM_EVSPEC; ++j) {
       mcrd_ev[i][j] = OpenEvent(mcrd_ev_desctab[i], mcrd_ev_spectab[j], EvMdNOINTR, NULL);
@@ -122,12 +115,16 @@ void mcrd_init(void) {
       DisableEvent(mcrd_ev[i][j]);
     }
   }
+
   ExitCriticalSection();
 
   printf("mcrd_init(): memcard initialized\n");
 }
 
 void mcrd_start(void) {
+  // tick music in the timer callback because all memcard processing is synchronous
+  timer_set_callback(timer_cb_music);
+
   mcrd_clear_events(MCRD_EV_HW);
   mcrd_clear_events(MCRD_EV_SW);
 
@@ -157,6 +154,9 @@ void mcrd_stop(void) {
       DisableEvent(mcrd_ev[i][j]);
   }
   ExitCriticalSection();
+
+  // reset timer back to normal callback
+  timer_set_callback(timer_cb_ticker);
 
   printf("mcrd_stop(): memcard processing stopped\n");
 }
@@ -189,9 +189,7 @@ mcrd_result_t mcrd_card_open(const mcrd_id_t id) {
   if (status != MCRD_SUCCESS) return status;
 
   mcrd_clear_events(MCRD_EV_SW);
-  EnterCriticalSection();
   _card_load(chan);
-  ExitCriticalSection();
   const u32 ev = mcrd_wait_event(MCRD_EV_SW);
   printf("mcrd_card_open(%d, %d): event %08x\n", id.port, id.card, ev);
 
@@ -253,6 +251,9 @@ mcrd_result_t mcrd_save_open(const char *name) {
     printf("mcrd_save_open(%s): invalid SAVEHDR\n", name);
     goto _error;
   }
+
+  // seek past the icons
+  lseek(fd, sizeof(SAVEHDR) + MCRD_SAVE_ICON_FRAMES * MCRD_SECSIZE, SEEK_SET);
 
   // read our save header
   rx = read(fd, (char *)&mcrd_save_hdr, sizeof(mcrd_save_hdr));
@@ -328,24 +329,25 @@ mcrd_result_t mcrd_save_write_slot(const int slot, const void *data, const int s
 
   mcrd_save_hdr.slotmask |= (1 << slot);
 
-  int ofs = sizeof(SAVEHDR) + MCRD_SECSIZE * MCRD_SAVE_ICON_FRAMES + 4;
-  if (lseek(mcrd_save_fd, ofs, 0) < 0) {
+  int ofs = sizeof(SAVEHDR) + MCRD_SECSIZE * MCRD_SAVE_ICON_FRAMES;
+  if (lseek(mcrd_save_fd, ofs, SEEK_SET) < 0) {
     printf("mcrd_save_write_slot(%d): error seeking to %d\n", slot, ofs);
     return MCRD_ERROR;
   }
 
-  write(mcrd_save_fd, (char *)&mcrd_save_hdr.slotmask, sizeof(mcrd_save_hdr.slotmask));
+  // unfortunately we cannot write just 4 bytes, so we gotta rewrite the entire save header
+  write(mcrd_save_fd, (char *)&mcrd_save_hdr, sizeof(mcrd_save_hdr));
 
   // write the save itself
 
   ofs = sizeof(SAVEHDR) + MCRD_SECSIZE * MCRD_SAVE_ICON_FRAMES +
     sizeof(mcrd_save_hdr) + MCRD_MAX_SAVE_SIZE * slot;
-  if (lseek(mcrd_save_fd, ofs, 0) < 0) {
+  if (lseek(mcrd_save_fd, ofs, SEEK_SET) < 0) {
     printf("mcrd_save_write_slot(%d): error seeking to %d\n", slot, ofs);
     return MCRD_ERROR;
   }
 
-  write(mcrd_save_fd, data, size);
+  write(mcrd_save_fd, (char *)data, size);
 
   return MCRD_SUCCESS;
 }
@@ -369,8 +371,8 @@ mcrd_result_t mcrd_save_read_slot(const int slot, void *data, const int size) {
 
   const int ofs = sizeof(SAVEHDR) + MCRD_SECSIZE * MCRD_SAVE_ICON_FRAMES +
     sizeof(mcrd_save_hdr) + MCRD_MAX_SAVE_SIZE * slot;
-  if (lseek(mcrd_save_fd, ofs, 0) < 0) {
-    printf("mcrd_save_write_slot(%d): error seeking to %d\n", slot, ofs);
+  if (lseek(mcrd_save_fd, ofs, SEEK_SET) < 0) {
+    printf("mcrd_save_read_slot(%d): error seeking to %d\n", slot, ofs);
     return MCRD_ERROR;
   }
 

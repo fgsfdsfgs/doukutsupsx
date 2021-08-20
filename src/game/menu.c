@@ -5,7 +5,6 @@
 #include "engine/memory.h"
 #include "engine/sound.h"
 #include "engine/input.h"
-#include "engine/timer.h"
 #include "engine/org.h"
 #include "engine/mcrd.h"
 
@@ -55,6 +54,8 @@ static gfx_texrect_t rc_stage[8];
 static gfx_texrect_t rc_stagesel_title = {{ 80, 64, 144, 72 }};
 static gfx_texrect_t rc_main_title = {{ 0, 0, 144, 40 }};
 
+static gfx_texrect_t rc_heart = {{ 32, 80, 48, 96 }};
+
 // common variables used by simple multiple-choice menus
 static int main_sel = 0;
 static int main_count = 0;
@@ -63,6 +64,7 @@ static const char *main_title = NULL;
 static const char **main_choices;
 static const u8 main_bg_rgb[] = { 32, 32, 32 };
 static const u8 main_title_rgb[] = { 243, 226, 152 };
+static const u8 main_black_rgb[] = { 0, 0, 0 };
 
 void menu_init(void) {
   menu_id = MENU_NONE;
@@ -97,6 +99,7 @@ void menu_init(void) {
 
   gfx_set_texrect(&rc_pause, SURFACE_ID_TEXT_BOX);
   gfx_set_texrect(&rc_stagesel_title, SURFACE_ID_TEXT_BOX);
+  gfx_set_texrect(&rc_heart, SURFACE_ID_NPC_SYM);
 }
 
 static inline void menu_close(void) {
@@ -125,16 +128,22 @@ static inline u32 menu_generic_control(void) {
 static inline void menu_generic_draw(int x, int y) {
   int yofs = 8;
   gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, x - 16, y + 5 + 8 + main_sel * 20);
-  for (int i = 0; i < main_count; ++i, yofs += 20)
+  for (int i = 0; i < main_count; ++i, yofs += 20) {
+    gfx_draw_string_rgb(main_choices[i], main_black_rgb, GFX_LAYER_FRONT, x + 8 + 1, y + 8 + yofs + 1);
     gfx_draw_string(main_choices[i], GFX_LAYER_FRONT, x + 8, y + 8 + yofs);
+  }
 }
 
 static inline void draw_string_centered(const char *str, const u8 *rgb, int x, int y) {
   const int w = strlen(str) * GFX_FONT_WIDTH;
+  x -= w / 2;
+  // draw shadow
+  gfx_draw_string_rgb(str, main_black_rgb, GFX_LAYER_FRONT, x + 1, y + 1);
+  // draw the button
   if (rgb)
-    gfx_draw_string_rgb(str, rgb, GFX_LAYER_FRONT, x - w / 2, y);
+    gfx_draw_string_rgb(str, rgb, GFX_LAYER_FRONT, x, y);
   else
-    gfx_draw_string(str, GFX_LAYER_FRONT, x - w / 2, y);
+    gfx_draw_string(str, GFX_LAYER_FRONT, x, y);
 }
 
 /* default func */
@@ -688,6 +697,8 @@ static void menu_stagesel_draw(void) {
 
 /* save/load menu */
 
+#define SAVELOAD_TOP ((VID_HEIGHT / 2) - 48 - 8)
+
 enum saveload_menu_state {
   SLSTATE_SELECT_MEMCARD,
   SLSTATE_SELECT_SAVE,
@@ -702,43 +713,76 @@ static struct {
   mcrd_id_t cards[MCRD_CARDS_PER_PORT * MCRD_NUM_PORTS];
   s32 num_cards;
   u32 slot_mask;
+  s32 slot_to_save;
   const char *title;
+  // short info about each slot
+  struct {
+    char stage[MAX_STAGE_TITLE];
+    s32 arm;
+    s32 life;
+    s32 max_life;
+  } slots[MCRD_MAX_SAVES];
 } saveload;
 
 static const char *str_yesno[] = { "Yes", "No" };
 static const char *str_ok[] = { "OK" };
 static const char *str_memcard[] = { "Memory Card 1", "Memory Card 2" };
 
-static void menu_saveload_open(void) {
+static inline void menu_saveload_set_state(const int state, const char *title, const int num_choices) {
+  saveload.state = state;
+  saveload.title = title;
+  main_count = num_choices;
   main_sel = 0;
+}
 
-  // tick music in the timer callback because all memcard processing is synchronous
-  timer_set_callback(timer_cb_music);
-
+static void menu_saveload_open(void) {
   mcrd_start();
 
   saveload.num_cards = mcrd_cards_available(saveload.cards);
 
   if (saveload.num_cards) {
-    saveload.state = SLSTATE_SELECT_MEMCARD;
-    saveload.title = "Select Memory Card";
-    main_count = saveload.num_cards;
+    menu_saveload_set_state(SLSTATE_SELECT_MEMCARD, "Select Memory Card", saveload.num_cards);
     // skip memcard 1 if we don't have it
     main_choices = &str_memcard[(saveload.cards[0].port == 1)];
   } else {
-    saveload.state = SLSTATE_NO_MEMCARDS;
-    saveload.title = "No Memory Cards detected.";
-    main_count = 1; // "OK"
+     menu_saveload_set_state(SLSTATE_NO_MEMCARDS, "No Memory Cards detected.", 1);
   }
 }
 
-static inline void menu_saveload_close(void) {
+static inline void menu_saveload_close(const bool success) {
   mcrd_stop();
-  timer_set_callback(timer_cb_ticker);
   menu_id = 0;
   // if we're in the intro stage, re-open the main menu
-  if (!stage_data || stage_data->id == STAGE_OPENING_ID)
+  if (!stage_data || stage_data->id == STAGE_OPENING_ID) {
     menu_open(MENU_TITLE);
+  } else if (!success) {
+    // didn't save at save point; prevent the TSC "game saved" message from printing
+    tsc_clear_text();
+    tsc_stop_event();
+    player.cond &= ~PLRCOND_USE_BUTTON;
+  }
+}
+
+static void menu_saveload_update_slots(void) {
+  saveload.slot_mask = mcrd_save_slots_available();
+  if (saveload.slot_mask == 0) return;
+
+  u8 buf[MCRD_SECSIZE * 2];
+  profile_t *prof = (profile_t *)buf;
+
+  for (int i = 0; i < MCRD_MAX_SAVES; ++i) {
+    // read beginning part of slot that contains the data that we need
+    const mcrd_result_t res = mcrd_save_read_slot(i, buf, sizeof(buf));
+    if (res != MCRD_SUCCESS) {
+      saveload.slot_mask &= ~(1 << i); // clear so it doesn't draw garbage
+      continue;
+    }
+    // store that shit
+    memcpy(saveload.slots[i].stage, prof->save.stage_title, MAX_STAGE_TITLE);
+    saveload.slots[i].life = prof->save.player.life;
+    saveload.slots[i].max_life = prof->save.player.max_life;
+    saveload.slots[i].arm = prof->save.player.arm_id;
+  }
 }
 
 static inline void menu_saveload_act_select_memcard(const u32 btn) {
@@ -749,35 +793,24 @@ static inline void menu_saveload_act_select_memcard(const u32 btn) {
   snd_play_sound(PRIO_HIGH, 18, FALSE);
 
   if (btn == IN_CANCEL) {
-    menu_saveload_close();
+    menu_saveload_close(FALSE);
     return;
   }
 
   mcrd_result_t res = mcrd_card_open(saveload.cards[main_sel]);
 
   if (res == MCRD_UNFORMATTED) {
-    // card is unformatted
-    if (menu_id == MENU_SAVE) {
-      // offer to format since we're saving
-      saveload.state = SLSTATE_FORMAT;
-      saveload.title = "Card is not formatted. Format?";
-      main_count = 2; // "Yes"/"No"
-    } else {
-      // can't really do shit at this point
-      saveload.state = SLSTATE_ERROR;
-      saveload.title = "Card is not formatted.";
-      main_count = 1; // "OK"
-    }
-    main_sel = 0;
+    // card is unformatted; if we're saving, offer to format it
+    if (menu_id == MENU_SAVE)
+      menu_saveload_set_state(SLSTATE_FORMAT, "Card is not formatted. Format?", 2);
+    else
+      menu_saveload_set_state(SLSTATE_ERROR, "Card is not formatted.", 1);
     return;
   }
 
   if (res != MCRD_SUCCESS) {
-    // error deteecting card
-    saveload.state = SLSTATE_ERROR;
-    saveload.title = "Could not read card.";
-    main_count = 1; // "OK"
-    main_sel = 0;
+    // error detecting card
+    menu_saveload_set_state(SLSTATE_ERROR, "Could not read card.", 1);
     return;
   }
 
@@ -790,18 +823,46 @@ static inline void menu_saveload_act_select_memcard(const u32 btn) {
   }
 
   if (res != MCRD_SUCCESS) {
-    saveload.state = SLSTATE_ERROR;
-    saveload.title = (menu_id == MENU_SAVE) ?
-      "Could not write save file." : "No save file on this card.";
-    main_count = 1; // "OK"
-    main_sel = 0;
+    const char *err = (menu_id == MENU_SAVE) ?
+      "Could not write save file." : "No save files on this card.";
+    menu_saveload_set_state(SLSTATE_ERROR, err, 1);
     return;
   }
 
-  saveload.state = SLSTATE_SELECT_SAVE;
-  saveload.title = "Select File";
-  main_count = MCRD_MAX_SAVES;
-  main_sel = 0;
+  menu_saveload_update_slots();
+
+  // can't load anything off of an empty save
+  if (menu_id == MENU_LOAD && !saveload.slot_mask) {
+    menu_saveload_set_state(SLSTATE_ERROR, "No save files on this card.", 1);
+    return;
+  }
+
+  menu_saveload_set_state(SLSTATE_SELECT_SAVE, "Select File", MCRD_MAX_SAVES);
+}
+
+static inline void menu_saveload_do_load(const int slot) {
+  mcrd_result_t res = mcrd_save_read_slot(slot, &profile, sizeof(profile));
+  if (res != MCRD_SUCCESS)  {
+    // write error; bail
+    menu_saveload_set_state(SLSTATE_ERROR, "Could not write save file.", 1);
+  } else {
+    // try to actually load the game
+    if (!profile_load())
+      menu_saveload_set_state(SLSTATE_ERROR, "Invalid save file.", 1);
+    else
+      menu_saveload_close(TRUE);
+  }
+}
+
+static inline void menu_saveload_do_save(const int slot) {
+  mcrd_result_t res = mcrd_save_write_slot(slot, &profile, sizeof(profile));
+  if (res != MCRD_SUCCESS) {
+    // write error
+    menu_saveload_set_state(SLSTATE_ERROR, "Could not write save file.", 1);
+  } else {
+    // success; let the "Game saved" TSC message play out
+    menu_saveload_close(TRUE);
+  }
 }
 
 static inline void menu_saveload_act_select_save(const u32 btn) {
@@ -813,12 +874,26 @@ static inline void menu_saveload_act_select_save(const u32 btn) {
 
   if (btn == IN_CANCEL) {
     // go back to memcard selection
-    saveload.state = SLSTATE_SELECT_MEMCARD;
-    saveload.title = "Select Memory Card";
-    main_count = saveload.num_cards;
+    menu_saveload_set_state(SLSTATE_SELECT_MEMCARD, "Select Memory Card", saveload.num_cards);
     // skip memcard 1 if we don't have it
     main_choices = &str_memcard[(saveload.cards[0].port == 1)];
     return;
+  }
+
+  const bool occupied = (saveload.slot_mask & (1 << main_sel)) != 0;
+
+  if (menu_id == MENU_SAVE) {
+    if (occupied) {
+      // trying to save over a slot; ask the user
+      saveload.slot_to_save = main_sel;
+      menu_saveload_set_state(SLSTATE_OVERWRITE, "Overwrite this file?", 2);
+    } else {
+      // saving over an empty slot; all is well
+      menu_saveload_do_save(main_sel);
+    }
+  } else if (occupied) {
+    // can only load if the slot is occupied
+    menu_saveload_do_load(main_sel);
   }
 }
 
@@ -833,27 +908,25 @@ static void menu_saveload_act(void) {
       menu_saveload_act_select_save(btn);
       break;
     case SLSTATE_OVERWRITE:
+      if (btn == IN_OK && main_sel == 0) {
+        // user pressed yes, save that shit
+        menu_saveload_do_save(saveload.slot_to_save);
+      } else if (btn == IN_CANCEL || (btn == IN_OK && main_sel == 1)) {
+        // go back to save selection
+        menu_saveload_set_state(SLSTATE_SELECT_SAVE, "Select File", MCRD_MAX_SAVES);
+      }
       break;
     case SLSTATE_FORMAT:
       if (btn == IN_OK && main_sel == 0) {
         // user pressed yes, format that shit
         mcrd_result_t res = mcrd_card_format();
-        if (res != MCRD_SUCCESS) {
-          saveload.state = SLSTATE_ERROR;
-          saveload.title = "Error formatting card.";
-          main_sel = 0;
-          main_count = 1; // "OK"
-        } else {
-          saveload.state = SLSTATE_SELECT_SAVE;
-          saveload.title = "Select File";
-          main_count = MCRD_MAX_SAVES;
-          main_sel = 0;
-        }
+        if (res != MCRD_SUCCESS)
+          menu_saveload_set_state(SLSTATE_ERROR, "Could not format card.", 1);
+        else
+          menu_saveload_set_state(SLSTATE_SELECT_SAVE, "Select File", MCRD_MAX_SAVES);
       } else if (btn == IN_CANCEL || (btn == IN_OK && main_sel == 1)) {
         // go back to memcard selection
-        saveload.state = SLSTATE_SELECT_MEMCARD;
-        saveload.title = "Select Memory Card";
-        main_count = saveload.num_cards;
+        menu_saveload_set_state(SLSTATE_SELECT_MEMCARD, "Select Memory Card", saveload.num_cards);
         // skip memcard 1 if we don't have it
         main_choices = &str_memcard[(saveload.cards[0].port == 1)];
       }
@@ -861,7 +934,7 @@ static void menu_saveload_act(void) {
     default: // all the other "OK" message prompts, etc
       if (btn) {
         snd_play_sound(PRIO_HIGH, 18, FALSE);
-        menu_saveload_close();
+        menu_saveload_close(FALSE);
       }
       break;
   }
@@ -869,6 +942,33 @@ static void menu_saveload_act(void) {
 
 static inline void menu_saveload_draw_select_save(void) {
   draw_string_centered(saveload.title, main_title_rgb, VID_WIDTH / 2, 36);
+
+  // draw slots using the textbox border
+  int yofs = SAVELOAD_TOP;
+  char lifetext[16];
+  for (int i = 0; i < MCRD_MAX_SAVES; ++i, yofs += 32) {
+    gfx_draw_texrect(&rc_menubox[0], GFX_LAYER_FRONT, TEXT_BOX_LEFT, yofs);
+    gfx_draw_texrect(&rc_menubox[1], GFX_LAYER_FRONT, TEXT_BOX_LEFT, yofs + 8);
+    gfx_draw_texrect(&rc_menubox[1], GFX_LAYER_FRONT, TEXT_BOX_LEFT, yofs + 16);
+    gfx_draw_texrect(&rc_menubox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, yofs + 24);
+
+    if (!(saveload.slot_mask & (1 << i))) {
+      //slot is empty
+      draw_string_centered("EMPTY FILE", NULL, VID_WIDTH / 2, yofs + 10 + 8);
+    } else {
+      // draw stage name
+      gfx_draw_string(saveload.slots[i].stage, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 36, yofs + 10 + 8);
+      // draw life at the right edge
+      sprintf(lifetext, "%02d/%02d", saveload.slots[i].life, saveload.slots[i].max_life);
+      gfx_draw_texrect_16x16(&rc_heart, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 40, yofs + 15);
+      gfx_draw_string(lifetext, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 40 - 5 * GFX_FONT_WIDTH, yofs + 10 + 8);
+      // draw current weapon (unfortunately weapon list won't fit)
+      gfx_draw_texrect_16x16(&hud_rc_arms[saveload.slots[i].arm], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 16, yofs + 16);
+    }
+  }
+
+  // draw cursor
+  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 16, SAVELOAD_TOP + 32 * main_sel + 16);
 }
 
 static void menu_saveload_draw(void) {

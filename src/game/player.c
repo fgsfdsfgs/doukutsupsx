@@ -132,7 +132,7 @@ void plr_animate(const u32 btns) {
     return;
 
   if (player.flags & 0x08) {
-    if (player.cond & PLRCOND_UNKNOWN01) {
+    if (player.cond & PLRCOND_USE_BUTTON) {
       player.anim = 11;
     } else if (btns & IN_UP && btns & (IN_LEFT | IN_RIGHT)) {
       player.cond |= PLRCOND_UNKNOWN04;
@@ -252,11 +252,11 @@ void plr_set_pos(int x, int y) {
   player.tgt_y = y;
   player.index_x = 0;
   player.index_y = 0;
-  player.cond &= ~PLRCOND_UNKNOWN01;
+  player.cond &= ~PLRCOND_USE_BUTTON;
 }
 
 void plr_jump_back(int from) {
-  player.cond &= ~PLRCOND_UNKNOWN01;
+  player.cond &= ~PLRCOND_USE_BUTTON;
   player.yvel = -FIX_SCALE;
   if (from == DIR_LEFT) {
     player.dir = DIR_LEFT;
@@ -280,9 +280,9 @@ void plr_jump_back(int from) {
 
 void plr_face_towards(int what) {
   if (what == 3) {
-    player.cond |= PLRCOND_UNKNOWN01;
+    player.cond |= PLRCOND_USE_BUTTON;
   } else {
-    player.cond &= ~PLRCOND_UNKNOWN01;
+    player.cond &= ~PLRCOND_USE_BUTTON;
     if (what < 10) {
       player.dir = what;
     } else {
@@ -355,8 +355,8 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
     // Move in direction held
     if (btns) {
-      if (trig == IN_DOWN && btns == IN_DOWN && !(player.cond & PLRCOND_UNKNOWN01) && !(game_flags & 4)) {
-        player.cond |= PLRCOND_UNKNOWN01;
+      if (trig == IN_DOWN && btns == IN_DOWN && !(player.cond & PLRCOND_USE_BUTTON) && !(game_flags & 4)) {
+        player.cond |= PLRCOND_USE_BUTTON;
         player.question = TRUE;
       } else if (btns == IN_DOWN) {
         // There probably used to be commented-out code here
@@ -473,7 +473,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
   // Stop interacting when moved
   if (btns & (IN_LEFT | IN_RIGHT | IN_UP | IN_JUMP | IN_FIRE))
-    player.cond &= ~PLRCOND_UNKNOWN01;
+    player.cond &= ~PLRCOND_USE_BUTTON;
 
   // Booster losing fuel
   if (player.boost_sw != 0 && player.boost_cnt != 0)

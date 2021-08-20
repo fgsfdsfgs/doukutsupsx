@@ -353,7 +353,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
     case 0x00: // END
       tsc_state.mode = TSC_MODE_OFF;
       tsc_state.face = 0;
-      player.cond &= ~PLRCOND_UNKNOWN01;
+      player.cond &= ~PLRCOND_USE_BUTTON;
       game_flags |= 3;
       return TRUE;
     /* string output opcodes */

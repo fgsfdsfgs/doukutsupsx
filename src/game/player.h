@@ -22,7 +22,7 @@ enum equip_flags {
 };
 
 enum plr_cond_flags {
-  PLRCOND_UNKNOWN01 = 0x01,
+  PLRCOND_USE_BUTTON = 0x01,
   PLRCOND_INVISIBLE = 0x02,
   PLRCOND_UNKNOWN04 = 0x04,
   PLRCOND_ONGROUND  = 0x08,
