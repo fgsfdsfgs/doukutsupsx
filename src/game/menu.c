@@ -769,11 +769,14 @@ static inline void menu_saveload_close(const bool success) {
   // if we're in the intro stage, re-open the main menu
   if (!stage_data || stage_data->id == STAGE_OPENING_ID) {
     menu_open(MENU_TITLE);
-  } else if (!success) {
-    // didn't save at save point; prevent the TSC "game saved" message from printing
+  } else {
+    // nuke the old "want to save?" prompt
     tsc_clear_text();
-    tsc_stop_event();
-    player.cond &= ~PLRCOND_USE_BUTTON;
+    if (!success) {
+      // didn't save at save point; prevent the TSC "game saved" message from printing
+      tsc_stop_event();
+      player.cond &= ~PLRCOND_USE_BUTTON; // don't re-activate the save point immediately
+    }
   }
 }
 
