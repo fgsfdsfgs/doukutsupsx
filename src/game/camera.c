@@ -314,7 +314,7 @@ void cam_draw_flash(void) {
   }
 }
 
-static inline void flash_update_flash(void) {
+static inline void flash_update_explosion(void) {
   int x, y, w, h;
 
   switch (flash.act) {
@@ -368,7 +368,7 @@ static inline void flash_update_flash(void) {
   }
 }
 
-static inline void flash_update_explosion(void) {
+static inline void flash_update_flash(void) {
   ++flash.count;
 
   flash.rect[0].left = 0;
