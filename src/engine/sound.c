@@ -10,6 +10,9 @@
 
 #define SFX_FREQ 22050
 
+// current sfx volume, 0-3FFF
+int snd_sfx_volume = 0x3FFF;
+
 sfx_bank_t *snd_main_bank;
 
 // channel each sample last played on
@@ -38,6 +41,8 @@ int snd_init(const char *mainbankpath) {
   // clear sfx->channel mapping
   for (int i = 0; i < MAX_SFX; ++i)
     sample_chan[i] = -1;
+
+  snd_sfx_volume = 0x3FFF;
 
   spu_flush_voices();
 }
@@ -139,6 +144,7 @@ int snd_play_sound_freq(int prio, const int no, const int freq, const bool loop)
       return -1; // don't play low priority sounds when out of channels
   }
 
+  spu_set_voice_volume(ch, snd_sfx_volume);
   spu_play_sample(ch, snd_main_bank->sfx_addr[no], freq);
 
   sample_chan[no] = ch;
@@ -164,4 +170,13 @@ void snd_stop_channel(const int ch) {
   chan_state[ch].loop = FALSE;
   chan_state[ch].sample = 0;
   chan_state[ch].prio = 0;
+}
+
+void snd_set_sfx_volume(const int vol) {
+  if (vol > SFX_MAX_VOLUME)
+    snd_sfx_volume = SFX_MAX_VOLUME;
+  else if (vol < 0)
+    snd_sfx_volume = 0;
+  else
+    snd_sfx_volume = vol;
 }

@@ -6,7 +6,7 @@
 #define MAX_SFX 160
 #define SFX_NUM_CHANNELS 8
 #define SFX_MAIN_BANK "\\MAIN\\MAIN.SFX;1"
-
+#define SFX_MAX_VOLUME 0x3FFF
 
 typedef enum {
   CHAN_SOUND = 0, // sfx channels from this to CHAN_MUSIC
@@ -28,6 +28,9 @@ typedef struct {
 
 // main sample bank; never unloaded
 extern sfx_bank_t *snd_main_bank;
+
+// current sfx volume, 0-3FFF
+extern int snd_sfx_volume;
 
 // initializes the spu and loads the main sample bank
 int snd_init(const char *mainbankpath);
@@ -54,3 +57,6 @@ void snd_stop_sound(const int no);
 
 // stops channel `ch` if something's playing on it
 void snd_stop_channel(const int ch);
+
+// set sfx volume, 0-3FFF
+void snd_set_sfx_volume(const int vol);

@@ -23,9 +23,14 @@ void profile_reset(void) {
 
 void profile_save(void) {
   memcpy(profile.magic, PROFILE_MAGIC, 4);
-  profile.save.game_tick = game_tick;
+
+  // save config
+  profile.config.vol_sfx = snd_sfx_volume;
+  profile.config.vol_music = org_get_master_volume();
+  memcpy(profile.config.binds, input_binds, sizeof(profile.config.binds));
 
   // save globals
+  profile.save.game_tick = game_tick;
   memcpy(profile.save.npc_flags, npc_flags, sizeof(profile.save.npc_flags));
   memcpy(profile.save.map_flags, map_flags, sizeof(profile.save.map_flags));
   memcpy(profile.save.skip_flags, skip_flags, sizeof(profile.save.skip_flags));
@@ -57,9 +62,14 @@ bool profile_load(void) {
     return FALSE;
 
   game_reset();
-  game_tick = profile.save.game_tick;
+  
+  // load config
+  memcpy(input_binds, profile.config.binds, sizeof(input_binds));
+  snd_set_sfx_volume(profile.config.vol_sfx);
+  org_set_master_volume(profile.config.vol_music);
 
   // load globals
+  game_tick = profile.save.game_tick;
   memcpy(npc_flags, profile.save.npc_flags, sizeof(npc_flags));
   memcpy(map_flags, profile.save.map_flags, sizeof(map_flags));
   memcpy(skip_flags, profile.save.skip_flags, sizeof(skip_flags));

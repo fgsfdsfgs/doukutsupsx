@@ -159,7 +159,7 @@ bool org_load(const u32 id, u8 *data, sfx_bank_t *bank) {
   printf("org_load: total notes: %u / %u\n", numnotes, ALLOCNOTE);
 
   org.id = id;
-  org.vol = 100;
+  org.vol = 0x60;
 
   // store SPU addresses of this song and upload sample data
   memcpy(inst_bank, bank, sizeof(*bank) + sizeof(u32) * bank->num_sfx);
@@ -353,7 +353,7 @@ u32 org_set_mute_mask(const u32 mask) {
     if (org.tracks[i].mute)
       oldmask |= (1 << i);
     org.tracks[i].mute = !!(mask & (1 << i));
-    org_set_vol(i, org.tracks[i].mute ? 0 : (org.tracks[i].vol * org.vol / 0x7F));
+    org_set_vol(i, org.tracks[i].mute ? 0 : (org.tracks[i].vol * org.vol / ORG_MAX_VOLUME));
   }
   spu_flush_voices();
   spu_key_off(mask << ORG_START_CH);
@@ -372,4 +372,17 @@ org_note_t *org_get_track_pos(const int tracknum) {
 
 u32 org_get_id(void) {
   return org.id;
+}
+
+int org_get_master_volume(void) {
+  return org.vol;
+}
+
+void org_set_master_volume(const int vol) {
+  if (vol > ORG_MAX_VOLUME)
+    org.vol = ORG_MAX_VOLUME;
+  else if (vol < 0)
+    org.vol = 0;
+  else
+    org.vol = vol;
 }

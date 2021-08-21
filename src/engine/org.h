@@ -7,6 +7,7 @@
 #define ORG_MAX_TRACKS 16
 #define ORG_INVALID 0xFFFF
 #define ORG_PREVIOUS 0xFFFE
+#define ORG_MAX_VOLUME 0x7F
 
 typedef struct org_note {
   s32 pos;
@@ -29,6 +30,8 @@ int org_get_wait(void);
 int org_get_pos(void);
 u32 org_get_mute_mask(void);
 u32 org_set_mute_mask(const u32 mask);
+int org_get_master_volume(void);
+void org_set_master_volume(const int vol);
 
 org_note_t *org_get_track(const int tracknum, u32 *numnotes);
 org_note_t *org_get_track_pos(const int tracknum);

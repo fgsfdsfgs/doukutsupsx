@@ -60,11 +60,11 @@ static gfx_texrect_t rc_heart = {{ 32, 80, 48, 96 }};
 static int main_sel = 0;
 static int main_count = 0;
 static int main_tick = 0;
-static const char *main_title = NULL;
 static const char **main_choices;
 static const u8 main_bg_rgb[] = { 32, 32, 32 };
 static const u8 main_title_rgb[] = { 243, 226, 152 };
 static const u8 main_black_rgb[] = { 0, 0, 0 };
+static const u8 main_barbg_rgb[] = { 16, 16, 16 };
 
 void menu_init(void) {
   menu_id = MENU_NONE;
@@ -102,10 +102,36 @@ void menu_init(void) {
   gfx_set_texrect(&rc_heart, SURFACE_ID_NPC_SYM);
 }
 
+static inline int menu_padbutton_index(const u32 input) {
+  switch (input) {
+    case PAD_CROSS:    return 2;
+    case PAD_CIRCLE:   return 1;
+    case PAD_SQUARE:   return 3;
+    case PAD_TRIANGLE:
+    default:
+      return 0;
+  }
+}
+
 static inline void menu_close(void) {
   tsc_stop_event();
   tsc_switch_script(TSC_SCRIPT_STAGE);
   menu_id = MENU_NONE;
+}
+
+static inline void draw_string_shadow(const char *str, const u8 *rgb, const int x, const int y) {
+  // draw shadow
+  gfx_draw_string_rgb(str, main_black_rgb, GFX_LAYER_FRONT, x + 1, y + 1);
+  // draw the string
+  if (rgb)
+    gfx_draw_string_rgb(str, rgb, GFX_LAYER_FRONT, x, y);
+  else
+    gfx_draw_string(str, GFX_LAYER_FRONT, x, y);
+}
+
+static inline void draw_string_centered(const char *str, const u8 *rgb, const int x, const int y) {
+  const int w = strlen(str) * GFX_FONT_WIDTH;
+  draw_string_shadow(str, rgb, x - w / 2, y);
 }
 
 static inline u32 menu_generic_control(void) {
@@ -128,22 +154,8 @@ static inline u32 menu_generic_control(void) {
 static inline void menu_generic_draw(int x, int y) {
   int yofs = 8;
   gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, x - 16, y + 5 + 8 + main_sel * 20);
-  for (int i = 0; i < main_count; ++i, yofs += 20) {
-    gfx_draw_string_rgb(main_choices[i], main_black_rgb, GFX_LAYER_FRONT, x + 8 + 1, y + 8 + yofs + 1);
-    gfx_draw_string(main_choices[i], GFX_LAYER_FRONT, x + 8, y + 8 + yofs);
-  }
-}
-
-static inline void draw_string_centered(const char *str, const u8 *rgb, int x, int y) {
-  const int w = strlen(str) * GFX_FONT_WIDTH;
-  x -= w / 2;
-  // draw shadow
-  gfx_draw_string_rgb(str, main_black_rgb, GFX_LAYER_FRONT, x + 1, y + 1);
-  // draw the button
-  if (rgb)
-    gfx_draw_string_rgb(str, rgb, GFX_LAYER_FRONT, x, y);
-  else
-    gfx_draw_string(str, GFX_LAYER_FRONT, x, y);
+  for (int i = 0; i < main_count; ++i, yofs += 20)
+    draw_string_shadow(main_choices[i], NULL, x + 8, y + 8 + yofs);
 }
 
 /* default func */
@@ -162,7 +174,6 @@ static void menu_title_open(void) {
   main_count = 3;
   main_sel = 0;
   main_choices = submenu_text;
-  main_title = "";
   // the title surface is only loaded in one specific map, so we can't do this in init
   gfx_set_texrect(&rc_main_title, SURFACE_ID_TITLE);
   // set title music (should be loaded with the "u" stagebank)
@@ -239,8 +250,10 @@ static void menu_pause_draw(void) {
   const int y = (VID_HEIGHT - rc_pause.r.h) / 2 - 8;
   gfx_draw_texrect(&rc_pause, GFX_LAYER_FRONT, x, y);
   // TODO: draw the buttons bound to OK/CANCEL
-  gfx_draw_texrect(&rc_padbuttons[1], GFX_LAYER_FRONT, x, y - 1);
-  gfx_draw_texrect(&rc_padbuttons[2], GFX_LAYER_FRONT, x + 78, y - 1);
+  const int btn_cancel = menu_padbutton_index(input_binds[11]);
+  const int btn_ok = menu_padbutton_index(input_binds[10]);
+  gfx_draw_texrect(&rc_padbuttons[btn_cancel], GFX_LAYER_FRONT, x, y - 1);
+  gfx_draw_texrect(&rc_padbuttons[btn_ok], GFX_LAYER_FRONT, x + 78, y - 1);
 }
 
 /* inventory */
@@ -991,6 +1004,194 @@ static void menu_saveload_draw(void) {
   }
 }
 
+/* options menu */
+
+#define OPT_SFX_VOL_STEP ((SFX_MAX_VOLUME + 1) / 8)
+#define OPT_ORG_VOL_STEP ((ORG_MAX_VOLUME + 1) / 8)
+#define OPT_NAME_XOFS (16 * GFX_FONT_WIDTH - 8)
+#define OPT_VAL_XOFS (4 * GFX_FONT_WIDTH - 8)
+
+enum option_type {
+  OPT_SEP,
+  OPT_SCROLL,
+  OPT_BIND,
+};
+
+static struct {
+  s32 sel;
+  s32 count;
+  s32 first;
+  s32 last;
+  u16 *bind;
+  u16 *counterbind;
+  bool lock;
+  s32 vol_sfx;
+  s32 vol_org;
+} optmenu;
+
+static const struct option {
+  s32 type;
+  const char *name;
+  void *value;
+  s32 max;
+  s32 def;
+} options[] = {
+  { OPT_SEP,    "Audio",         NULL,             0,  0            },
+  { OPT_SCROLL, "Sound volume",  &optmenu.vol_sfx, 8,  8            },
+  { OPT_SCROLL, "Music volume",  &optmenu.vol_org, 8,  6            },
+  { OPT_SEP,    "Controls",      NULL,             0,  0            },
+  { OPT_BIND,   "Jump",          &input_binds[4],  0,  PAD_CROSS    },
+  { OPT_BIND,   "Fire",          &input_binds[5],  0,  PAD_SQUARE   },
+  { OPT_BIND,   "Prev weapon",   &input_binds[6],  0,  PAD_TRIANGLE },
+  { OPT_BIND,   "Next weapon",   &input_binds[7],  0,  PAD_CIRCLE   },
+  { OPT_BIND,   "Accept button", &input_binds[10], 11, PAD_CROSS    },
+  { OPT_BIND,   "Cancel button", &input_binds[11], 10, PAD_CIRCLE   },
+};
+
+static void menu_options_open(void) {
+  optmenu.bind = optmenu.counterbind = NULL;
+  optmenu.count = sizeof(options) / sizeof(*options);
+  optmenu.sel = optmenu.first = 1;
+  optmenu.last = optmenu.count - 1;
+  optmenu.vol_sfx = (snd_sfx_volume + 1) / OPT_SFX_VOL_STEP;
+  optmenu.vol_org = (org_get_master_volume() + 1) / OPT_ORG_VOL_STEP;
+  optmenu.lock = FALSE;
+}
+
+static inline void menu_options_apply(void) {
+  snd_set_sfx_volume(optmenu.vol_sfx * OPT_SFX_VOL_STEP);
+  org_set_master_volume(optmenu.vol_org * OPT_ORG_VOL_STEP);
+}
+
+static void menu_options_act(void) {
+  if (optmenu.bind) {
+    if (optmenu.lock) {
+      // waiting for the user to release all buttons
+      if (!input_pad)
+        optmenu.lock = FALSE;
+      return;
+    }
+    if (input_pad) {
+      // we were waiting for a bind and user pressed a button
+      const u16 old_bind = *optmenu.bind;
+      switch (input_pad) {
+        case PAD_CROSS:
+        case PAD_CIRCLE:
+        case PAD_SQUARE:
+        case PAD_TRIANGLE:
+          *optmenu.bind = input_pad;
+          // swap binds if necessary
+          if (optmenu.counterbind && *optmenu.counterbind == input_pad)
+            *optmenu.counterbind = old_bind;
+          /* fallthrough */
+        case PAD_START: // start just cancels it out
+          snd_play_sound(PRIO_HIGH, 18, FALSE);
+          optmenu.bind = optmenu.counterbind = NULL;
+          input_suppress_trig = TRUE;
+          break;
+      }
+      return;
+    }
+  }
+
+  if (input_trig & IN_CANCEL) {
+    snd_play_sound(PRIO_HIGH, 18, FALSE);
+    menu_id = 0;
+    menu_open(MENU_TITLE);
+    return;
+  }
+
+  bool scroll_changed = FALSE;
+
+  if (input_trig & IN_DOWN) {
+    ++optmenu.sel;
+    while (optmenu.sel < optmenu.count && options[optmenu.sel].type == OPT_SEP)
+      ++optmenu.sel; // skip separators
+    if (optmenu.sel > optmenu.last)
+      optmenu.sel = optmenu.first;
+    snd_play_sound(PRIO_HIGH, 1, FALSE);
+  } else if (input_trig & IN_UP) {
+    --optmenu.sel;
+    while (optmenu.sel >= 0 && options[optmenu.sel].type == OPT_SEP)
+      --optmenu.sel; // skip separators
+    if (optmenu.sel < optmenu.first)
+      optmenu.sel = optmenu.last;
+    snd_play_sound(PRIO_HIGH, 1, FALSE);
+  }
+
+  if (options[optmenu.sel].type == OPT_SCROLL) {
+    s32 *pval = (s32 *)options[optmenu.sel].value;
+    if ((input_trig & IN_LEFT) && *pval > 0) {
+      --*pval;
+      scroll_changed = TRUE;
+      snd_play_sound(PRIO_HIGH, 1, FALSE);
+    } else if ((input_trig & (IN_RIGHT | IN_OK)) && *pval < options[optmenu.sel].max) {
+      ++*pval;
+      scroll_changed = TRUE;
+      snd_play_sound(PRIO_HIGH, 1, FALSE);
+    }
+  } else if (options[optmenu.sel].type == OPT_BIND) {
+    if (input_trig & IN_OK) {
+      snd_play_sound(PRIO_HIGH, 18, FALSE);
+      optmenu.bind = options[optmenu.sel].value;
+      optmenu.lock = TRUE;
+      // HACK: maybe add a field for this or turn `option` into a union
+      if (options[optmenu.sel].max)
+        optmenu.counterbind = &input_binds[options[optmenu.sel].max];
+      else
+        optmenu.counterbind = NULL;
+      return;
+    }
+  }
+
+  if (scroll_changed)
+    menu_options_apply();
+}
+
+static void menu_options_draw(void) {
+  gfx_draw_clear(main_bg_rgb, GFX_LAYER_FRONT);
+
+  int yofs = 8;
+  const int xname = VID_WIDTH / 2 - OPT_NAME_XOFS;
+  const int xval = VID_WIDTH / 2 + OPT_VAL_XOFS;
+  const int y = GFX_FONT_HEIGHT;
+
+  static const char bar[] = "||||||||||||||||||||||||||||||||";
+  int bar_total, bar_val, btn;
+
+  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, xname - 16 - 8, y + 5 + optmenu.sel * 20);
+  for (int i = 0; i < optmenu.count; ++i, yofs += 20) {
+    switch (options[i].type) {
+      case OPT_SEP:
+        draw_string_centered(options[i].name, main_title_rgb, VID_WIDTH / 2, y + yofs);
+        break;
+
+      case OPT_SCROLL:
+        // name
+        draw_string_shadow(options[i].name, NULL, xname, y + yofs);
+        // value
+        bar_total = (sizeof(bar) - options[i].max - 1);
+        bar_val = (sizeof(bar) - *(s32 *)options[i].value - 1);
+        draw_string_shadow(bar + bar_total, main_barbg_rgb, xval, y + yofs);
+        gfx_draw_string(bar + bar_val, GFX_LAYER_FRONT, xval, y + yofs);
+        break;
+
+      case OPT_BIND:
+        // name
+        draw_string_shadow(options[i].name, NULL, xname, y + yofs);
+        // value
+        if (optmenu.bind == options[i].value) {
+          if (main_tick / 16 % 2)
+            draw_string_shadow("...", NULL, xval + GFX_FONT_WIDTH * (8 - 3), y + yofs);
+        } else {
+          btn = menu_padbutton_index(*(u16 *)options[i].value);
+          gfx_draw_texrect(&rc_padbuttons[btn], GFX_LAYER_FRONT, xval - 8 + GFX_FONT_WIDTH * 8 - 12, y + yofs - 8);
+        }
+        break;
+    }
+  }
+}
+
 /* -------------- */
 
 typedef void (*menu_func_t)(void);
@@ -1009,7 +1210,7 @@ static const struct menu_desc {
   { menu_stagesel_open,  menu_stagesel_act,  menu_stagesel_draw,  TRUE  }, // STAGESELECT
   { menu_saveload_open,  menu_saveload_act,  menu_saveload_draw,  FALSE }, // SAVE
   { menu_saveload_open,  menu_saveload_act,  menu_saveload_draw,  FALSE }, // LOAD
-  { menu_null,           menu_null,          menu_null,           FALSE }, // OPTIONS
+  { menu_options_open,   menu_options_act,   menu_options_draw,   FALSE }, // OPTIONS
 };
 
 void menu_open(const int menu) {

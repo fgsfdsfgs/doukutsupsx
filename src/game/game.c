@@ -57,6 +57,7 @@ void game_start_intro(void) {
   // stage_transition(2, 90, 5, 6);
   // stage_transition(28, 94, 6, 13); // balfrog
   // stage_transition(10, 99, 36, 33); // sand
+  // stage_transition(6, 98, 4, 18); // weed
 }
 
 void game_start_new(void) {
