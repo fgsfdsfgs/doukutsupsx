@@ -211,6 +211,7 @@ static void menu_pause_act(void) {
     plr_arm_give(3, 0);
     plr_arm_give(5, 100);
     plr_arm_give(7, 100);
+    npc_set_flag(201); // got missile launcher
     player.arm = 2;
     // heal
     player.max_life = 50;
