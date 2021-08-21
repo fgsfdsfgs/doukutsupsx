@@ -5,6 +5,7 @@
 #include "engine/memory.h"
 #include "engine/sound.h"
 #include "engine/input.h"
+#include "engine/timer.h"
 #include "engine/org.h"
 #include "engine/mcrd.h"
 
@@ -750,6 +751,13 @@ static inline void menu_saveload_set_state(const int state, const char *title, c
 }
 
 static void menu_saveload_open(void) {
+  // tick music in the timer callback because all memcard processing is synchronous
+  timer_set_callback(timer_cb_music);
+
+  // clear screen to show that something is actually happening
+  gfx_draw_clear_immediate(main_bg_rgb);
+
+  // ...since this takes a while the first time
   mcrd_start();
 
   saveload.num_cards = mcrd_cards_available(saveload.cards);
@@ -765,7 +773,13 @@ static void menu_saveload_open(void) {
 
 static inline void menu_saveload_close(const bool success) {
   mcrd_stop();
+
+  // reset timer back to normal callback
+  timer_set_callback(timer_cb_ticker);
+
+  // close menu
   menu_id = 0;
+
   // if we're in the intro stage, re-open the main menu
   if (!stage_data || stage_data->id == STAGE_OPENING_ID) {
     menu_open(MENU_TITLE);

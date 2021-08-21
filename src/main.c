@@ -20,7 +20,6 @@ int main(int argc, char **argv) {
   snd_init(SFX_MAIN_BANK);
   org_init();
   in_init();
-  mcrd_init();
 
   // load main graphics bank
   gfx_load_gfx_bank(GFX_MAIN_BANK);

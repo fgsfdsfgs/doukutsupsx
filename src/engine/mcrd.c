@@ -6,7 +6,6 @@
 #include <libetc.h>
 
 #include "engine/common.h"
-#include "engine/timer.h"
 #include "engine/mcrd.h"
 
 #define MCRD_SAVE_MAGIC "CSS\x01"
@@ -44,6 +43,8 @@ static u16 save_icon_clut[] = {
 static u8 save_icon_data[] = {
 #include "saveicon.inc"
 };
+
+static bool mcrd_init_done = FALSE;
 
 static inline char *mcrd_devname(const int chan) {
   static char buf[6] = "bu00:";
@@ -118,12 +119,15 @@ void mcrd_init(void) {
 
   ExitCriticalSection();
 
+  mcrd_init_done = TRUE;
+
   printf("mcrd_init(): memcard initialized\n");
 }
 
 void mcrd_start(void) {
-  // tick music in the timer callback because all memcard processing is synchronous
-  timer_set_callback(timer_cb_music);
+  // call InitCARD and open events if we haven't done it already
+  if (!mcrd_init_done)
+    mcrd_init();
 
   mcrd_clear_events(MCRD_EV_HW);
   mcrd_clear_events(MCRD_EV_SW);
@@ -154,9 +158,6 @@ void mcrd_stop(void) {
       DisableEvent(mcrd_ev[i][j]);
   }
   ExitCriticalSection();
-
-  // reset timer back to normal callback
-  timer_set_callback(timer_cb_ticker);
 
   printf("mcrd_stop(): memcard processing stopped\n");
 }
