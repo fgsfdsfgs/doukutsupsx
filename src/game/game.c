@@ -142,12 +142,21 @@ void game_frame(void) {
   if (cur_menu) {
     menu_act();
     game_draw_common();
+    cam_draw_fade();
     menu_draw();
     if (menu_uses_tsc()) {
       tsc_update();
       tsc_draw();
     }
     return;
+  }
+
+  // HACK: allow to skip title sequence if we're in the title map
+  if (stage_data && stage_data->id == STAGE_OPENING_ID) {
+    if (input_trig & (IN_OK | IN_CANCEL | IN_PAUSE)) {
+      menu_open(MENU_TITLE);
+      return;
+    }
   }
 
   // call `act` on all entities when game isn't frozen (except bullets and particles for some reason)
