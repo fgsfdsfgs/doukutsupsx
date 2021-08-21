@@ -243,12 +243,12 @@ void tsc_print_number(const int id) {
   const int left = TSC_LINE_LEN - tsc_state.writepos + 1;
 
   // do a shitty reverse print since psyq has no snprintf()
-  // numbers are all 16-bit, so 8 should be enough
+  // numbers are all 16-bit, so 7 should be enough
   char dig[8];
   int firstdig = 7;
   int numdig = 0;
   do {
-    dig[--firstdig] = x % 10;
+    dig[--firstdig] = '0' + (x % 10);
     x /= 10;
     ++numdig;
   } while (x && firstdig);
