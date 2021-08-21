@@ -340,7 +340,7 @@ void npc_draw(int cam_x, int cam_y) {
   // draw bosses first
   for (int i = npc_boss_max; i >= 0; --i) {
     if (npc_boss[i].cond & NPCCOND_ALIVE)
-      npc_draw_instance(&npc_list[i], cam_x, cam_y);
+      npc_draw_instance(&npc_boss[i], cam_x, cam_y);
   }
   // draw regular npcs after
   for (int i = 0; i <= npc_list_max; ++i) {

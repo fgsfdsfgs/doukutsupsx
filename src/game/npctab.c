@@ -4,6 +4,7 @@
 
 #include "game/npc.h"
 #include "game/npc_act/npc_act.h"
+#include "game/boss_act/boss_act.h"
 
 npc_class_t *npc_classtab;
 
@@ -418,7 +419,7 @@ npc_func_t npc_functab[NPC_MAX_ACTFUNC] = {
 npc_func_t npc_boss_functab[] = {
   npc_act_null,
   npc_act_null,
-  npc_act_null,
+  boss_act_balfrog,
   npc_act_null,
   npc_act_null,
   npc_act_null,

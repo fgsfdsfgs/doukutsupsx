@@ -7,7 +7,7 @@ LDFLAGS		:= -Lnugget/psyq/lib -Wl,--start-group -lcard -lapi -lc2 -lcd -letc -lg
 LDFLAGS		+= -flto
 
 SRCDIR		= src
-SRCSUB		= engine game game/npc_act
+SRCSUB		= engine game game/npc_act game/boss_act
 
 SRCDIRS		= $(foreach dir,$(SRCSUB),$(SRCDIR)/$(dir)) $(SRCDIR)
 CFILES		= $(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.c))

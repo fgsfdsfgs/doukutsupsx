@@ -340,7 +340,7 @@ static inline void flash_update_flash(void) {
       flash.rect[1].w = VID_WIDTH;
       flash.rect[1].h = h;
       if (flash.width > TO_FIX(VID_WIDTH) * 4) {
-        flash.act = 0;
+        flash.act = 1;
         flash.count = 0;
         flash.width = TO_FIX(VID_HEIGHT);
       }

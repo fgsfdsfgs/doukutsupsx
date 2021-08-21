@@ -62,13 +62,21 @@ typedef union {
   short vec[4];
 } rect_t;
 
-//OTHER_RECT in CSE2, used for bounding boxes
+// OTHER_RECT in CSE2, used for bounding boxes
 typedef struct {
   int front;
   int top;
   int back;
   int bottom;
 } hitbox_t;
+
+// collision flags
+enum collision_flag {
+  COLL_LEFT_WALL = 1,  // Touching a left wall
+  COLL_CEILING = 2,    // Touching a ceiling
+  COLL_RIGHT_WALL = 4, // Touching a right wall
+  COLL_GROUND = 8,     // Touching the ground
+};
 
 // utilities
 
