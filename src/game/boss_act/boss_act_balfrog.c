@@ -112,7 +112,7 @@ static inline void boss_act_balfrog_sub02(void) {
 }
 
 void boss_act_balfrog(npc_t *root) {
-  unsigned char deg;
+  u8 deg;
   int xvel, yvel;
   int i;
 

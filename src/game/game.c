@@ -55,6 +55,8 @@ void game_start_intro(void) {
   // stage_transition(62, 90, 80, 9);
   // stage_transition(56, 90, 80, 9);
   // stage_transition(2, 90, 5, 6);
+  // stage_transition(28, 94, 6, 13); // balfrog
+  // stage_transition(10, 99, 36, 33); // sand
 }
 
 void game_start_new(void) {

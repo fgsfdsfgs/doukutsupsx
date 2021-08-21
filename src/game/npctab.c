@@ -418,13 +418,13 @@ npc_func_t npc_functab[NPC_MAX_ACTFUNC] = {
 
 npc_func_t npc_boss_functab[] = {
   npc_act_null,
-  npc_act_null,
+  boss_act_omega,
   boss_act_balfrog,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
-  npc_act_null,
+  boss_act_monster_x,
+  boss_act_core,
+  boss_act_ironhead,
+  boss_act_twins,
+  boss_act_undead_core,
+  boss_act_heavy_press,
+  boss_act_ballos,
 };
