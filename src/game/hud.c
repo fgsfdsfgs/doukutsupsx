@@ -268,14 +268,6 @@ static inline void hud_draw_life(void) {
   hud_draw_number(player.life_bar, 32, 40);
 }
 
-static inline void hud_draw_map_name(void) {
-  const int x = (VID_WIDTH / 2) + map_name_xofs;
-  const int y = (VID_HEIGHT / 2) - 40;
-  const u8 shadow[3] = { 0x08, 0x00, 0x11 };
-  gfx_draw_string_rgb(stage_data->title, shadow, GFX_LAYER_FRONT, x + 1, y + 1);
-  gfx_draw_string(stage_data->title, GFX_LAYER_FRONT, x, y);
-}
-
 static inline void hud_draw_boss_life(void) {
   const int life = *hud_boss_life;
 
@@ -310,15 +302,21 @@ void hud_draw(void) {
     hud_draw_arms();
   }
 
-  if (map_name_time) {
-    hud_draw_map_name();
-    --map_name_time;
-  }
-
   if (hud_boss_life)
     hud_draw_boss_life();
 
   hud_draw_debug();
+}
+
+void hud_draw_map_name(void) {
+  if (map_name_time) {
+    const int x = (VID_WIDTH / 2) + map_name_xofs;
+    const int y = (VID_HEIGHT / 2) - 40;
+    const u8 shadow[3] = { 0x08, 0x00, 0x11 };
+    gfx_draw_string_rgb(stage_data->title, shadow, GFX_LAYER_FRONT, x + 1, y + 1);
+    gfx_draw_string(stage_data->title, GFX_LAYER_FRONT, x, y);
+    --map_name_time;
+  }
 }
 
 void hud_show_map_name(void) {

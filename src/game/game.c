@@ -190,6 +190,7 @@ void game_frame(void) {
 
   hud_draw();
   cam_draw_fade();
+  hud_draw_map_name(); // this has to be above the fade
   tsc_draw();
 
   ++game_tick;
