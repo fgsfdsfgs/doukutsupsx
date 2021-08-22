@@ -998,7 +998,7 @@ void plr_arm_shoot(void) {
   }
 
   // Run functions
-  if (!(player.cond & 2))
+  if (!(player.cond & PLRCOND_INVISIBLE))
     arm_functab[player.arm](player.arms[player.arm].level);
 }
 

@@ -10,7 +10,7 @@
 #include "game/caret.h"
 
 static inline void star_particle(void) {
-  if (!(player.cond & 2) && player.yvel < -0x200) {
+  if (!(player.cond & PLRCOND_INVISIBLE) && player.yvel < -0x200) {
     snd_play_sound(PRIO_LOW, 3, FALSE);
     caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
     caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_LEFT);
@@ -61,7 +61,7 @@ static inline int hit_check_player_block(int x, int y) {
     player.y = ((y * 0x10 + 8) * 0x200) + player.hit.top;
 
     // halt momentum
-    if (!(player.cond & 2) && player.yvel < -0x200) star_particle();
+    if (!(player.cond & PLRCOND_INVISIBLE) && player.yvel < -0x200) star_particle();
     if (player.yvel < 0) player.yvel = 0;
 
     // set that a ceiling was hit
@@ -98,7 +98,7 @@ static inline int hit_check_player_slope_a(int x, int y) {
                0x800 + player.hit.top;
 
     // halt momentum
-    if (!(player.cond & 2) && player.yvel < -0x200) star_particle();
+    if (!(player.cond & PLRCOND_INVISIBLE) && player.yvel < -0x200) star_particle();
     if (player.yvel < 0) player.yvel = 0;
 
     // set that hit a ceiling
@@ -119,7 +119,7 @@ static inline int hit_check_player_slope_b(int x, int y) {
                0x800 + player.hit.top;
 
     // halt momentum
-    if (!(player.cond & 2) && player.yvel < -0x200) star_particle();
+    if (!(player.cond & PLRCOND_INVISIBLE) && player.yvel < -0x200) star_particle();
     if (player.yvel < 0) player.yvel = 0;
 
     // set that hit a ceiling
@@ -140,7 +140,7 @@ static inline int hit_check_player_slope_c(int x, int y) {
                0x800 + player.hit.top;
 
     // halt momentum
-    if (!(player.cond & 2) && player.yvel < -0x200) star_particle();
+    if (!(player.cond & PLRCOND_INVISIBLE) && player.yvel < -0x200) star_particle();
     if (player.yvel < 0) player.yvel = 0;
 
     // set that hit a ceiling
@@ -161,7 +161,7 @@ static inline int hit_check_player_slope_d(int x, int y) {
                0x800 + player.hit.top;
 
     // halt momentum
-    if (!(player.cond & 2) && player.yvel < -0x200) star_particle();
+    if (!(player.cond & PLRCOND_INVISIBLE) && player.yvel < -0x200) star_particle();
     if (player.yvel < 0) player.yvel = 0;
 
     // set that hit a ceiling

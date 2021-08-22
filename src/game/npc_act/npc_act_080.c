@@ -1446,7 +1446,7 @@ void npc_act_096(npc_t *npc) {
       if (player.y < npc->y + (8 * 0x200) && player.y > npc->y - (8 * 0x200) && player.x < npc->x &&
           player.x > npc->x - (96 * 0x200)) {
         player.xvel -= 0x88;
-        player.cond |= 0x20;
+        player.cond |= PLRCOND_IN_WIND;
       }
 
       break;
@@ -1538,7 +1538,7 @@ void npc_act_098(npc_t *npc) {
       if (player.y < npc->y + (8 * 0x200) && player.y > npc->y - (8 * 0x200) && player.x < npc->x + (96 * 0x200) &&
           player.x > npc->x) {
         player.xvel += 0x88;
-        player.cond |= 0x20;
+        player.cond |= PLRCOND_IN_WIND;
       }
 
       break;

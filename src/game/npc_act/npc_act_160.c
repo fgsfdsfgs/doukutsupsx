@@ -579,7 +579,7 @@ void npc_act_169(npc_t *npc) {
           npc->y - (12 * 0x200) < player.y && npc->y + (8 * 0x200) > player.y) {
         npc->act = 10;
         npc->anim = 5;
-        player.cond |= 2;
+        player.cond |= PLRCOND_INVISIBLE;
         plr_damage(5);
         break;
       }
@@ -639,7 +639,7 @@ void npc_act_169(npc_t *npc) {
           npc->y - (12 * 0x200) < player.y && npc->y + (8 * 0x200) > player.y) {
         npc->act = 10;
         npc->anim = 5;
-        player.cond |= 2;
+        player.cond |= PLRCOND_INVISIBLE;
         plr_damage(10);
       }
 
@@ -688,7 +688,7 @@ void npc_act_169(npc_t *npc) {
 
     case 20:
       snd_play_sound(PRIO_NORMAL, 25, FALSE);
-      player.cond &= ~2;
+      player.cond &= ~PLRCOND_INVISIBLE;
 
       if (npc->dir == 0) {
         player.x += 4 * 0x200;

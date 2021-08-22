@@ -1233,13 +1233,13 @@ void npc_act_153(npc_t *npc) {
         npc->yvel = -0x5FF;
         npc->act = 20;
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
       } else if (npc->dir == 2 && npc->flags & 4) {
         npc->anim = 2;
         npc->yvel = -0x5FF;
         npc->act = 20;
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
       }
 
       break;
@@ -1270,7 +1270,7 @@ void npc_act_153(npc_t *npc) {
         npc->act_wait = 0;
         npc->xvel = 0;
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 23, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 23, FALSE);
       }
 
       break;
@@ -1405,7 +1405,7 @@ void npc_act_155(npc_t *npc) {
         xvel = m_cos(deg) * 3;
         npc_spawn(156, npc->x, npc->y, xvel, yvel, 0, NULL, 0x100);
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 39, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 39, FALSE);
 
         npc->act = 1;
         npc->act_wait = m_rand(70, 150);

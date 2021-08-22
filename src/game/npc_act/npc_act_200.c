@@ -86,7 +86,7 @@ void npc_act_200(npc_t *npc) {
         else
           npc_spawn(202, npc->x + (14 * 0x200), npc->y, xvel, yvel, 0, NULL, 0x100);
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 33, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 33, FALSE);
       }
 
       if (npc->act_wait > 60) {
@@ -206,7 +206,7 @@ void npc_act_203(npc_t *npc) {
         npc->anim = 2;
         npc->yvel = -0x5FF;
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
 
         if (npc->dir == 0)
           npc->xvel = -0x100;
@@ -223,7 +223,7 @@ void npc_act_203(npc_t *npc) {
         npc->anim = 0;
         npc->act = 1;
 
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 23, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 23, FALSE);
       }
 
       break;
@@ -275,7 +275,7 @@ void npc_act_204(npc_t *npc) {
       npc->yvel += 0x20;
 
       if (npc->flags & 0xFF) {
-        if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 12, FALSE);
+        if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 12, FALSE);
 
         npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 4, 0);
         npc->cond = 0;

@@ -135,7 +135,7 @@ void plr_animate(const bool input_enabled) {
     if (player.cond & PLRCOND_USE_BUTTON) {
       player.anim = 11;
     } else if (input_held & IN_UP && input_held & (IN_LEFT | IN_RIGHT) && input_enabled) {
-      player.cond |= PLRCOND_UNKNOWN04;
+      player.cond |= PLRCOND_WALKING;
 
       if (++player.anim_wait > 4) {
         player.anim_wait = 0;
@@ -146,7 +146,7 @@ void plr_animate(const bool input_enabled) {
       if (player.anim > 9 || player.anim < 6)
         player.anim = 6;
     } else if (input_held & (IN_LEFT | IN_RIGHT) && input_enabled) {
-      player.cond |= PLRCOND_UNKNOWN04;
+      player.cond |= PLRCOND_WALKING;
 
       if (++player.anim_wait > 4) {
         player.anim_wait = 0;
@@ -157,16 +157,16 @@ void plr_animate(const bool input_enabled) {
       if (player.anim > 4 || player.anim < 1)
         player.anim = 1;
     } else if (input_held & IN_UP && input_enabled) {
-      if (player.cond & PLRCOND_UNKNOWN04)
+      if (player.cond & PLRCOND_WALKING)
         snd_play_sound(PRIO_LOW, 24, FALSE);
 
-      player.cond &= ~PLRCOND_UNKNOWN04;
+      player.cond &= ~PLRCOND_WALKING;
       player.anim = 5;
     } else {
-      if (player.cond & PLRCOND_UNKNOWN04)
+      if (player.cond & PLRCOND_WALKING)
         snd_play_sound(PRIO_LOW, 24, FALSE);
 
-      player.cond &= ~PLRCOND_UNKNOWN04;
+      player.cond &= ~PLRCOND_WALKING;
       player.anim = 0;
     }
   } else if (player.up) {
@@ -373,7 +373,7 @@ static void plr_act_normal(const bool input_enabled) {
     }
 
     // Friction
-    if (!(player.cond & PLRCOND_UNKNOWN20)) {
+    if (!(player.cond & PLRCOND_IN_WIND)) {
       if (player.xvel < 0) {
         if (player.xvel > -phys->resist)
           player.xvel = 0;
@@ -727,7 +727,7 @@ void plr_act(const bool input_enabled) {
   else
     plr_act_normal(input_enabled);
 
-  player.cond &= ~PLRCOND_UNKNOWN20;
+  player.cond &= ~PLRCOND_IN_WIND;
 }
 
 void plr_damage(int val) {
@@ -739,7 +739,7 @@ void plr_damage(int val) {
 
   // Damage player
   snd_play_sound(PRIO_HIGH, 16, FALSE);
-  player.cond &= ~1;
+  player.cond &= ~PLRCOND_USE_BUTTON;
   player.shock = 128;
 
   if (player.unit != 1)

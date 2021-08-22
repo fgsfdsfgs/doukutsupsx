@@ -413,7 +413,7 @@ void boss_act_core(npc_t *root) {
       ++npc->act_wait;
       npc_spawn(199, player.x + (m_rand(-50, 150) * 0x200 * 2), player.y + (m_rand(-160, 160) * 0x200), 0, 0, 0, NULL, 0x100);
       player.xvel -= 0x20;
-      player.cond |= 0x20;
+      player.cond |= PLRCOND_IN_WIND;
 
       if (npc->shock != 0) {
         if (++flash / 2 % 2) {

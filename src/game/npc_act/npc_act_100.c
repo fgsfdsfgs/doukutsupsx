@@ -233,7 +233,7 @@ void npc_act_104(npc_t *npc) {
     npc->anim = 2;
     npc->yvel = -0x5FF;
 
-    if (!(player.cond & 2)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
+    if (!(player.cond & PLRCOND_INVISIBLE)) snd_play_sound(PRIO_NORMAL, 30, FALSE);
 
     if (npc->dir == 0)
       npc->xvel = -0x200;

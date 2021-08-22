@@ -23,11 +23,11 @@ enum equip_flags {
 
 enum plr_cond_flags {
   PLRCOND_USE_BUTTON = 0x01,
-  PLRCOND_INVISIBLE = 0x02,
-  PLRCOND_UNKNOWN04 = 0x04,
-  PLRCOND_ONGROUND  = 0x08,
-  PLRCOND_UNKNOWN20 = 0x20,
-  PLRCOND_ALIVE     = 0x80,
+  PLRCOND_INVISIBLE  = 0x02,
+  PLRCOND_WALKING    = 0x04,
+  PLRCOND_ONGROUND   = 0x08,
+  PLRCOND_IN_WIND    = 0x20,
+  PLRCOND_ALIVE      = 0x80,
 };
 
 typedef struct {
