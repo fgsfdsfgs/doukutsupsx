@@ -12,7 +12,7 @@ dmgnum_t dmgnum_list[DMGNUM_MAX];
 static int dmgnum_last = 0;
 
 void dmgnum_init(void) {
-  memset(dmgnum_list, 0, sizeof(dmgnum_list));
+  memset_word(dmgnum_list, 0, sizeof(dmgnum_list));
 }
 
 void dmgnum_spawn(int *tgt_x, int *tgt_y, int val) {

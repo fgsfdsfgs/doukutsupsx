@@ -39,10 +39,10 @@ void npc_init(const char *tabpath) {
 
 void npc_reset(void) {
   npc_list_max = 0;
-  memset(&npc_list, 0, sizeof(npc_list));
+  memset_word(&npc_list, 0, sizeof(npc_list));
   npc_boss_max = -1;
-  memset(&npc_boss, 0, sizeof(npc_boss));
-  memset(npc_flags, 0, sizeof(npc_flags));
+  memset_word(&npc_boss, 0, sizeof(npc_boss));
+  memset_word(npc_flags, 0, sizeof(npc_flags));
 }
 
 static inline void npc_set_class(npc_t *npc, const u32 class_num) {
@@ -70,7 +70,7 @@ static inline void npc_set_class(npc_t *npc, const u32 class_num) {
 void npc_show_death_damage(npc_t *npc) {
   const int tx = npc->x;
   const int ty = npc->y;
-  memset(npc, 0, sizeof(*npc));
+  memset_word(npc, 0, sizeof(*npc));
   npc->x = tx;
   npc->y = ty;
   npc->cond |= NPCCOND_ALIVE;
@@ -210,7 +210,7 @@ npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *pa
     npc_list_max = n;
 
   npc_t *npc = &npc_list[n];
-  memset(npc, 0, sizeof(*npc));
+  memset_word(npc, 0, sizeof(*npc));
   npc_init_instance(npc, class_num, x, y, dir);
   npc->xvel = xv;
   npc->yvel = yv;
@@ -221,7 +221,7 @@ npc_t *npc_spawn(int class_num, int x, int y, int xv, int yv, int dir, npc_t *pa
 }
 
 void npc_parse_event_list(const stage_event_t *ev, const int numev) {
-  memset(npc_list, 0, sizeof(npc_list));
+  memset_word(npc_list, 0, sizeof(npc_list));
   npc_boss[0].cond = 0;
 
   for (int i = 0; i < numev; ++i) {
@@ -473,7 +473,7 @@ void npc_set_pos(npc_t *npc, const int x, const int y, const int dir) {
 }
 
 npc_t *npc_spawn_boss(const int boss_id) {
-  memset(npc_boss, 0, sizeof(npc_boss));
+  memset_word(npc_boss, 0, sizeof(npc_boss));
   npc_boss[0].class_num = boss_id;
   if (boss_id) {
     npc_boss[0].cond = NPCCOND_ALIVE;

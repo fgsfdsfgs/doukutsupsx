@@ -103,7 +103,7 @@ bullet_t *bullet_spawn(int class_num, int x, int y, int dir) {
 
   bullet_t *bullet = &bullet_list[i];
   bullet_class_t *bclass = &bullet_classtab[class_num];
-  memset(bullet, 0, sizeof(*bullet));
+  memset_word(bullet, 0, sizeof(*bullet));
   bullet->cond = BULLETCOND_ALIVE;
   bullet->class_num = class_num;
   bullet->life = bclass->life;

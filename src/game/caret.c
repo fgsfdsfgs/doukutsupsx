@@ -35,7 +35,7 @@ static const struct {
 };
 
 void caret_init(void) {
-  memset(caret_list, 0, sizeof(caret_list));
+  memset_word(caret_list, 0, sizeof(caret_list));
   caret_list_max = 0;
 }
 

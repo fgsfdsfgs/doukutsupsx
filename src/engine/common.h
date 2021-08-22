@@ -80,6 +80,11 @@ enum collision_flag {
 
 // utilities
 
+// memcpy and memset operating on words (see common_a.s)
+// addresses and byte count must be multiples of 4
+extern void *memcpy_word(void *dst, const void *src, const int n);
+extern void *memset_word(void *dst, const u32 set, const int n);
+
 // since psyq lacks vs(n)printf, we'll have to replace PANIC() with a shitty macro
 extern char error_msg[MAX_ERROR];
 
