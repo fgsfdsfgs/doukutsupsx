@@ -751,9 +751,6 @@ static inline void menu_saveload_set_state(const int state, const char *title, c
 }
 
 static void menu_saveload_open(void) {
-  // tick music in the timer callback because all memcard processing is synchronous
-  timer_set_callback(timer_cb_music);
-
   // clear screen to show that something is actually happening
   gfx_draw_clear_immediate(main_bg_rgb);
 
@@ -773,9 +770,6 @@ static void menu_saveload_open(void) {
 
 static inline void menu_saveload_close(const bool success) {
   mcrd_stop();
-
-  // reset timer back to normal callback
-  timer_set_callback(timer_cb_ticker);
 
   // close menu
   menu_id = 0;

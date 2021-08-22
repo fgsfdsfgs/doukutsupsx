@@ -77,10 +77,8 @@ bool profile_load(void) {
   tele_dest_num = profile.save.tele_dest_num;
 
   // load stage bank
-  timer_set_callback(timer_cb_music); // switch to IRQ based music
   gfx_draw_loading();
   stage_load_stage_bank(profile.save.stage_bank_id);
-  timer_set_callback(timer_cb_ticker); // switch back to a simple ticker
 
   // after loading the stage bank we can get into the actual stage
   stage_transition(profile.save.stage_id, 0, 0, 1);

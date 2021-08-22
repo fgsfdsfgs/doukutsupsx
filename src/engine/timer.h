@@ -10,10 +10,8 @@ extern timer_func_t timer_callback;
 // global timer; ticks at 100hz
 extern volatile u32 timer_ticks;
 // next music tick
-extern volatile u32 timer_next_orgtick;
-
-void timer_cb_ticker(void);
-void timer_cb_music(void);
+extern volatile u32 timer_org_nexttick;
+// music tickrate
+extern volatile u32 timer_org_delay;
 
 void timer_init(void);
-void timer_set_callback(timer_func_t cb);

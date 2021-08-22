@@ -6,6 +6,7 @@
 #include "engine/memory.h"
 #include "engine/sound.h"
 #include "engine/spu.h"
+#include "engine/timer.h"
 #include "engine/org.h"
 
 #define ORG_MAGIC "Org-0"
@@ -165,6 +166,9 @@ bool org_load(const u32 id, u8 *data, sfx_bank_t *bank) {
   memcpy(inst_bank, bank, sizeof(*bank) + sizeof(u32) * bank->num_sfx);
   snd_upload_sfx_bank(bank, NULL);
 
+  // change music callback timing
+  timer_org_delay = org_get_wait() / 10;
+
   return TRUE;
 }
 
@@ -183,6 +187,9 @@ void org_free(void) {
 
   org.id = ORG_INVALID;
   org.fadeout = 0;
+
+  // shut off music callback
+  timer_org_delay = 0;
 }
 
 void org_pause(const bool new_paused) {

@@ -35,27 +35,16 @@ int main(int argc, char **argv) {
 
   u32 now = timer_ticks;
   u32 next_frame = now;
-  timer_next_orgtick = now;
 
   game_start_intro();
 
   while (1) {
     now = timer_ticks;
-
     if (now >= next_frame) {
       in_update();
       game_frame();
       gfx_swap_buffers();
       next_frame = now + 2; 
-    }
-
-    // tick music only if timer isn't already doing it
-    if (timer_callback != timer_cb_music) {
-      const u32 orgwait = org_get_wait() / 10;
-      if (now >= timer_next_orgtick && orgwait) {
-        org_tick();
-        timer_next_orgtick = now + orgwait;
-      }
     }
   }
 
