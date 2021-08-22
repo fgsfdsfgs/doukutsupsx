@@ -472,7 +472,7 @@ void boss_act_undead_core(npc_t *root) {
             x = npc_boss[6].x;
             y = npc_boss[6].y;
             break;
-          case 3:
+          default:
             x = npc_boss[7].x;
             y = npc_boss[7].y;
             break;

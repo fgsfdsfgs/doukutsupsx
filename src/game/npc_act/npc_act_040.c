@@ -258,7 +258,7 @@ void npc_act_042(npc_t *npc) {
       npc->xvel = 0;
       npc->anim = 12;
       npc_doctor_state.crystal_x = npc->x;
-      npc_doctor_state.crystal_y - (8 * 0x200);
+      npc_doctor_state.crystal_y = npc->y - (8 * 0x200);
       break;
 
     case 20:
@@ -476,7 +476,8 @@ void npc_act_044(npc_t *npc) {
   if (npc->life <= 100) {
     int i;
 
-    for (i = 0; i < 10; ++i) npc_spawn(45, npc->x, npc->y, 0, 0, 0, NULL, 0x100);
+    for (i = 0; i < 10; ++i)
+      npc_spawn(45, npc->x, npc->y, 0, 0, 0, NULL, 0x100);
 
     npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
     snd_play_sound(PRIO_NORMAL, 25, FALSE);
@@ -1073,7 +1074,7 @@ void npc_act_053(npc_t *npc) {
       npc->act = 1;
       npc->count1 = 10;
       // Fallthrough
-    case 1:
+    default:
       if (npc->dir == 0 && npc->flags & 0x20) {
         npc->parent->y -= 2 * 0x200;
         npc->parent->yvel -= 0x100;

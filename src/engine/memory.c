@@ -28,10 +28,10 @@ static struct {
 } mem_mark[MEM_MARK_COUNT];
 
 // this should be defined somewhere
-extern u32 __bss_end;
+extern u8 __bss_end[];
 
 void mem_init(void) {
-  mem_base = (u8 *)&__bss_end + MALLOC_HEAP_SIZE;
+  mem_base = __bss_end + MALLOC_HEAP_SIZE;
   mem_base = (u8 *)ALIGN((u32)mem_base, MEM_ALIGNMENT);
   mem_size = mem_left = (u8 *)RAM_END - mem_base - STACK_SIZE;
   mem_ptr = mem_lastptr = mem_base;

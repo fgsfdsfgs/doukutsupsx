@@ -84,7 +84,7 @@ void npc_act_321(npc_t *npc) {
     {168, 168, 184, 184},
   };
 
-  int dir;
+  int dir = 0;
 
   if (npc->parent == NULL) return;
 

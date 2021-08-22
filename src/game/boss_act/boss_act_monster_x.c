@@ -206,7 +206,7 @@ static void boss_act_monster_x_type2(npc_t *npc) {
           x = -30 * 0x200;
           y = -6 * 0x200;
           break;
-        case 3:
+        default:
           dir = 1;
           x = 30 * 0x200;
           y = -6 * 0x200;

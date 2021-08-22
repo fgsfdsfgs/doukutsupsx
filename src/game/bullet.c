@@ -126,7 +126,7 @@ bullet_t *bullet_spawn(int class_num, int x, int y, int dir) {
 }
 
 static inline void bullet_draw_instance(bullet_t *b, const int cam_vx, const int cam_vy) {
-  register int x, y;
+  int x, y;
 
   switch (b->dir) {
     case DIR_LEFT:
@@ -141,7 +141,7 @@ static inline void bullet_draw_instance(bullet_t *b, const int cam_vx, const int
       x = b->x - b->view.back;
       y = b->y - b->view.top;
       break;
-    case DIR_DOWN:
+    default:
       x = b->x - b->view.top;
       y = b->y - b->view.back;
       break;

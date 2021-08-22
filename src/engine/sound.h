@@ -33,7 +33,7 @@ extern sfx_bank_t *snd_main_bank;
 extern int snd_sfx_volume;
 
 // initializes the spu and loads the main sample bank
-int snd_init(const char *mainbankpath);
+void snd_init(const char *mainbankpath);
 
 // loads a sample bank into a sfx_bank struct and uploads it to spu ram
 int snd_upload_sfx_bank(sfx_bank_t *bank, u8 *bank_data);

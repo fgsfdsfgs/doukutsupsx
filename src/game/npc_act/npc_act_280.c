@@ -56,6 +56,7 @@ void npc_act_280(npc_t *npc) {
 
   if (npc->act == 1) {
     npc->rect_delta.bottom = npc->rect->top + npc->act_wait / 4 - npc->rect->bottom;
+    npc->rect_prev = NULL; // force texrect update
     if (npc->act_wait / 2 % 2)
       npc->x = npc->tgt_x;
     else
@@ -1080,6 +1081,7 @@ void npc_act_289(npc_t *npc) {
   if (npc->act == 1) {
     npc->rect_delta.top = 8 - (npc->act_wait / 2);
     npc->rect_delta.bottom = -8 - (npc->act_wait / 2);
+    npc->rect_prev = NULL; // force texrect update
     npc->view.top = (npc->act_wait * 0x200) / 2;
     npc->view.bottom = (npc->act_wait * 0x200) / 2;
   }
@@ -1160,6 +1162,7 @@ void npc_act_290(npc_t *npc) {
   if (npc->act == 1) {
     npc->rect_delta.top = 8 - (npc->act_wait / 2);
     npc->rect_delta.bottom = -8 - (npc->act_wait / 2);
+    npc->rect_prev = NULL; // force texrect update
     npc->view.top = (npc->act_wait * 0x200) / 2;
     npc->view.bottom = (npc->act_wait * 0x200) / 2;
   }
@@ -1369,7 +1372,7 @@ void npc_act_296(npc_t *npc) {
           pri = 0x40;
           break;
 
-        case 3:
+        default:
           pri = 0x00;
           break;
       }
@@ -1391,7 +1394,7 @@ void npc_act_296(npc_t *npc) {
           pri = 0x40;
           break;
 
-        case 3:
+        default:
           pri = 0x00;
           break;
       }

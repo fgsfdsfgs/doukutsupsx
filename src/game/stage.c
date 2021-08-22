@@ -236,8 +236,6 @@ static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
 }
 
 static inline void stage_draw_bg(const int cam_vx, const int cam_vy) {
-  int start_y, start_x;
-
   switch (stage_data->bk_type) {
     case BACKGROUND_TYPE_STATIONARY:
       stage_draw_bg_grid(0, 0);

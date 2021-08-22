@@ -792,21 +792,20 @@ static void menu_saveload_update_slots(void) {
   saveload.slot_mask = mcrd_save_slots_available();
   if (saveload.slot_mask == 0) return;
 
-  u8 buf[MCRD_SECSIZE * 2];
-  profile_t *prof = (profile_t *)buf;
+  profile_t prof;
 
   for (int i = 0; i < MCRD_MAX_SAVES; ++i) {
     // read beginning part of slot that contains the data that we need
-    const mcrd_result_t res = mcrd_save_read_slot(i, buf, sizeof(buf));
+    const mcrd_result_t res = mcrd_save_read_slot(i, &prof, 2 * MCRD_SECSIZE);
     if (res != MCRD_SUCCESS) {
       saveload.slot_mask &= ~(1 << i); // clear so it doesn't draw garbage
       continue;
     }
     // store that shit
-    memcpy(saveload.slots[i].stage, prof->save.stage_title, MAX_STAGE_TITLE);
-    saveload.slots[i].life = prof->save.player.life;
-    saveload.slots[i].max_life = prof->save.player.max_life;
-    saveload.slots[i].arm = prof->save.player.arm_id;
+    memcpy(saveload.slots[i].stage, prof.save.stage_title, MAX_STAGE_TITLE);
+    saveload.slots[i].life = prof.save.player.life;
+    saveload.slots[i].max_life = prof.save.player.max_life;
+    saveload.slots[i].arm = prof.save.player.arm_id;
   }
 }
 

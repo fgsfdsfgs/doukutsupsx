@@ -1040,7 +1040,6 @@ void npc_act_136(npc_t *npc) {
         npc->act_wait = 0;
         npc->anim = 1;
       }
-
       break;
 
     case 2:
@@ -1048,7 +1047,6 @@ void npc_act_136(npc_t *npc) {
         npc->act = 1;
         npc->anim = 0;
       }
-
       break;
   }
 
@@ -1067,7 +1065,10 @@ void npc_act_136(npc_t *npc) {
     npc->rect = &rc_right[npc->anim];
   }
 
-  if (player.anim % 2) npc->rect_delta.top = 1;
+  if (player.anim % 2)
+    npc->rect_delta.top = 1;
+
+  npc->rect_prev = NULL; // force texrect update
 }
 
 // Large door (frame)
@@ -1104,7 +1105,8 @@ void npc_act_138(npc_t *npc) {
       npc->bits |= NPC_IGNORE_SOLIDITY;
       // Fallthrough
     case 11:
-      if (++npc->act_wait % 8 == 0) snd_play_sound(PRIO_NORMAL, 26, FALSE);
+      if (++npc->act_wait % 8 == 0)
+        snd_play_sound(PRIO_NORMAL, 26, FALSE);
 
       if (npc->dir == 0) {
         npc->rect = &rc_left;
@@ -1115,7 +1117,10 @@ void npc_act_138(npc_t *npc) {
         npc->rect_delta.right = -npc->act_wait / 8;
       }
 
-      if (npc->act_wait == 104) npc->cond = 0;
+      if (npc->act_wait == 104)
+        npc->cond = 0;
+
+      npc->rect_prev = NULL; // force texrect update
 
       break;
   }
@@ -1234,5 +1239,6 @@ void npc_act_139(npc_t *npc) {
   if (npc->act == 31 || npc->act == 41) {
     npc->rect_delta.bottom = npc->rect->top + (npc->act_wait / 2) - npc->rect->bottom;
     if (npc->act_wait / 2 % 2) npc->rect_delta.left = 1;
+    npc->rect_prev = NULL; // force texrect update
   }
 }

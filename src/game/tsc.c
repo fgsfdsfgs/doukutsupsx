@@ -295,7 +295,7 @@ static inline bool tsc_parse_string(const char in_ch) {
     memcpy(text[line], start, len);
     text[line][len] = 0;
 
-    tsc_state.readptr = end;
+    tsc_state.readptr = (u8 *)end;
     if (len >= TSC_LINE_LEN)
       tsc_check_newline();
   } else {

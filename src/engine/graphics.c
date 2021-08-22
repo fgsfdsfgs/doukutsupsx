@@ -69,8 +69,7 @@ static plist_t *primlist;
 static u16 cur_tpage[GFX_NUM_LAYERS];
 
 // texrects for fonts
-static gfx_texrect_t fnt8_rect;
-static gfx_texrect_t fnt16_rect;
+static gfx_texrect_t fnt_rect;
 
 // texrect for the currently loaded tileset
 static gfx_texrect_t tiles_rect;
@@ -82,7 +81,7 @@ static u16 img_loading[] = {
 static const u32 img_loading_w = 64;
 static const u32 img_loading_h = 8;
 
-static inline u8 *plist_append(plist_t *list, const u32 size) {
+static inline void plist_append(plist_t *list, const u32 size) {
   if (!list->last)
     catPrim(&list->first, primptr);
   else
@@ -279,7 +278,7 @@ void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int
 
 void gfx_draw_string(const char *str, const int layer, int x, int y) {
   // SPRTs have no tpage field, so we have to make do
-  gfx_update_tpage(layer, fnt8_rect.tpage);
+  gfx_update_tpage(layer, fnt_rect.tpage);
   for (const char *ch = str; *ch; ++ch, x += GFX_FONT_WIDTH) {
     const int n = *ch - ' ';
     SPRT *prim = (SPRT *)primptr;
@@ -287,7 +286,7 @@ void gfx_draw_string(const char *str, const int layer, int x, int y) {
     setRGB0(prim, 0x80, 0x80, 0x80);
     setSemiTrans(prim, 0);
     setXY0(prim, x, y);
-    setUV0(prim, fnt8_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt8_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
+    setUV0(prim, fnt_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
     setWH(prim, GFX_FONT_WIDTH, GFX_FONT_HEIGHT);
     prim->clut = gfx_surf[SURFACE_ID_FONT1].clut;
     plist_append(&primlist[layer], sizeof(*prim));
@@ -296,7 +295,7 @@ void gfx_draw_string(const char *str, const int layer, int x, int y) {
 
 void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x, int y) {
   // SPRTs have no tpage field, so we have to make do
-  gfx_update_tpage(layer, fnt8_rect.tpage);
+  gfx_update_tpage(layer, fnt_rect.tpage);
   for (const char *ch = str; *ch; ++ch, x += GFX_FONT_WIDTH) {
     const int n = *ch - ' ';
     SPRT *prim = (SPRT *)primptr;
@@ -304,7 +303,7 @@ void gfx_draw_string_rgb(const char *str, const u8 *rgb, const int layer, int x,
     setSemiTrans(prim, 0);
     setRGB0(prim, rgb[0] >> 1, rgb[1] >> 1, rgb[2] >> 1);
     setXY0(prim, x, y);
-    setUV0(prim, fnt8_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt8_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
+    setUV0(prim, fnt_rect.u + (n & 0x0F) * GFX_FONT_WIDTH, fnt_rect.v + (n >> 4) * GFX_FONT_HEIGHT);
     setWH(prim, GFX_FONT_WIDTH, GFX_FONT_HEIGHT);
     prim->clut = gfx_surf[SURFACE_ID_FONT1].clut;
     plist_append(&primlist[layer], sizeof(*prim));
@@ -402,7 +401,6 @@ int gfx_upload_gfx_bank(gfx_bank_t *bank, u8 *bank_data) {
   };
 
   const u32 total_clut_size = clut_size[0] + clut_size[1];
-  const u32 total_surf_size = surf_size[0] + surf_size[1];
 
   if (clut_size[0])
     LoadImage(&bank->clut_rect[0], (u_long *)bank_data);
@@ -476,9 +474,9 @@ int gfx_load_gfx_bank(const char *path) {
 }
 
 void gfx_init_fonts(void) {
-  fnt8_rect.r.x = 0;
-  fnt8_rect.r.y = 0;
-  fnt8_rect.r.w = GFX_FONT_WIDTH;
-  fnt8_rect.r.h = GFX_FONT_HEIGHT;
-  gfx_set_texrect(&fnt8_rect, SURFACE_ID_FONT1);
+  fnt_rect.r.x = 0;
+  fnt_rect.r.y = 0;
+  fnt_rect.r.w = GFX_FONT_WIDTH;
+  fnt_rect.r.h = GFX_FONT_HEIGHT;
+  gfx_set_texrect(&fnt_rect, SURFACE_ID_FONT1);
 }

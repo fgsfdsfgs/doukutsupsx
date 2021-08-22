@@ -259,6 +259,7 @@ void npc_act_162(npc_t *npc) {
         npc->rect_delta.top = npc->count1 / 8;
         npc->y = npc->tgt_y + ((npc->count1 / 8) * 0x200);
         npc->rect_delta.left = -(npc->count1 / 2) % 2;
+        npc->rect_prev = NULL; // force texrect update
       } else {
         npc->rect = &rect_end;
 

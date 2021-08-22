@@ -1220,7 +1220,10 @@ void npc_act_259(npc_t *npc) {
         npc->rect = &rc_right;
       }
 
-      if (player.anim % 2) npc->rect_delta.top = 1;
+      if (player.anim % 2) {
+        npc->rect_delta.top = 1;
+        npc->rect_prev = NULL; // force texrect update
+      }
 
       break;
 

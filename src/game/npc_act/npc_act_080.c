@@ -954,7 +954,7 @@ void npc_act_089(npc_t *npc) {
 
       if (npc->act_wait / 2 % 2) {
         npc->rect_delta.left = -1;
-        npc->rect = NULL;  // force texrect update
+        npc->rect_prev = NULL;  // force texrect update
       }
 
       break;

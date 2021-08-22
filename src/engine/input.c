@@ -28,7 +28,7 @@ bool input_suppress_trig;
 // IN_ flags of actions held on previous frame
 static u32 input_old;
 
-static u8 padbuf[2][34];
+static char padbuf[2][34];
 
 // pad->action bindings
 u16 input_binds[IN_NUM_ACTIONS];

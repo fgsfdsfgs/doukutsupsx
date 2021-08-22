@@ -46,7 +46,6 @@ void dmgnum_spawn(int *tgt_x, int *tgt_y, int val) {
   dnum->vofs = 0;
 
   const int div[4] = { 1000, 100, 10, 1 };
-  const int widths[4] = { 16, 24, 32, 40 };
   int digits[5] = { 20, 0, 0, 0, 0 };
   int numdigits = 1; // includes sign
   if (val < 0) {

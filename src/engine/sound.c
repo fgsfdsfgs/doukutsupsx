@@ -28,7 +28,7 @@ static struct {
   u16 loop;   // is this channel looping?
 } chan_state[SFX_NUM_CHANNELS];
 
-int snd_init(const char *mainbankpath) {
+void snd_init(const char *mainbankpath) {
   spu_init();
 
   snd_main_bank = snd_load_sfx_bank(mainbankpath);

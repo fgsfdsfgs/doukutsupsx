@@ -61,7 +61,7 @@ static void arm_act_snake(int level) {
       bul_no = 2;
       break;
 
-    case 3:
+    default:
       bul_no = 3;
       break;
   }
@@ -115,7 +115,7 @@ static void arm_act_polarstar(int level) {
       bul_no = 5;
       break;
 
-    case 3:
+    default:
       bul_no = 6;
       break;
   }
@@ -166,19 +166,16 @@ static void arm_act_fireball(int level) {
   switch (level) {
     case 1:
       if (bullet_count_by_arm(3) > 1) return;
-
       bul_no = 7;
       break;
 
     case 2:
       if (bullet_count_by_arm(3) > 2) return;
-
       bul_no = 8;
       break;
 
-    case 3:
+    default:
       if (bullet_count_by_arm(3) > 3) return;
-
       bul_no = 9;
       break;
   }
@@ -233,7 +230,7 @@ static void arm_act_machinegun(int level) {
       bul_no = 11;
       break;
 
-    case 3:
+    default:
       bul_no = 12;
       break;
   }
@@ -320,76 +317,41 @@ static inline void arm_act_missile_generic(int level, bool is_super) {
   if (is_super) {
     switch (level) {
       case 1:
+        if (bullet_count_by_arm(10) > 0) return;
+        if (bullet_count_by_arm(11) > 0) return;
         bul_no = 28;
         break;
 
       case 2:
+        if (bullet_count_by_arm(10) > 1) return;
+        if (bullet_count_by_arm(11) > 1) return;
         bul_no = 29;
         break;
 
-      case 3:
+      default:
+        if (bullet_count_by_arm(10) > 3) return;
+        if (bullet_count_by_arm(11) > 3) return;
         bul_no = 30;
         break;
     }
-
-    switch (level) {
-      case 1:
-        if (bullet_count_by_arm(10) > 0) return;
-
-        if (bullet_count_by_arm(11) > 0) return;
-
-        break;
-
-      case 2:
-        if (bullet_count_by_arm(10) > 1) return;
-
-        if (bullet_count_by_arm(11) > 1) return;
-
-        break;
-
-      case 3:
-        if (bullet_count_by_arm(10) > 3) return;
-
-        if (bullet_count_by_arm(11) > 3) return;
-
-        break;
-    }
-
   } else {
     switch (level) {
       case 1:
+        if (bullet_count_by_arm(5) > 0) return;
+        if (bullet_count_by_arm(6) > 0) return;
         bul_no = 13;
         break;
 
       case 2:
+        if (bullet_count_by_arm(5) > 1) return;
+        if (bullet_count_by_arm(6) > 1) return;
         bul_no = 14;
         break;
 
-      case 3:
-        bul_no = 15;
-        break;
-    }
-
-    switch (level) {
-      case 1:
-        if (bullet_count_by_arm(5) > 0) return;
-
-        if (bullet_count_by_arm(6) > 0) return;
-
-        break;
-
-      case 2:
-        if (bullet_count_by_arm(5) > 1) return;
-
-        if (bullet_count_by_arm(6) > 1) return;
-
-        break;
-
-      case 3:
+      default:
         if (bullet_count_by_arm(5) > 3) return;
-
         if (bullet_count_by_arm(6) > 3) return;
-
+        bul_no = 15;
         break;
     }
   }
@@ -617,7 +579,7 @@ static void arm_act_sword(int level) {
       bul_no = 26;
       break;
 
-    case 3:
+    default:
       bul_no = 27;
       break;
   }
@@ -667,7 +629,7 @@ static void arm_act_nemesis(int level) {
       bul_no = 35;
       break;
 
-    case 3:
+    default:
       bul_no = 36;
       break;
   }
@@ -775,12 +737,11 @@ static void arm_act_spur(int level) {
       bul_no = 37;
       break;
 
-    case 3:
+    default:
       if (max)
         bul_no = 39;
       else
         bul_no = 38;
-
       break;
   }
 

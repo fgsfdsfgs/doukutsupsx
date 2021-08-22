@@ -343,7 +343,7 @@ static inline int hit_check_player_wind_down(int x, int y) {
   return hit;
 }
 
-static inline void hit_player_map(const u32 input_held) {
+static inline void hit_player_map(void) {
   static const int ofsx[4] = { 0, 1, 0, 1 };
   static const int ofsy[4] = { 0, 0, 1, 1 };
 
@@ -766,9 +766,9 @@ static inline void hit_player_boss(void) {
   }
 }
 
-void hit_player(const u32 input_held) {
+void hit_player(void) {
   player.flags = 0;
-  hit_player_map(input_held);
+  hit_player_map();
   hit_player_npc();
   hit_player_boss();
 }

@@ -355,6 +355,8 @@ void npc_spawn_exp(int x, int y, int exp) {
     } else if (exp >= 1) {
       exp -= 1;
       sub_exp = 1;
+    } else {
+      sub_exp = 0; // shut up compiler
     }
 
     npc->exp = sub_exp;
