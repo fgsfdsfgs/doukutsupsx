@@ -7,7 +7,7 @@ void boss_act_ironhead(npc_t *root) {
 
   switch (npc->act) {
     case 0:
-      npc->cond = 0x80;
+      npc->cond = NPCCOND_ALIVE;
       npc->exp = 1;
       npc->dir = 2;
       npc->act = 100;

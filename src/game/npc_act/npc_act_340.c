@@ -8,7 +8,7 @@ void npc_act_340(npc_t *npc) {
   switch (npc->act) {
     case 0:
       npc->act = 1;
-      npc->cond = 0x80;
+      npc->cond = NPCCOND_ALIVE;
       npc->exp = 1;
       npc->dir = 0;
       npc->y -= 6 * 0x200;
@@ -1246,7 +1246,7 @@ void npc_act_351(npc_t *npc) {
     case 11:
       if (npc->life <= 900) {
         npc_spawn(351, npc->x - (8 * 0x200), npc->y - (12 * 0x200), 0, 0, (npc->anim + 4) * 10, NULL, 0);
-        npc->cond |= 8;
+        npc->cond |= NPCCOND_KILLED;
       }
 
       break;

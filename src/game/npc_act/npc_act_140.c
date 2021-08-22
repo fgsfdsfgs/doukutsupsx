@@ -1340,7 +1340,7 @@ void npc_act_154(npc_t *npc) {
 
       if (npc->anim > 11) npc->anim = 10;
 
-      if (++npc->act_wait > 50) npc->cond |= 8;
+      if (++npc->act_wait > 50) npc->cond |= NPCCOND_KILLED;
 
       break;
   }

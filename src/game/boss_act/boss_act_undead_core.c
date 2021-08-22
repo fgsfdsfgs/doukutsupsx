@@ -268,7 +268,7 @@ void boss_act_undead_core(npc_t *root) {
     case 1:
       npc->act = 10;
       npc->exp = 1;
-      npc->cond = 0x80;
+      npc->cond = NPCCOND_ALIVE;
       npc->bits = (NPC_INVULNERABLE | NPC_IGNORE_SOLIDITY | NPC_SHOW_DAMAGE);
       npc->life = 700;
       npc->snd_hit = 114;

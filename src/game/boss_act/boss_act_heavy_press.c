@@ -9,7 +9,7 @@ void boss_act_heavy_press(npc_t *root) {
   switch (npc->act) {
     case 0:
       npc->act = 10;
-      npc->cond = 0x80;
+      npc->cond = NPCCOND_ALIVE;
       npc->exp = 1;
       npc->dir = 2;
       npc->x = 0;

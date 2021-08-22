@@ -429,7 +429,7 @@ void npc_act_206(npc_t *npc) {
           snd_play_sound(PRIO_NORMAL, 35, FALSE);
           npc_spawn_death_fx(npc->x, npc->y, 0x10000, 100, 0);
           cam_start_quake_small(20);
-          npc->cond |= 8;
+          npc->cond |= NPCCOND_KILLED;
           break;
       }
 

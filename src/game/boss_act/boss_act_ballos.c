@@ -117,7 +117,7 @@ void boss_act_ballos(npc_t *root) {
     case 0:
       // Initialize main boss
       npc->act = 1;
-      npc->cond = 0x80;
+      npc->cond = NPCCOND_ALIVE;
       npc->exp = 1;
       npc->dir = 0;
       npc->x = 320 * 0x200;

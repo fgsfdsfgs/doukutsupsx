@@ -241,7 +241,7 @@ void boss_act_twins(npc_t *root) {
 
   switch (npc->act) {
     case 0:
-      npc->cond = 0x80;
+      npc->cond = NPCCOND_ALIVE;
       npc->dir = 0;
       npc->act = 10;
       npc->exp = 0;

@@ -1411,7 +1411,7 @@ void npc_act_316(npc_t *npc) {
 
       if (npc->anim > 2) npc->anim = 1;
 
-      if (++npc->act_wait > 50) npc->cond |= 8;
+      if (++npc->act_wait > 50) npc->cond |= NPCCOND_KILLED;
 
       break;
   }
@@ -1566,7 +1566,7 @@ void npc_act_318(npc_t *npc) {
 
       if (npc->anim > 2) npc->anim = 1;
 
-      if (++npc->act_wait > 50) npc->cond |= 8;
+      if (++npc->act_wait > 50) npc->cond |= NPCCOND_KILLED;
 
       break;
   }

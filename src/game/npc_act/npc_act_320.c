@@ -214,7 +214,7 @@ void npc_act_322(npc_t *npc) {
             stage_delete_tile((npc->x + (8 * 0x200)) / 0x200 / 0x10, npc->y / 0x200 / 0x10);
           }
 
-          npc->cond |= 8;
+          npc->cond |= NPCCOND_KILLED;
           break;
       }
 
