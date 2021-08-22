@@ -70,7 +70,7 @@ static inline void npc_set_class(npc_t *npc, const u32 class_num) {
 void npc_show_death_damage(npc_t *npc) {
   const int tx = npc->x;
   const int ty = npc->y;
-  memset(npc, 0, sizeof(npc));
+  memset(npc, 0, sizeof(*npc));
   npc->x = tx;
   npc->y = ty;
   npc->cond |= NPCCOND_ALIVE;
