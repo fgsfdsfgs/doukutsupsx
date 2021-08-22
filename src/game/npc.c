@@ -87,15 +87,15 @@ void npc_kill(npc_t *npc, bool show_damage) {
   // Create smoke
   switch (npc->size) {
     case 1:
-      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 3, 0);
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 2, 0);
       break;
 
     case 2:
-      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 7, 0);
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 4, 0);
       break;
 
     case 3:
-      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 12, 0);
+      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
       break;
   }
 
