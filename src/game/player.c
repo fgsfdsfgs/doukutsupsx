@@ -127,14 +127,14 @@ void plr_reset(void) {
   player.arms_x = 16;
 }
 
-void plr_animate(const u32 btns) {
+void plr_animate(const bool input_enabled) {
   if (player.cond & PLRCOND_INVISIBLE)
     return;
 
   if (player.flags & 0x08) {
     if (player.cond & PLRCOND_USE_BUTTON) {
       player.anim = 11;
-    } else if (btns & IN_UP && btns & (IN_LEFT | IN_RIGHT)) {
+    } else if (input_held & IN_UP && input_held & (IN_LEFT | IN_RIGHT) && input_enabled) {
       player.cond |= PLRCOND_UNKNOWN04;
 
       if (++player.anim_wait > 4) {
@@ -145,7 +145,7 @@ void plr_animate(const u32 btns) {
 
       if (player.anim > 9 || player.anim < 6)
         player.anim = 6;
-    } else if (btns & (IN_LEFT | IN_RIGHT)) {
+    } else if (input_held & (IN_LEFT | IN_RIGHT) && input_enabled) {
       player.cond |= PLRCOND_UNKNOWN04;
 
       if (++player.anim_wait > 4) {
@@ -156,7 +156,7 @@ void plr_animate(const u32 btns) {
 
       if (player.anim > 4 || player.anim < 1)
         player.anim = 1;
-    } else if (btns & IN_UP) {
+    } else if (input_held & IN_UP && input_enabled) {
       if (player.cond & PLRCOND_UNKNOWN04)
         snd_play_sound(PRIO_LOW, 24, FALSE);
 
@@ -323,12 +323,12 @@ static inline void plr_update_air(void) {
 }
 
 // jesus h christ
-static void plr_act_normal(const u32 btns, const u32 trig) {
+static void plr_act_normal(const bool input_enabled) {
   // Get speeds and accelerations
   const struct phystab *phys = &phystab[(player.flags & 0x100) != 0];
   int a, x;
 
-  if ((game_flags & (GFLAG_INPUT_ENABLED | 4)) == GFLAG_INPUT_ENABLED)
+  if (input_enabled && !(game_flags & 4))
     plr_update_air();
 
   if (player.cond & PLRCOND_INVISIBLE)
@@ -338,7 +338,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   player.question = FALSE;
 
   // If can't control player, stop boosting
-  if (!btns) player.boost_sw = 0;
+  if (!input_enabled) player.boost_sw = 0;
 
   // Movement on the ground
   if (player.flags & 8 || player.flags & 0x10 || player.flags & 0x20) {
@@ -354,20 +354,20 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
     }
 
     // Move in direction held
-    if (btns) {
-      if (trig == IN_DOWN && btns == IN_DOWN && !(player.cond & PLRCOND_USE_BUTTON) && !(game_flags & 4)) {
+    if (input_enabled) {
+      if (input_trig == IN_DOWN && input_held == IN_DOWN && !(player.cond & PLRCOND_USE_BUTTON) && !(game_flags & 4)) {
         player.cond |= PLRCOND_USE_BUTTON;
         player.question = TRUE;
-      } else if (btns == IN_DOWN) {
+      } else if (input_held == IN_DOWN) {
         // There probably used to be commented-out code here
       } else {
-        if (btns & IN_LEFT && player.xvel > -phys->max_dash)
+        if (input_held & IN_LEFT && player.xvel > -phys->max_dash)
           player.xvel -= phys->dash1;
-        if (btns & IN_RIGHT && player.xvel < phys->max_dash)
+        if (input_held & IN_RIGHT && player.xvel < phys->max_dash)
           player.xvel += phys->dash1;
-        if (btns & IN_LEFT)
+        if (input_held & IN_LEFT)
           player.dir = 0;
-        if (btns & IN_RIGHT)
+        if (input_held & IN_RIGHT)
           player.dir = 2;
       }
     }
@@ -389,8 +389,8 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
     }
   } else {
     // Start boosting
-    if (btns) {
-      if (player.equip & (EQUIP_BOOSTER_0_8 | EQUIP_BOOSTER_2_0) && trig & IN_JUMP && player.boost_cnt != 0) {
+    if (input_enabled) {
+      if (player.equip & (EQUIP_BOOSTER_0_8 | EQUIP_BOOSTER_2_0) && input_trig & IN_JUMP && player.boost_cnt != 0) {
         // Booster 0.8
         if (player.equip & EQUIP_BOOSTER_0_8) {
           player.boost_sw = 1;
@@ -400,19 +400,19 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
         // Booster 2.0
         if (player.equip & EQUIP_BOOSTER_2_0) {
-          if (btns & IN_UP) {
+          if (input_held & IN_UP) {
             player.boost_sw = 2;
             player.xvel = 0;
             player.yvel = -0x5FF;
-          } else if (btns & IN_LEFT) {
+          } else if (input_held & IN_LEFT) {
             player.boost_sw = 1;
             player.yvel = 0;
             player.xvel = -0x5FF;
-          } else if (btns & IN_RIGHT) {
+          } else if (input_held & IN_RIGHT) {
             player.boost_sw = 1;
             player.yvel = 0;
             player.xvel = 0x5FF;
-          } else if (btns & IN_DOWN) {
+          } else if (input_held & IN_DOWN) {
             player.boost_sw = 3;
             player.xvel = 0;
             player.yvel = 0x5FF;
@@ -425,17 +425,17 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
       }
 
       // Move left and right
-      if (btns & IN_LEFT && player.xvel > -phys->max_dash)
+      if (input_held & IN_LEFT && player.xvel > -phys->max_dash)
         player.xvel -= phys->dash2;
-      if (btns & IN_RIGHT && player.xvel < phys->max_dash)
+      if (input_held & IN_RIGHT && player.xvel < phys->max_dash)
         player.xvel += phys->dash2;
 
-      if (btns & IN_LEFT) player.dir = 0;
-      if (btns & IN_RIGHT) player.dir = 2;
+      if (input_held & IN_LEFT) player.dir = 0;
+      if (input_held & IN_RIGHT) player.dir = 2;
     }
 
     // Slow down when stopped boosting (Booster 2.0)
-    if (player.equip & EQUIP_BOOSTER_2_0 && player.boost_sw != 0 && (!(btns & IN_JUMP) || player.boost_cnt == 0)) {
+    if (player.equip & EQUIP_BOOSTER_2_0 && player.boost_sw != 0 && (!(input_held & IN_JUMP) || player.boost_cnt == 0)) {
       if (player.boost_sw == 1)
         player.xvel /= 2;
       else if (player.boost_sw == 2)
@@ -443,24 +443,24 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
     }
 
     // Stop boosting
-    if (player.boost_cnt == 0 || !(btns & IN_JUMP))
+    if (player.boost_cnt == 0 || !(input_held & IN_JUMP))
       player.boost_sw = 0;
   }
 
   // Jumping
-  if (btns) {
+  if (input_enabled) {
     // Look up and down
-    if (btns & IN_UP)
+    if (input_held & IN_UP)
       player.up = TRUE;
     else
       player.up = FALSE;
 
-    if (btns & IN_DOWN && !(player.flags & 8))
+    if (input_held & IN_DOWN && !(player.flags & 8))
       player.down = TRUE;
     else
       player.down = FALSE;
 
-    if (trig & IN_JUMP && (player.flags & 8 || player.flags & 0x10 || player.flags & 0x20)) {
+    if (input_trig & IN_JUMP && (player.flags & 8 || player.flags & 0x10 || player.flags & 0x20)) {
       if (player.flags & 0x2000) {
         // Another weird empty case needed for accurate assembly.
         // There probably used to be some commented-out code here.
@@ -472,7 +472,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   }
 
   // Stop interacting when moved
-  if (btns & (IN_LEFT | IN_RIGHT | IN_UP | IN_JUMP | IN_FIRE))
+  if (input_enabled && input_held & (IN_LEFT | IN_RIGHT | IN_UP | IN_JUMP | IN_FIRE))
     player.cond &= ~PLRCOND_USE_BUTTON;
 
   // Booster losing fuel
@@ -496,7 +496,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
       if (player.dir == 2) player.xvel += 0x20;
 
       // Boost particles (and sound) 
-      if (trig & IN_JUMP || player.boost_cnt % 3 == 1) {
+      if (input_trig & IN_JUMP || player.boost_cnt % 3 == 1) {
         if (player.dir == 0)
           caret_spawn(player.x + (2 * 0x200), player.y + (2 * 0x200), CARET_EXHAUST, DIR_RIGHT);
         if (player.dir == 2)
@@ -508,11 +508,11 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
       player.yvel -= 0x20;
 
       // Boost particles (and sound)
-      if (trig & IN_JUMP || player.boost_cnt % 3 == 1) {
+      if (input_trig & IN_JUMP || player.boost_cnt % 3 == 1) {
         caret_spawn(player.x, player.y + (6 * 0x200), CARET_EXHAUST, DIR_DOWN);
         snd_play_sound(PRIO_LOW, 113, FALSE);
       }
-    } else if (player.boost_sw == 3 && (trig & IN_JUMP || player.boost_cnt % 3 == 1)) {
+    } else if (player.boost_sw == 3 && (input_trig & IN_JUMP || player.boost_cnt % 3 == 1)) {
       // Boost particles (and sound)
       caret_spawn(player.x, player.y - (6 * 0x200), CARET_EXHAUST, DIR_UP);
       snd_play_sound(PRIO_LOW, 113, FALSE);
@@ -532,7 +532,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 
     // Bounce off of ceiling
     if (player.flags & 2) player.yvel = 0x200;
-  } else if (player.yvel < 0 && btns && btns & IN_JUMP) {
+  } else if (player.yvel < 0 && input_enabled && input_held & IN_JUMP) {
     // Gravity while jump is held
     player.yvel += phys->gravity2;
   } else {
@@ -541,7 +541,7 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   }
 
   // Keep player on slopes
-  if (!btns || !(trig & IN_JUMP)) {
+  if (!input_enabled || !(input_trig & IN_JUMP)) {
     if (player.flags & 0x10 && player.xvel < 0) player.yvel = -player.xvel;
     if (player.flags & 0x20 && player.xvel > 0) player.yvel = player.xvel;
     if (player.flags & 8 && player.flags & 0x80000 && player.xvel < 0) player.yvel = 0x400;
@@ -608,11 +608,11 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
     if (player.index_x > 0x8000)
       player.index_x = 0x8000;
   }
-  if (btns & IN_UP && btns) {
+  if (input_held & IN_UP && input_enabled) {
     player.index_y -= 0x200;
     if (player.index_y < -0x8000)
       player.index_y = -0x8000;
-  } else if (btns & IN_DOWN && btns) {
+  } else if (input_held & IN_DOWN && input_enabled) {
     player.index_y += 0x200;
     if (player.index_y > 0x8000) 
       player.index_y = 0x8000;
@@ -633,14 +633,14 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
   player.y += player.yvel;
 }
 
-static void plr_act_stream(const u32 btns, const u32 trig) {
+static void plr_act_stream(const bool input_enabled) {
   player.up = FALSE;
   player.down = FALSE;
 
-  if (btns) {
-    if (btns & (IN_LEFT | IN_RIGHT)) {
-      if (btns & IN_LEFT) player.xvel -= 0x100;
-      if (btns & IN_RIGHT) player.xvel += 0x100;
+  if (input_enabled) {
+    if (input_held & (IN_LEFT | IN_RIGHT)) {
+      if (input_held & IN_LEFT) player.xvel -= 0x100;
+      if (input_held & IN_RIGHT) player.xvel += 0x100;
     } else if (player.xvel < 0x80 && player.xvel > -0x80) {
       player.xvel = 0;
     } else if (player.xvel > 0) {
@@ -648,9 +648,9 @@ static void plr_act_stream(const u32 btns, const u32 trig) {
     } else if (player.xvel < 0) {
       player.xvel += 0x80;
     }
-    if (btns & (IN_UP | IN_DOWN)) {
-      if (btns & IN_UP) player.yvel -= 0x100;
-      if (btns & IN_DOWN) player.yvel += 0x100;
+    if (input_held & (IN_UP | IN_DOWN)) {
+      if (input_held & IN_UP) player.yvel -= 0x100;
+      if (input_held & IN_DOWN) player.yvel += 0x100;
     } else if (player.yvel < 0x80 && player.yvel > -0x80) {
       player.yvel = 0;
     } else if (player.yvel > 0) {
@@ -684,22 +684,22 @@ static void plr_act_stream(const u32 btns, const u32 trig) {
   if (player.yvel > 0x400) player.yvel = 0x400;
   if (player.yvel < -0x400) player.yvel = -0x400;
 
-  if ((btns & (IN_LEFT | IN_UP)) == (IN_LEFT | IN_UP)) {
+  if ((input_held & (IN_LEFT | IN_UP)) == (IN_LEFT | IN_UP)) {
     if (player.xvel < -780) player.xvel = -780;
     if (player.yvel < -780) player.yvel = -780;
   }
 
-  if ((btns & (IN_RIGHT | IN_UP)) == (IN_RIGHT | IN_UP)) {
+  if ((input_held & (IN_RIGHT | IN_UP)) == (IN_RIGHT | IN_UP)) {
     if (player.xvel > 780) player.xvel = 780;
     if (player.yvel < -780) player.yvel = -780;
   }
 
-  if ((btns & (IN_LEFT | IN_DOWN)) == (IN_LEFT | IN_DOWN)) {
+  if ((input_held & (IN_LEFT | IN_DOWN)) == (IN_LEFT | IN_DOWN)) {
     if (player.xvel < -780) player.xvel = -780;
     if (player.yvel > 780) player.yvel = 780;
   }
 
-  if ((btns & (IN_RIGHT | IN_DOWN)) == (IN_RIGHT | IN_DOWN)) {
+  if ((input_held & (IN_RIGHT | IN_DOWN)) == (IN_RIGHT | IN_DOWN)) {
     if (player.xvel > 780) player.xvel = 780;
     if (player.yvel > 780) player.yvel = 780;
   }
@@ -708,7 +708,7 @@ static void plr_act_stream(const u32 btns, const u32 trig) {
   player.y += player.yvel;
 }
 
-void plr_act(const u32 btns, const u32 trig) {
+void plr_act(const bool input_enabled) {
   if (!(player.cond & PLRCOND_ALIVE))
     return;
 
@@ -723,9 +723,9 @@ void plr_act(const u32 btns, const u32 trig) {
   }
 
   if (player.unit == 1)
-    plr_act_stream(btns, trig);
+    plr_act_stream(input_enabled);
   else
-    plr_act_normal(btns, trig);
+    plr_act_normal(input_enabled);
 
   player.cond &= ~PLRCOND_UNKNOWN20;
 }

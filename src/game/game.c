@@ -103,10 +103,9 @@ static inline void game_draw_common(void) {
   dmgnum_draw(camera.x, camera.y);
 }
 
-static inline void game_update_objects(const bool input_enabled, const u32 btns_held, const u32 btns_trig) {
-  plr_act(btns_held, btns_trig);
+static inline void game_update_objects(const bool input_enabled) {
+  plr_act(input_enabled);
   npc_act();
-  // boss_act();
   stage_update();
 
   // call `hit` on all entities
@@ -128,14 +127,6 @@ static inline void game_update_objects(const bool input_enabled, const u32 btns_
 
 void game_frame(void) {
   const bool input_enabled = (game_flags & GFLAG_INPUT_ENABLED);
-
-  u16 btns_held, btns_trig;
-  if (input_enabled) {
-    btns_held = input_held;
-    btns_trig = input_trig;
-  } else {
-    btns_held = btns_trig = 0;
-  }
 
   // if there's a menu open, update that and bail
   const int cur_menu = menu_active();
@@ -161,7 +152,7 @@ void game_frame(void) {
 
   if (game_flags & 1) {
     // call `act` on all entities when game isn't frozen
-    game_update_objects(input_enabled, btns_held, btns_trig);
+    game_update_objects(input_enabled);
     // and move camera and update flash/quake effects
     cam_update();
   }
@@ -170,7 +161,7 @@ void game_frame(void) {
   cam_update_fade();
 
   // animate the player
-  plr_animate(btns_held);
+  plr_animate(input_enabled);
 
   // call `draw` on all entities
   game_draw_common();
