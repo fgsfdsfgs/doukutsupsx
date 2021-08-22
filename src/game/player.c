@@ -222,7 +222,7 @@ static inline void plr_draw_char(int plr_vx, int plr_vy, int cam_vx, int cam_vy)
 static inline void plr_draw_bubble(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
   ++player.bubble;
   if ((player.equip & EQUIP_AIR_TANK) || player.unit == 1)
-    gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 12 - cam_vx, plr_vy - 12 - cam_vy);
+    gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 12 - cam_vx + 8, plr_vy - 12 - cam_vy + 8);
 }
 
 void plr_draw(int cam_x, int cam_y) {
@@ -634,6 +634,78 @@ static void plr_act_normal(const u32 btns, const u32 trig) {
 }
 
 static void plr_act_stream(const u32 btns, const u32 trig) {
+  player.up = FALSE;
+  player.down = FALSE;
+
+  if (btns) {
+    if (btns & (IN_LEFT | IN_RIGHT)) {
+      if (btns & IN_LEFT) player.xvel -= 0x100;
+      if (btns & IN_RIGHT) player.xvel += 0x100;
+    } else if (player.xvel < 0x80 && player.xvel > -0x80) {
+      player.xvel = 0;
+    } else if (player.xvel > 0) {
+      player.xvel -= 0x80;
+    } else if (player.xvel < 0) {
+      player.xvel += 0x80;
+    }
+    if (btns & (IN_UP | IN_DOWN)) {
+      if (btns & IN_UP) player.yvel -= 0x100;
+      if (btns & IN_DOWN) player.yvel += 0x100;
+    } else if (player.yvel < 0x80 && player.yvel > -0x80) {
+      player.yvel = 0;
+    } else if (player.yvel > 0) {
+      player.yvel -= 0x80;
+    } else if (player.yvel < 0) {
+      player.yvel += 0x80;
+    }
+  } else {
+    if (player.xvel < 0x80 && player.xvel > -0x40)
+      player.xvel = 0;
+    else if (player.xvel > 0)
+      player.xvel -= 0x80;
+    else if (player.xvel < 0)
+      player.xvel += 0x80;
+    if (player.yvel < 0x80 && player.yvel > -0x40)
+      player.yvel = 0;
+    else if (player.yvel > 0)
+      player.yvel -= 0x80;
+    else if (player.yvel < 0)
+      player.yvel += 0x80;
+  }
+
+  if (player.yvel < -0x200 && player.flags & 2)
+    caret_spawn(player.x, player.y - player.hit.top, CARET_TINY_PARTICLES, DIR_OTHER);
+  if (player.yvel > 0x200 && player.flags & 8)
+    caret_spawn(player.x, player.y + player.hit.bottom, CARET_TINY_PARTICLES, DIR_OTHER);
+
+  if (player.xvel > 0x400) player.xvel = 0x400;
+  if (player.xvel < -0x400) player.xvel = -0x400;
+
+  if (player.yvel > 0x400) player.yvel = 0x400;
+  if (player.yvel < -0x400) player.yvel = -0x400;
+
+  if ((btns & (IN_LEFT | IN_UP)) == (IN_LEFT | IN_UP)) {
+    if (player.xvel < -780) player.xvel = -780;
+    if (player.yvel < -780) player.yvel = -780;
+  }
+
+  if ((btns & (IN_RIGHT | IN_UP)) == (IN_RIGHT | IN_UP)) {
+    if (player.xvel > 780) player.xvel = 780;
+    if (player.yvel < -780) player.yvel = -780;
+  }
+
+  if ((btns & (IN_LEFT | IN_DOWN)) == (IN_LEFT | IN_DOWN)) {
+    if (player.xvel < -780) player.xvel = -780;
+    if (player.yvel > 780) player.yvel = 780;
+  }
+
+  if ((btns & (IN_RIGHT | IN_DOWN)) == (IN_RIGHT | IN_DOWN)) {
+    if (player.xvel > 780) player.xvel = 780;
+    if (player.yvel > 780) player.yvel = 780;
+  }
+
+  player.x += player.xvel;
+  player.y += player.yvel;
 }
 
 void plr_act(const u32 btns, const u32 trig) {
