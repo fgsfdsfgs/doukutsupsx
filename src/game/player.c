@@ -267,7 +267,7 @@ void plr_jump_back(int from) {
   } else {
     npc_t *npc = npc_find_by_event_num(from);
     if (npc) {
-      if (player.x < npc->x) {
+      if (player.x > npc->x) {
         player.dir = DIR_LEFT;
         player.xvel = FIX_SCALE;
       } else {
@@ -288,7 +288,7 @@ void plr_face_towards(int what) {
     } else {
       npc_t *npc = npc_find_by_event_num(what);
       if (!npc) return;
-      player.dir = (player.x < npc->x) ? DIR_LEFT : DIR_RIGHT;
+      player.dir = (player.x > npc->x) ? DIR_LEFT : DIR_RIGHT;
     }
   }
   player.xvel = 0;
