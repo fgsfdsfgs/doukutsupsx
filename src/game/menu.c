@@ -751,10 +751,7 @@ static inline void menu_saveload_set_state(const int state, const char *title, c
 }
 
 static void menu_saveload_open(void) {
-  // clear screen to show that something is actually happening
-  gfx_draw_clear_immediate(main_bg_rgb);
-
-  // ...since this takes a while the first time
+  // this takes a while the first time
   mcrd_start();
 
   saveload.num_cards = mcrd_cards_available(saveload.cards);
