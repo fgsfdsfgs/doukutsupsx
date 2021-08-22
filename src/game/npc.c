@@ -85,19 +85,8 @@ void npc_kill(npc_t *npc, bool show_damage) {
   snd_play_sound(PRIO_NORMAL, npc->snd_die, FALSE);
 
   // Create smoke
-  switch (npc->size) {
-    case 1:
-      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 2, 0);
-      break;
-
-    case 2:
-      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 4, 0);
-      break;
-
-    case 3:
-      npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
-      break;
-  }
+  if (npc->size)
+    npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 3 * npc->size, 0);
 
   // Create drop
   if (npc->exp != 0) {
