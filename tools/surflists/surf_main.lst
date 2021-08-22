@@ -13,7 +13,7 @@ SURF, 12, data/ArmsImage.pbm,   0,   SURFACE_ID_ARMS_IMAGE
 SURF, 14, data/StageImage.pbm,  0,   SURFACE_ID_STAGE_ITEM
 SURF, 16, data/MyChar.pbm,      0,   SURFACE_ID_MY_CHAR
 SURF, 17, data/Bullet.pbm,      0,   SURFACE_ID_BULLET
-SURF, 19, data/Caret.pbm,       0,   SURFACE_ID_CARET
+SURF, 19, data/Caret.pbm,       16,  SURFACE_ID_CARET
 SURF, 26, data/TextBox4bpp.pbm, 0,   SURFACE_ID_TEXTBOX, updated for PSX
 SURF, 20, data/Npc/NpcSym.pbm,  0,   SURFACE_ID_NPC_SYM
 SURF, 38, data/FontAscii.pbm,   0,   SURFACE_ID_FONT1
