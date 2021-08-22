@@ -8,6 +8,9 @@
       volume_set  ="DOUKUTSU   "
       publisher   ="FGSFDS     "
     />
+    <!-- <license file="licensea.dat"/> -->
+    <!-- <license file="licensee.dat"/> -->
+    <!-- <license file="licensej.dat"/> -->
     <directory_tree>
       <file name="system.cnf" type="data" source="system.cnf"/>
       <file name="doukutsu.exe" type="data" source="doukutsu.ps-exe"/>
