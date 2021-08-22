@@ -133,7 +133,10 @@ static inline int snd_find_chan(const int start_idx, const int prio, const int s
 int snd_play_sound_freq(int prio, const int no, const int freq, const bool loop) {
   ASSERT(snd_main_bank);
 
-  if (no < 0 || no >= snd_main_bank->num_sfx)
+  if (no < 1)
+    return -1; // null sound, do nothing
+
+  if (no >= snd_main_bank->num_sfx)
     PANIC("unknown sound %03d (max is %03d)", no, snd_main_bank->num_sfx);
 
   int ch = snd_find_chan(last_chan + 1, prio, no);
