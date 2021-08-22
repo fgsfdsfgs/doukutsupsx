@@ -254,7 +254,7 @@ static inline void stage_draw_bg(const int cam_vx, const int cam_vy) {
       break;
 
     case BACKGROUND_TYPE_AUTOSCROLL:
-      stage_draw_bg_grid(-(TO_FIX(bg_x) % rc_back.r.w), -rc_back.r.h);
+      stage_draw_bg_grid(-(TO_INT(bg_x) % rc_back.r.w), -rc_back.r.h);
       break;
 
     case BACKGROUND_TYPE_CLOUDS:
