@@ -392,7 +392,7 @@ void npc_act_283(npc_t *npc) {
                 dir = 0x14;
                 break;
 
-              case 3:
+              default:
                 dir = 0x28;
                 break;
             }
@@ -413,7 +413,7 @@ void npc_act_283(npc_t *npc) {
                 dir = 0x94;
                 break;
 
-              case 3:
+              default:
                 dir = 0xA8;
                 break;
             }
@@ -440,7 +440,7 @@ void npc_act_283(npc_t *npc) {
               dir = 0x14;
               break;
 
-            case 3:
+            default:
               dir = 0x28;
               break;
           }
@@ -461,7 +461,7 @@ void npc_act_283(npc_t *npc) {
               dir = 0x94;
               break;
 
-            case 3:
+            default:
               dir = 0xA8;
               break;
           }
