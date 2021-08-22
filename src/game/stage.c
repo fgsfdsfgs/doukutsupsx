@@ -233,7 +233,7 @@ void stage_update(void) {
 static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
   for (int y = start_y; y < VID_HEIGHT; y += rc_back.r.h) {
     for (int x = start_x; x < VID_WIDTH; x += rc_back.r.w)
-      gfx_draw_texrect(&rc_back, GFX_LAYER_BACK, x - 8, y - 8);
+      gfx_draw_texrect(&rc_back, GFX_LAYER_BACK, x, y);
   }
 }
 
@@ -268,11 +268,11 @@ static inline void stage_draw_fg(const int cam_vx, const int cam_vy) {
   // TODO
 }
 
-static inline void stage_draw_map(const int cam_vx, const int cam_vy) {
-  const int start_tx = cam_vx >> TILE_SHIFT;
-  const int start_ty = cam_vy >> TILE_SHIFT;
-  const int end_tx = start_tx + (VID_WIDTH >> TILE_SHIFT);
-  const int end_ty = start_ty + (VID_HEIGHT >> TILE_SHIFT);
+static inline void stage_draw_map(int cam_vx, int cam_vy) {
+  const int start_tx = (cam_vx + TILE_SIZE / 2) >> TILE_SHIFT;
+  const int start_ty = (cam_vy + TILE_SIZE / 2) >> TILE_SHIFT;
+  const int end_tx = start_tx + ((VID_WIDTH + TILE_SIZE - 1) >> TILE_SHIFT) + 1;
+  const int end_ty = start_ty + ((VID_HEIGHT + TILE_SIZE - 1) >> TILE_SHIFT) + 1;
 
   const u32 stride = stage_data->width;
   const u8 *line = &stage_data->map_data[start_ty * stride + start_tx];
@@ -280,9 +280,13 @@ static inline void stage_draw_map(const int cam_vx, const int cam_vy) {
   u8 tile, atrb;
   int tx, ty;
 
-  for (ty = start_ty; ty <= end_ty; ++ty, line += stride) {
+  // tile rendering is centered
+  cam_vx += TILE_SIZE / 2;
+  cam_vy += TILE_SIZE / 2;
+
+  for (ty = start_ty; ty < end_ty; ++ty, line += stride) {
     ptr = line;
-    for (tx = start_tx; tx <= end_tx; ++tx, ++ptr) {
+    for (tx = start_tx; tx < end_tx; ++tx, ++ptr) {
       tile = *ptr;
       atrb = stage_data->atrb[tile];
       if (atrb == 0x43)

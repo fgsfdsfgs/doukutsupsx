@@ -335,7 +335,7 @@ static void caret_act_10(caret_t *crt) {
 
 // Red hurt particles (used by bosses and invisible hidden pickups)
 static void caret_act_11(caret_t *crt) {
-  unsigned char deg;
+  u8 deg;
 
   if (crt->act == 0) {
     crt->act = 1;
@@ -458,7 +458,7 @@ static void caret_act_15(caret_t *crt) {
 
     if (++crt->anim > 3) {
       crt->cond = 0;
-      return;  // The code below will use 'anim' to access 'rc_left', even though it's now too high
+      return;
     }
   }
 

@@ -809,15 +809,15 @@ void tsc_draw(void) {
     gfx_draw_texrect(&rc_textbox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, text_y - 10 + 7 * 8);
   }
 
-  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT + 16, text_y + 6, 244, 48);
+  gfx_push_cliprect(GFX_LAYER_FRONT, TEXT_BOX_LEFT + 8, text_y - 2, 244, 48);
 
   // draw face
   int text_ofs_x = 0;
   if (tsc_state.face) {
-    text_ofs_x = 56;
+    text_ofs_x = 52;
     if (tsc_state.face_x < TO_FIX(TEXT_LEFT))
       tsc_state.face_x += 0x1000;
-    gfx_draw_texrect(&rc_face, GFX_LAYER_FRONT, TO_INT(tsc_state.face_x) - 4, text_y - 1);
+    gfx_draw_texrect(&rc_face, GFX_LAYER_FRONT, TO_INT(tsc_state.face_x) - 5, text_y - 1);
   }
 
   // append NOD cursor
@@ -833,27 +833,27 @@ void tsc_draw(void) {
   // draw text
   for (int i = 0; i < TSC_MAX_LINES; ++i) {
     if (text[i][0])
-      gfx_draw_string(text[i], GFX_LAYER_FRONT, TEXT_LEFT + 8 + text_ofs_x, text_y + tsc_state.line_y[i] + 8);
+      gfx_draw_string(text[i], GFX_LAYER_FRONT, TEXT_LEFT + text_ofs_x, text_y + tsc_state.line_y[i]);
   }
 
   gfx_pop_cliprect(GFX_LAYER_FRONT);
 
   // draw item
   if (tsc_state.item) {
-    gfx_draw_texrect(&rc_itembox[0], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 82, VID_HEIGHT - 112 - 16);
-    gfx_draw_texrect(&rc_itembox[1], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 82, VID_HEIGHT - 96 - 16);
-    gfx_draw_texrect(&rc_itembox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 112 - 16);
-    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 104 - 16);
-    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 96 - 16);
-    gfx_draw_texrect(&rc_itembox[4], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 154, VID_HEIGHT - 88 - 16);
+    gfx_draw_texrect(&rc_itembox[0], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 86, VID_HEIGHT - 112 - 8);
+    gfx_draw_texrect(&rc_itembox[1], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 86, VID_HEIGHT - 96 - 8);
+    gfx_draw_texrect(&rc_itembox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 158, VID_HEIGHT - 112 - 8);
+    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 158, VID_HEIGHT - 104 - 8);
+    gfx_draw_texrect(&rc_itembox[3], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 158, VID_HEIGHT - 96 - 8);
+    gfx_draw_texrect(&rc_itembox[4], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 158, VID_HEIGHT - 88 - 8);
 
     if (tsc_state.item_y < VID_HEIGHT - 104)
       ++tsc_state.item_y;
 
     if (tsc_state.item < 1000)
-      gfx_draw_texrect_16x16(&hud_rc_arms[tsc_state.item], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 110 + 8, tsc_state.item_y + 8 - 16);
+      gfx_draw_texrect_16x16(&hud_rc_arms[tsc_state.item], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 116, tsc_state.item_y - 8);
     else
-      gfx_draw_texrect(&hud_rc_item[tsc_state.item - 1000], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 102, tsc_state.item_y - 16);
+      gfx_draw_texrect(&hud_rc_item[tsc_state.item - 1000], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 108, tsc_state.item_y - 8);
   }
 
   // draw yes/no

@@ -154,9 +154,9 @@ static inline u32 menu_generic_control(void) {
 
 static inline void menu_generic_draw(int x, int y) {
   int yofs = 8;
-  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, x - 16, y + 5 + 8 + main_sel * 20);
+  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, x - 24, y + 5 + main_sel * 20);
   for (int i = 0; i < main_count; ++i, yofs += 20)
-    draw_string_shadow(main_choices[i], NULL, x + 8, y + 8 + yofs);
+    draw_string_shadow(main_choices[i], NULL, x, y + yofs);
 }
 
 /* default func */
@@ -167,8 +167,8 @@ static void menu_null(void) {
 
 /* main menu */
 
-#define MAIN_LEFT ((VID_WIDTH / 2) - 72 - 8)
-#define MAIN_TOP (40 - 8)
+#define MAIN_LEFT ((VID_WIDTH / 2) - 72)
+#define MAIN_TOP 40
 
 static void menu_title_open(void) {
   static const char *submenu_text[3] = { "New", "Load", "Options" };
@@ -203,7 +203,7 @@ static void menu_title_draw(void) {
   gfx_draw_clear(main_bg_rgb, GFX_LAYER_FRONT);
   // draw the menu
   gfx_draw_texrect(&rc_main_title, GFX_LAYER_FRONT, MAIN_LEFT, MAIN_TOP);
-  menu_generic_draw(MAIN_LEFT + 48, MAIN_TOP + 80);
+  menu_generic_draw(MAIN_LEFT + 56, MAIN_TOP + 80);
 }
 
 /* pause */
@@ -247,8 +247,8 @@ static void menu_pause_draw(void) {
   // clear screen
   gfx_draw_clear(gfx_clear_rgb, GFX_LAYER_FRONT);
   // draw the prompt
-  const int x = (VID_WIDTH - rc_pause.r.w) / 2 - 8;
-  const int y = (VID_HEIGHT - rc_pause.r.h) / 2 - 8;
+  const int x = (VID_WIDTH - rc_pause.r.w) / 2;
+  const int y = (VID_HEIGHT - rc_pause.r.h) / 2;
   gfx_draw_texrect(&rc_pause, GFX_LAYER_FRONT, x, y);
   // TODO: draw the buttons bound to OK/CANCEL
   const int btn_cancel = menu_padbutton_index(input_binds[11]);
@@ -260,7 +260,7 @@ static void menu_pause_draw(void) {
 /* inventory */
 
 #define INV_BOX_LEFT TEXT_BOX_LEFT
-#define INV_BOX_TOP  ((VID_HEIGHT / 2) - 116)
+#define INV_BOX_TOP  ((VID_HEIGHT / 2) - 108)
 #define INV_CUR_LEFT (INV_BOX_LEFT + 10)
 #define INV_CUR_TOP  (INV_BOX_TOP + 16)
 #define INV_ITEM_TOP (INV_CUR_TOP + 52)
@@ -442,12 +442,12 @@ static void menu_inventory_draw(void) {
     gfx_draw_texrect(&hud_rc_arms[arm_id], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP);
     gfx_draw_texrect(&hud_rc_ammo[0], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP + 32);
     gfx_draw_texrect(&hud_rc_ammo[1], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP + 16);
-    hud_draw_number(player.arms[arm_id].level, (i * 40) + INV_CUR_LEFT + 32, INV_CUR_TOP + 16 + 8);
+    hud_draw_number(player.arms[arm_id].level, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 16);
 
     // draw ammo (or "--" if infinite)
     if (player.arms[arm_id].max_ammo) {
-      hud_draw_number(player.arms[arm_id].ammo, (i * 40) + INV_CUR_LEFT + 32, INV_CUR_TOP + 24 + 8);
-      hud_draw_number(player.arms[arm_id].max_ammo, (i * 40) + INV_CUR_LEFT + 32, INV_CUR_TOP + 32 + 8);
+      hud_draw_number(player.arms[arm_id].ammo, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 24);
+      hud_draw_number(player.arms[arm_id].max_ammo, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 32);
     } else {
       gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT + 16, INV_CUR_TOP + 24); // "--"
       gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT + 16, INV_CUR_TOP + 32); // "--"
@@ -620,9 +620,9 @@ static void menu_map_draw(void) {
       // draw map
       map.texrect.r.h = map.count;
       if (map.scale == 1) {
-        gfx_draw_texrect(&map.texrect, GFX_LAYER_FRONT, xofs - 8, yofs - 8);
+        gfx_draw_texrect(&map.texrect, GFX_LAYER_FRONT, xofs, yofs);
         if (map.texrect_wide.tpage)
-          gfx_draw_texrect(&map.texrect_wide, GFX_LAYER_FRONT, xofs - 8 + map.texrect.r.w, yofs - 8);
+          gfx_draw_texrect(&map.texrect_wide, GFX_LAYER_FRONT, xofs + map.texrect.r.w, yofs);
       } else {
         gfx_draw_texrect_scaled(&map.texrect, GFX_LAYER_FRONT, xofs, yofs, map.scale);
       }
@@ -638,7 +638,7 @@ static void menu_map_draw(void) {
 
 /* stage select */
 
-#define STAGESEL_TOP ((VID_HEIGHT / 2) - 82)
+#define STAGESEL_TOP ((VID_HEIGHT / 2) - 74)
 
 static struct {
   s32 idx;
@@ -695,11 +695,11 @@ static void menu_stagesel_draw(void) {
   if (stagesel.title_y > STAGESEL_TOP)
     --stagesel.title_y;
 
-  gfx_draw_texrect(&rc_stagesel_title, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 40, stagesel.title_y);
+  gfx_draw_texrect(&rc_stagesel_title, GFX_LAYER_FRONT, VID_WIDTH / 2 - 32, stagesel.title_y);
 
   if (tele_dest_num == 0) return;
 
-  int x = (VID_WIDTH - (tele_dest_num * 40)) / 2 - 4;
+  int x = (VID_WIDTH - (tele_dest_num * 40)) / 2;
 
   gfx_draw_texrect(&rc_cursor_items[stagesel.flash / 2 % 2], GFX_LAYER_FRONT, x + stagesel.idx * 40, STAGESEL_TOP + 18);
 
@@ -712,7 +712,7 @@ static void menu_stagesel_draw(void) {
 
 /* save/load menu */
 
-#define SAVELOAD_TOP ((VID_HEIGHT / 2) - 48 - 8)
+#define SAVELOAD_TOP ((VID_HEIGHT / 2) - 48)
 
 enum saveload_menu_state {
   SLSTATE_SELECT_MEMCARD,
@@ -985,21 +985,21 @@ static inline void menu_saveload_draw_select_save(void) {
 
     if (!(saveload.slot_mask & (1 << i))) {
       //slot is empty
-      draw_string_centered("EMPTY FILE", NULL, VID_WIDTH / 2, yofs + 10 + 8);
+      draw_string_centered("EMPTY FILE", NULL, VID_WIDTH / 2, yofs + 10);
     } else {
       // draw stage name
-      gfx_draw_string(saveload.slots[i].stage, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 36, yofs + 10 + 8);
+      gfx_draw_string(saveload.slots[i].stage, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 30, yofs + 10);
       // draw life at the right edge
       sprintf(lifetext, "%02d/%02d", saveload.slots[i].life, saveload.slots[i].max_life);
-      gfx_draw_texrect_16x16(&rc_heart, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 40, yofs + 15);
-      gfx_draw_string(lifetext, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 40 - 5 * GFX_FONT_WIDTH, yofs + 10 + 8);
+      gfx_draw_texrect_16x16(&rc_heart, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 46, yofs + 7);
+      gfx_draw_string(lifetext, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 40 - 6 * GFX_FONT_WIDTH, yofs + 10);
       // draw current weapon (unfortunately weapon list won't fit)
-      gfx_draw_texrect_16x16(&hud_rc_arms[saveload.slots[i].arm], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 16, yofs + 16);
+      gfx_draw_texrect_16x16(&hud_rc_arms[saveload.slots[i].arm], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 24, yofs + 8);
     }
   }
 
   // draw cursor
-  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 16, SAVELOAD_TOP + 32 * main_sel + 16);
+  gfx_draw_texrect_16x16(&rc_cursor_menu[++main_tick / 10 % 4], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 8, SAVELOAD_TOP + 32 * main_sel + 8);
 }
 
 static void menu_saveload_draw(void) {
@@ -1014,7 +1014,7 @@ static void menu_saveload_draw(void) {
       main_choices = (main_count == 1) ? str_ok : str_yesno;
       /* fallthrough */
     case SLSTATE_SELECT_MEMCARD:
-      xofs = (strlen(main_choices[0]) * GFX_FONT_WIDTH - 8) / 2;
+      xofs = (strlen(main_choices[0]) * GFX_FONT_WIDTH - 24) / 2;
       draw_string_centered(saveload.title, main_title_rgb, VID_WIDTH / 2, VID_HEIGHT / 2 - 48);
       menu_generic_draw(VID_WIDTH / 2 - xofs, MAIN_TOP + 80 - 24);
       break;
@@ -1025,8 +1025,8 @@ static void menu_saveload_draw(void) {
 
 #define OPT_SFX_VOL_STEP ((SFX_MAX_VOLUME + 1) / 8)
 #define OPT_ORG_VOL_STEP ((ORG_MAX_VOLUME + 1) / 8)
-#define OPT_NAME_XOFS (16 * GFX_FONT_WIDTH - 8)
-#define OPT_VAL_XOFS (4 * GFX_FONT_WIDTH - 8)
+#define OPT_NAME_XOFS (16 * GFX_FONT_WIDTH)
+#define OPT_VAL_XOFS (8 * GFX_FONT_WIDTH)
 
 enum option_type {
   OPT_SEP,
@@ -1202,7 +1202,7 @@ static void menu_options_draw(void) {
             draw_string_shadow("...", NULL, xval + GFX_FONT_WIDTH * (8 - 3), y + yofs);
         } else {
           btn = menu_padbutton_index(*(u16 *)options[i].value);
-          gfx_draw_texrect(&rc_padbuttons[btn], GFX_LAYER_FRONT, xval - 8 + GFX_FONT_WIDTH * 8 - 12, y + yofs - 8);
+          gfx_draw_texrect(&rc_padbuttons[btn], GFX_LAYER_FRONT, xval + GFX_FONT_WIDTH * 8 - 12, y + yofs);
         }
         break;
     }

@@ -216,13 +216,13 @@ static inline void plr_draw_char(int plr_vx, int plr_vy, int cam_vx, int cam_vy)
   gfx_texrect_t rect = player.rect;
   if (player.equip & EQUIP_MIMIGA_MASK)
     rect.r.y += CHAR_FRAME_H * 2;
-  gfx_draw_texrect_16x16(&rect, GFX_LAYER_BACK, plr_vx - cam_vx + 8, plr_vy - cam_vy + 8);
+  gfx_draw_texrect_16x16(&rect, GFX_LAYER_BACK, plr_vx - cam_vx, plr_vy - cam_vy);
 }
 
 static inline void plr_draw_bubble(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
   ++player.bubble;
   if ((player.equip & EQUIP_AIR_TANK) || player.unit == 1)
-    gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 12 - cam_vx + 8, plr_vy - 12 - cam_vy + 8);
+    gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 12 - cam_vx, plr_vy - 12 - cam_vy);
 }
 
 void plr_draw(int cam_x, int cam_y) {

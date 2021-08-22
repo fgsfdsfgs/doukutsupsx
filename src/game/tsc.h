@@ -8,9 +8,9 @@
 #define TSC_MAX_LOADED_SCRIPTS 4
 #define TSC_LINE_LEN 35
 
-#define TEXT_LEFT (VID_WIDTH / 2 - 116)
-#define TEXT_BOX_LEFT (VID_WIDTH / 2 - 130)
-#define TEXT_TOP (VID_HEIGHT - 56)
+#define TEXT_LEFT (VID_WIDTH / 2 - 108)
+#define TEXT_BOX_LEFT (VID_WIDTH / 2 - 122)
+#define TEXT_TOP (VID_HEIGHT - 48)
 
 enum tsc_script_id {
   TSC_SCRIPT_ARMS_ITEM,

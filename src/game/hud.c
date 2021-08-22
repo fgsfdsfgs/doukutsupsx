@@ -159,8 +159,8 @@ static inline void hud_draw_ammo(void) {
     hud_draw_number(player.arms[arm_id].ammo, player.arms_x + 32 + 24, 16);
     hud_draw_number(player.arms[arm_id].max_ammo, player.arms_x + 32 + 24, 24);
   } else {
-    gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, player.arms_x + 48 - 8, 16 - 8); // "--"
-    gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, player.arms_x + 48 - 8, 24 - 8); // "--"
+    gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, player.arms_x + 48, 16); // "--"
+    gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, player.arms_x + 48, 24); // "--"
   }
 
   if (player.shock / 2 % 2)
@@ -168,7 +168,7 @@ static inline void hud_draw_ammo(void) {
 
   int lv = player.arms[arm_id].level;
   gfx_draw_texrect_8x8(&hud_rc_ammo[0], GFX_LAYER_FRONT, player.arms_x + 32, 24); // "/"
-  gfx_draw_texrect(&hud_rc_ammo[1], GFX_LAYER_FRONT, player.arms_x - 8, 32 - 8); // "Lv"
+  gfx_draw_texrect(&hud_rc_ammo[1], GFX_LAYER_FRONT, player.arms_x, 32); // "Lv"
   hud_draw_number(lv, player.arms_x + 16, 32);
 
   if (lv) --lv;
@@ -176,36 +176,36 @@ static inline void hud_draw_ammo(void) {
   const int exp_now = player.arms[arm_id].exp;
   const int exp_max = plr_arms_exptab[arm_id][lv];
 
-  gfx_draw_texrect(&hud_rc_ammo[3], GFX_LAYER_FRONT, player.arms_x + 24 - 8, 32 - 8);
+  gfx_draw_texrect(&hud_rc_ammo[3], GFX_LAYER_FRONT, player.arms_x + 24, 32);
 
   if (lv == 2 && exp_max == exp_now) {
     // draw ==MAX==
-    gfx_draw_texrect(&hud_rc_ammo[5], GFX_LAYER_FRONT, player.arms_x + 24 - 8, 32 - 8);
+    gfx_draw_texrect(&hud_rc_ammo[5], GFX_LAYER_FRONT, player.arms_x + 24, 32);
   } else {
     // draw bar
     if (exp_max)
       hud_rc_ammo[4].r.right = (exp_now * 40) / exp_max;
     else
       hud_rc_ammo[4].r.right = 0;
-    gfx_draw_texrect(&hud_rc_ammo[4], GFX_LAYER_FRONT, player.arms_x + 24 - 8, 32 - 8);
+    gfx_draw_texrect(&hud_rc_ammo[4], GFX_LAYER_FRONT, player.arms_x + 24, 32);
   }
 
   // draw flashing bar
   if (player.exp_wait && ((player.exp_flash++ / 2) % 2))
-    gfx_draw_texrect(&hud_rc_ammo[6], GFX_LAYER_FRONT, player.arms_x + 24 - 8, 32 - 8);
+    gfx_draw_texrect(&hud_rc_ammo[6], GFX_LAYER_FRONT, player.arms_x + 24, 32);
 }
 
 static inline void hud_draw_air(void) {
   if (player.equip & EQUIP_AIR_TANK)
     return;
 
-  const int x = (VID_WIDTH / 2) - 40;
+  const int x = (VID_WIDTH / 2) - 32;
   const int y = (VID_HEIGHT / 2) - 16;
 
   if (player.air_count) {
     if (player.air_count % 6 < 4)
       hud_draw_number(player.air / 10, x + 56, y);
-    gfx_draw_texrect(&hud_rc_air[player.air % 30 <= 10], GFX_LAYER_FRONT, x - 8, y - 8);
+    gfx_draw_texrect(&hud_rc_air[player.air % 30 <= 10], GFX_LAYER_FRONT, x, y);
   }
 }
 
@@ -262,9 +262,9 @@ static inline void hud_draw_life(void) {
   hud_rc_life.r.w = ((player.life * 40) / player.max_life) - 1;
   hud_rc_life_flash.r.w = ((player.life_bar * 40) / player.max_life) - 1;
 
-  gfx_draw_texrect(&hud_rc_life_label, GFX_LAYER_FRONT, 16 - 8, 40 - 8);
-  gfx_draw_texrect(&hud_rc_life_flash, GFX_LAYER_FRONT, 40 - 8, 40 - 8);
-  gfx_draw_texrect(&hud_rc_life, GFX_LAYER_FRONT, 40 - 8, 40 - 8);
+  gfx_draw_texrect(&hud_rc_life_label, GFX_LAYER_FRONT, 16, 40);
+  gfx_draw_texrect(&hud_rc_life_flash, GFX_LAYER_FRONT, 40, 40);
+  gfx_draw_texrect(&hud_rc_life, GFX_LAYER_FRONT, 40, 40);
   hud_draw_number(player.life_bar, 32, 40);
 }
 
@@ -281,11 +281,11 @@ static inline void hud_draw_boss_life(void) {
   hud_rc_boss_life.r.w = (life * 198) / hud_boss_bar_max;
   hud_rc_boss_flash.r.w = (hud_boss_bar_flash * 198) / hud_boss_bar_max;
 
-  gfx_draw_texrect(&hud_rc_boss_box1, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 128, VID_HEIGHT - 20 - 16);
-  gfx_draw_texrect(&hud_rc_boss_box2, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 128, VID_HEIGHT - 12 - 16);
-  gfx_draw_texrect(&hud_rc_boss_flash, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 88, VID_HEIGHT - 16 - 16);
-  gfx_draw_texrect(&hud_rc_boss_life, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 88, VID_HEIGHT - 16 - 16);
-  gfx_draw_texrect(&hud_rc_boss_label, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 120, VID_HEIGHT - 16 - 16);
+  gfx_draw_texrect(&hud_rc_boss_box1, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 120, VID_HEIGHT - 20 - 8);
+  gfx_draw_texrect(&hud_rc_boss_box2, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 120, VID_HEIGHT - 12 - 8);
+  gfx_draw_texrect(&hud_rc_boss_flash, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 80, VID_HEIGHT - 16 - 8);
+  gfx_draw_texrect(&hud_rc_boss_life, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 80, VID_HEIGHT - 16 - 8);
+  gfx_draw_texrect(&hud_rc_boss_label, GFX_LAYER_FRONT, (VID_WIDTH / 2) - 112, VID_HEIGHT - 16 - 8);
 }
 
 static inline void hud_draw_debug(void) {
@@ -311,7 +311,7 @@ void hud_draw(void) {
 void hud_draw_map_name(void) {
   if (map_name_time) {
     const int x = (VID_WIDTH / 2) + map_name_xofs;
-    const int y = (VID_HEIGHT / 2) - 40;
+    const int y = (VID_HEIGHT / 2) - 48;
     const u8 shadow[3] = { 0x08, 0x00, 0x11 };
     gfx_draw_string_rgb(stage_data->title, shadow, GFX_LAYER_FRONT, x + 1, y + 1);
     gfx_draw_string(stage_data->title, GFX_LAYER_FRONT, x, y);
