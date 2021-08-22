@@ -159,12 +159,15 @@ void game_frame(void) {
     }
   }
 
-  // call `act` on all entities when game isn't frozen (except bullets and particles for some reason)
-  if (game_flags & 1)
+  if (game_flags & 1) {
+    // call `act` on all entities when game isn't frozen
     game_update_objects(input_enabled, btns_held, btns_trig);
+    // and move camera and update flash/quake effects
+    cam_update();
+  }
 
-  // move camera and update fade/quake effects
-  cam_update();
+  // fade always updates
+  cam_update_fade();
 
   // animate the player
   plr_animate(btns_held);

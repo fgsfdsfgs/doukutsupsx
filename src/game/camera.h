@@ -36,6 +36,7 @@ void cam_start_fade_in(const int dir);
 void cam_clear_fade(void);
 void cam_complete_fade(void);
 void cam_draw_fade(void);
+void cam_update_fade(void);
 
 void cam_start_quake_small(const int duration);
 void cam_start_quake_big(const int duration);

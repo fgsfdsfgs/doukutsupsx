@@ -184,7 +184,10 @@ static inline void fade_in_center(void) {
         fade.flag[y][x] = TRUE;
 }
 
-static inline void cam_update_fade(void) {
+void cam_update_fade(void) {
+  if (fade.mode == 0)
+    return;
+
   int t;
 
   switch (fade.dir) {
@@ -418,9 +421,6 @@ void cam_update(void) {
     camera.y += (m_rand(-1, 1) * 0x200);
     --camera.quake;
   }
-
-  if (fade.mode != 0)
-    cam_update_fade();
 
   if (flash.mode != FLASH_MODE_NONE)
     cam_update_flash();
