@@ -827,11 +827,12 @@ void plr_arm_add_exp(int val) {
   player.arms[player.arm].exp += val;
 
   if (lv == 2) {
-    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][2])
+    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][2]) {
       player.arms[player.arm].exp = plr_arms_exptab[player.arm][2];
-    if (player.equip & EQUIP_WHIMSICAL_STAR) {
-      if (player.star < 3)
-        ++ player.star;
+      if (player.equip & EQUIP_WHIMSICAL_STAR) {
+        if (player.star < PLR_MAX_STAR)
+          ++player.star;
+      }
     }
   } else {
     for (; lv < 2; ++lv) {

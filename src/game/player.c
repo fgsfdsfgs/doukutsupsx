@@ -6,12 +6,13 @@
 #include "engine/sound.h"
 #include "engine/input.h"
 
-#include "game/player.h"
 #include "game/npc.h"
 #include "game/tsc.h"
 #include "game/game.h"
 #include "game/caret.h"
+#include "game/bullet.h"
 #include "game/dmgnum.h"
+#include "game/player.h"
 
 // also known as MyChar.cpp
 // most of the animation and physics code was left intact
@@ -63,21 +64,38 @@ static gfx_texrect_t rc_bubble[] = {
   {{ 80, 96, 104, 120 }},
 };
 
+static gfx_texrect_t rc_star[PLR_MAX_STAR] = {
+  {{ 192, 0, 200, 8 }},
+  {{ 192, 8, 200, 16 }},
+  {{ 192, 16, 200, 24 }},
+};
+
 static gfx_texrect_t rc_arms[PLR_MAX_ARMS];
 
 static const struct phystab {
-  s16 max_dash;
-  s16 max_move;
-  s16 gravity1;
-  s16 gravity2;
-  s16 jump;
-  s16 dash1;
-  s16 dash2;
-  s16 resist;
+  s32 max_dash;
+  s32 max_move;
+  s32 gravity1;
+  s32 gravity2;
+  s32 jump;
+  s32 dash1;
+  s32 dash2;
+  s32 resist;
 } phystab[2] = {
   { 0x32C,     0x5FF,     0x50,     0x20,     0x500,     0x200 / 6,     0x200 / 16,     0x200 / 10     },
   { 0x32C / 2, 0x5FF / 2, 0x50 / 2, 0x20 / 2, 0x500 / 2, 0x200 / 6 / 2, 0x200 / 16 / 2, 0x200 / 10 / 2 },
 };
+
+// whimsical star stars
+static struct {
+  s32 x;
+  s32 y;
+  s32 xvel;
+  s32 yvel;
+} star[PLR_MAX_STAR];
+
+// the star that will spawn a bullet next frame?
+static int star_idx = 0;
 
 void plr_init(void) {
   // init player struct
@@ -99,12 +117,15 @@ void plr_init(void) {
     gfx_set_texrect(&rc_arms[i], SURFACE_ID_ARMS);
   }
 
+  for (u32 i = 0; i < sizeof(rc_star) / sizeof(*rc_star); ++i)
+    gfx_set_texrect(&rc_star[i], SURFACE_ID_MY_CHAR);
+
   gfx_set_texrect(&rc_bubble[0], SURFACE_ID_CARET);
   gfx_set_texrect(&rc_bubble[1], SURFACE_ID_CARET);
 }
 
 void plr_reset(void) {
-  memset(&player, 0, sizeof(player));
+  memset_word(&player, 0, sizeof(player));
 
   player.cond = PLRCOND_ALIVE;
   player.dir = DIR_RIGHT;
@@ -125,6 +146,8 @@ void plr_reset(void) {
 
   player.arm = 0;
   player.arms_x = 16;
+
+  plr_star_reset();
 }
 
 void plr_animate(const bool input_enabled) {
@@ -225,6 +248,14 @@ static inline void plr_draw_bubble(int plr_vx, int plr_vy, int cam_vx, int cam_v
     gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 4 - cam_vx, plr_vy - 4 - cam_vy);
 }
 
+static inline void plr_draw_star(int cam_vx, int cam_vy) {
+  for (int i = 0; i < player.star; ++i) {
+    const int sx = TO_INT(star[i].x);
+    const int sy = TO_INT(star[i].y);
+    gfx_draw_texrect(&rc_star[i], GFX_LAYER_BACK, sx - cam_vx - 4, sy - cam_vy - 4);
+  }
+}
+
 void plr_draw(int cam_x, int cam_y) {
   if (!(player.cond & PLRCOND_ALIVE) || player.cond & PLRCOND_INVISIBLE)
     return;
@@ -236,11 +267,13 @@ void plr_draw(int cam_x, int cam_y) {
 
   plr_draw_arm(plr_vx, plr_vy, cam_vx, cam_vy);
 
-  if ((player.shock >> 1) & 1)
-    return;
+  if ((player.shock & 2) == 0) {
+    plr_draw_char(plr_vx, plr_vy, cam_vx, cam_vy);
+    plr_draw_bubble(plr_vx, plr_vy, cam_vx, cam_vy);
+  }
 
-  plr_draw_char(plr_vx, plr_vy, cam_vx, cam_vy);
-  plr_draw_bubble(plr_vx, plr_vy, cam_vx, cam_vy);
+  if (player.equip & EQUIP_WHIMSICAL_STAR)
+    plr_draw_star(cam_vx, cam_vy);
 }
 
 void plr_set_pos(int x, int y) {
@@ -708,7 +741,52 @@ static void plr_act_stream(const bool input_enabled) {
   player.y += player.yvel;
 }
 
+static inline void plr_star_act(const bool spawn_bullets) {
+  star_idx = (star_idx + 1) % PLR_MAX_STAR;
+
+  for (int i = 0; i < PLR_MAX_STAR; ++i) {
+    int xref, yref;
+    if (i) {
+      xref = star[i - 1].x;
+      yref = star[i - 1].y;
+    } else {
+      xref = player.x;
+      yref = player.y;
+    }
+
+    if (xref < star[i].x)
+      star[i].xvel -= 0x80;
+    else
+      star[i].xvel += 0x80;
+
+    if (yref < star[i].y)
+      star[i].yvel -= 0xAA;
+    else
+      star[i].yvel += 0xAA;
+
+    if (star[i].xvel > 0xA00)
+      star[i].xvel = 0xA00;
+    if (star[i].xvel < -0xA00)
+      star[i].xvel = -0xA00;
+
+    if (star[i].yvel > 0xA00)
+      star[i].yvel = 0xA00;
+    if (star[i].yvel < -0xA00)
+      star[i].yvel = -0xA00;
+
+    star[i].x += star[i].xvel;
+    star[i].y += star[i].yvel;
+
+    if (spawn_bullets && i < player.star && star_idx == i)
+      bullet_spawn(45, star[i].x, star[i].y, 0);
+  }
+}
+
 void plr_act(const bool input_enabled) {
+  // the original code updates all 3 stars regardless of star value or flags
+  // to keep the stars at sane positions
+  plr_star_act(input_enabled && (player.equip & EQUIP_WHIMSICAL_STAR));
+
   if (!(player.cond & PLRCOND_ALIVE))
     return;
 
@@ -806,7 +884,7 @@ void plr_add_exp(int val) {
     if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][lv]) {
       player.arms[player.arm].exp = plr_arms_exptab[player.arm][lv];
       if (player.equip & EQUIP_WHIMSICAL_STAR) {
-        if (player.star < 3)
+        if (player.star < PLR_MAX_STAR)
           ++player.star;
       }
     }
@@ -859,4 +937,20 @@ void plr_item_give(const u32 item) {
 
 void plr_item_take(const u32 item) {
   player.items[item] = FALSE;
+}
+
+void plr_star_reset(void) {
+  for (int i = 0; i < PLR_MAX_STAR; ++i) {
+    star[i].x = player.x;
+    star[i].y = player.y;
+  }
+
+  star[0].xvel = 0x400;
+  star[0].yvel = -0x200;
+
+  star[1].xvel = -0x200;
+  star[1].yvel = 0x400;
+
+  star[2].xvel = 0x200;
+  star[2].yvel = 0x200;
 }

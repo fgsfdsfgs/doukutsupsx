@@ -223,6 +223,7 @@ static void menu_pause_act(void) {
     plr_arm_give(3, 0);
     plr_arm_give(5, 100);
     plr_arm_give(7, 100);
+    plr_arm_give(13, 0);
     npc_set_flag(201); // got missile launcher
     player.arm = 2;
     // heal
@@ -234,6 +235,9 @@ static void menu_pause_act(void) {
     // give booster 2.0
     player.items[23] = TRUE;
     player.equip |= EQUIP_BOOSTER_2_0;
+    // give whimsical star
+    player.items[38] = TRUE;
+    player.equip |= EQUIP_WHIMSICAL_STAR;
     // give arthur's key and set flags
     player.items[1] = TRUE;
     npc_set_flag(390);

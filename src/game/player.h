@@ -8,6 +8,7 @@
 #define PLR_MAX_ARMS 14
 #define PLR_MAX_ITEMS 48
 #define PLR_MAX_LIFE 232
+#define PLR_MAX_STAR 3
 
 enum equip_flags {
   EQUIP_BOOSTER_0_8      = 0x01,
@@ -132,3 +133,5 @@ bool plr_arm_trade(const int id, const int new_id, const int new_max_ammo);
 
 void plr_arms_refill_all(void);
 void plr_arms_empty_all(void);
+
+void plr_star_reset(void);

@@ -268,6 +268,10 @@ void hit_bullet_map(void) {
     // Clear hit tiles
     bul->flags = 0;
 
+    // bit 2 = don't hit map tiles
+    if (bul->bits & 4)
+      continue;
+
     for (int j = 0; j < 4; ++j) {
       // if the bullet got killed at some point, bail out
       if (!(bul->cond & BULLETCOND_ALIVE))

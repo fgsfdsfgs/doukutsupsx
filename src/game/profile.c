@@ -100,7 +100,10 @@ bool profile_load(void) {
   player.arm = profile.save.player.arm_id;
   player.unit = profile.save.player.unit;
 
-  // recenter since player position changed
+  // recenter whimsical star projectiles
+  plr_star_reset();
+
+  // recenter camera since player position changed
   cam_center_on_player();
 
   // show camera

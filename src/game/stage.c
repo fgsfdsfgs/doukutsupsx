@@ -151,6 +151,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   caret_init();
   dmgnum_init();
   hud_clear();
+  plr_star_reset();
   npc_spawn_boss(stage_data->boss_type);
 
   stage_water_y = TO_FIX(240 * TILE_SIZE);
