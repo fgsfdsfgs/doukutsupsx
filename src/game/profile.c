@@ -62,7 +62,10 @@ bool profile_load(void) {
     return FALSE;
 
   game_reset();
-  
+
+  // make sure camera is 100% faded out while we're loading shit
+  cam_complete_fade();
+
   // load config
   memcpy(input_binds, profile.config.binds, sizeof(input_binds));
   snd_set_sfx_volume(profile.config.vol_sfx);
@@ -97,6 +100,10 @@ bool profile_load(void) {
   player.arm = profile.save.player.arm_id;
   player.unit = profile.save.player.unit;
 
+  // recenter since player position changed
+  cam_center_on_player();
+
+  // show camera
   cam_clear_fade();
 
   return TRUE;
