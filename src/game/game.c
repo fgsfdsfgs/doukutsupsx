@@ -60,6 +60,7 @@ void game_start_intro(void) {
   // stage_transition(6, 98, 4, 18); // weed
   // stage_transition(48, 93, 155, 1); // river
   // stage_transition(47, 92, 4, 17); // core
+  // stage_transition(53, 92, 4, 165); // oside
 }
 
 void game_start_new(void) {

@@ -236,8 +236,7 @@ void stage_update(void) {
       break;
     case BACKGROUND_TYPE_CLOUDS:
     case BACKGROUND_TYPE_CLOUDS_WINDY:
-      ++bg_x;
-      bg_x %= 640;
+      bg_x = (bg_x + 1) % (VID_WIDTH * 2);
       break;
   }
 }
@@ -246,6 +245,55 @@ static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
   for (int y = start_y; y < VID_HEIGHT; y += rc_back[0].r.h) {
     for (int x = start_x; x < VID_WIDTH; x += rc_back[0].r.w)
       gfx_draw_texrect(&rc_back[0], GFX_LAYER_BACK, x, y);
+  }
+}
+
+static void stage_draw_bg_wide_strip(const rect_t *r, const int x, const int y) {
+  rc_back[0].r = *r;
+  gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
+
+  // if the strip intersects the texture page boundary, draw a second texrect
+  if ((int)rc_back[0].u + rc_back[0].r.w > 256) {
+    const int part_w = (256 - (int)rc_back[0].u);
+    const int next_x = x + part_w;
+    // no point rendering the second part if it goes completely off screen
+    if (next_x < VID_WIDTH) {
+      rc_back[1].r.x = rc_back[0].r.x + part_w;
+      rc_back[1].r.y = rc_back[0].r.y;
+      rc_back[1].r.right = rc_back[1].r.x + rc_back[0].r.w - part_w;
+      rc_back[1].r.bottom = rc_back[0].r.y + rc_back[0].r.h;
+      gfx_set_texrect(&rc_back[1], SURFACE_ID_LEVEL_BACKGROUND);
+      gfx_draw_texrect(&rc_back[1], GFX_LAYER_BACK, next_x, y);
+      rc_back[0].r.w = part_w; // shorten the first part
+    }
+  }
+
+  gfx_draw_texrect(&rc_back[0], GFX_LAYER_BACK, x, y);
+}
+
+// FIXME: drawing the rects right away causes a lot of tpage switching,
+//        maybe prepare them in update() instead
+static inline void stage_draw_bg_clouds(const int cam_vx, const int cam_vy) {
+  static rect_t rc[] = {
+    { 0, 0,   320,  88 }, // sky
+    { 0, 88,  320, 123 }, // cloud strip 1
+    { 0, 123, 320, 146 }, // cloud strip 2
+    { 0, 146, 320, 176 }, // cloud strip 3
+    { 0, 176, 320, 240 }, // cloud strip 4
+  };
+
+  const int xofs[] = { 0, bg_x / 2, bg_x, bg_x * 2, bg_x * 4 };
+
+  // sky
+  stage_draw_bg_wide_strip(&rc[0], 0, 0);
+
+  // scrolling cloud strips
+  for (int i = 1; i < 5; ++i) {
+    const int tx = xofs[i] % 320;
+    rc[i].left = tx;
+    stage_draw_bg_wide_strip(&rc[i], 0, rc[i].top);
+    rc[i].left = 0;
+    stage_draw_bg_wide_strip(&rc[i], 320 - tx, rc[i].top);
   }
 }
 
@@ -269,7 +317,7 @@ static inline void stage_draw_bg(const int cam_vx, const int cam_vy) {
 
     case BACKGROUND_TYPE_CLOUDS:
     case BACKGROUND_TYPE_CLOUDS_WINDY:
-      // TODO
+      stage_draw_bg_clouds(cam_vx, cam_vy);
       break;
   }
 }
