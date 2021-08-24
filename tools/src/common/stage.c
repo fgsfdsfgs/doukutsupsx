@@ -49,7 +49,7 @@ static inline bool parse_stage_entry(char **args, stage_list_t *list, const int 
 
   for (int i = 0; i < NUM_STAGE_ARGS; ++i) {
     args[i] = trim_whitespace(args[i]);
-    if (!strcmp(args[i], "0"))
+    if (!strcmp(args[i], "0") && i != 1) // HACK: "0" is an actual map
       args[i] = &empty;
   }
 
