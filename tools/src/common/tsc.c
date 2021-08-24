@@ -66,11 +66,11 @@ static opcode_t op_table[] = {
 
 static const int num_opcodes = sizeof(op_table) / sizeof(*op_table);
 
-static const opcode_t op_credits_table[] = {
+static opcode_t op_credits_table[] = {
   // credits pseudo-opcodes
-  { "[",    0, 0x80  }, { "+",    1, 0x81  }, { "!",    1, 0x82  }, { "-",    1, 0x83  },
-  { "f",    2, 0x84  }, { "j",    1, 0x85  }, { "l",    1, 0x86  }, { "~",    0, 0x87  },
-  { "/",    0, 0x88  },
+  { "l",    1, 0x80  }, { "+",    1, 0x81  }, { "!",    1, 0x82  }, { "-",    1, 0x83  },
+  { "f",    2, 0x84  }, { "j",    1, 0x85  }, { "~",    0, 0x86  }, { "/",    0, 0x87  },
+  { "[",    0, 0x88  }, { "]",    1, 0x89  },
 };
 
 static const int num_credits_opcodes = sizeof(op_credits_table) / sizeof(*op_credits_table);
@@ -85,7 +85,7 @@ static inline const opcode_t *parse_opcode(const char *p, opcode_t *optab, const
     pname.name_cmp = *(const uint32_t *)p;
   } else {
     // might be a special credits pseudo op
-    pname.name[0] = *p;
+    pname.name[0] = p[0];
     pname.name[1] = pname.name[2] = pname.name[3] = 0;
   }
 
@@ -155,8 +155,89 @@ static inline uint8_t *tsc_compile_event(const int ev, char *src, uint8_t *code)
 }
 
 static inline uint8_t *tsc_compile_credits(char *src, uint8_t *code) {
-  // TODO
-  *code++ = 0x00;
+  uint8_t *code_start = code;
+
+  // FIXME: remove this fucking atrocity
+  uint16_t labels[10000];
+  uint16_t *jumps[10000];
+  int num_jumps = 0;
+  memset(labels, 0, sizeof(labels));
+  memset(jumps, 0, sizeof(jumps));
+
+  while (src) {
+    const opcode_t *op = parse_opcode(src, op_credits_table, num_credits_opcodes);
+    if (!op) {
+      fprintf(stderr, "error: tsc_compile: unknown credits opcode '%c' (0x%02x)\n", *src, *src);
+      return NULL;
+    }
+
+    *code++ = op->id;
+
+    if (*src == '[') {
+      // consume text string until matching ]
+      *code++ = OP_STR_START; // mark string start
+      ++src; // skip [
+      while (*src && *src != ']')
+        *code++ = *src++;
+      *code++ = 0; // mark string end
+      if (*src != ']') {
+        fprintf(stderr, "error: tsc_compile: '[' with no matching ']'\n");
+        return NULL;
+      }
+      continue; // let it process the closing ] as a command
+    } else if (*src == '/') {
+      // end of script
+      *code++ = 0x00;
+      break;
+    }
+
+    ++src;
+
+    if (op->num_args > 0) {
+      // numeric args
+      uint32_t i, n;
+      char buf[5] = { 0 };
+      uint16_t arg;
+
+      for (i = 0; i < op->num_args; ++i) {
+        for (n = 0; n < 4 && isdigit(*src); ++n, ++src)
+          buf[n] = *src;
+        arg  = (uint16_t)atoi(buf);
+        *(uint16_t *)code = arg;
+        code += 2;
+        if (*src == ':') ++src; // skip ':'
+      }
+
+      if (i != op->num_args) {
+        fprintf(stderr, "error: tsc_compile: '%.4s' expects %u args, got %u\n", op->name, op->num_args, i);
+        return NULL;
+      }
+
+      if (op->name[0] == 'l' && arg < 10000) {
+        // if this is a label, remember position right after it
+        labels[arg] = code - code_start;
+      } else if ((op->name[0] == 'j' || op->name[0] == 'f') && num_jumps < 10000) {
+        // if this is a jump or conditional jump, remember pointer to its target argument
+        jumps[num_jumps++] = (uint16_t *)(code - 2);
+      }
+    }
+
+    // skip whitespace until end of line
+    src = skip_whitespace(src);
+  }
+
+  if (*src != '/') {
+    // unterminated script; insert terminator
+    *code++ = 0x87;
+    *code++ = 0x00;
+  }
+
+  // point all jumps to code offsets instead of label ids
+  for (int i = 0; i < num_jumps; ++i) {
+    const uint16_t label_id = *jumps[i];
+    *jumps[i] = labels[label_id];
+  }
+
   return code;
 }
 
@@ -188,8 +269,10 @@ tsc_script_t *tsc_compile(char *src, const int in_size, int *out_size) {
     fprintf(stderr, "warning: tsc_compile: no events in script!\n");
     fprintf(stderr, "this is normal when compiling credits.tsc\n");
 
+    codeptr += sizeof(tsc_event_t);
     tsc->num_ev = 1;
     tsc->ev_map[0].ofs = codeptr - (uint8_t *)tsc;
+    tsc->ev_map[0].id = 1;
     codeptr = tsc_compile_credits(src, codeptr);
     if (!codeptr) {
       fprintf(stderr, "error: tsc_compile: could not compile credits script\n");
