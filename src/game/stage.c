@@ -37,7 +37,7 @@ static char bank_path[CD_MAX_PATH] = STAGE_PATH_PREFIX STAGE_PATH_FORMAT;
 static gfx_texrect_t rc_snack_tile = { 256, 48, 272, 64 };
 
 // rect for the background
-static gfx_texrect_t rc_back;
+static gfx_texrect_t rc_back[2];
 // background position
 static int bg_x;
 static int bg_y;
@@ -98,11 +98,24 @@ int stage_load_stage_bank(const u32 id) {
   stage_bank_id = id;
 
   // set background texrect
-  rc_back.r.left = 0;
-  rc_back.r.top = 0;
-  rc_back.r.right = stage_bank->bk_width;
-  rc_back.r.bottom = stage_bank->bk_height;
-  gfx_set_texrect(&rc_back, SURFACE_ID_LEVEL_BACKGROUND);
+  if (stage_data->bk_type == BACKGROUND_TYPE_WATER) {
+    rc_back[0].r.left = 0;
+    rc_back[0].r.top = 0;
+    rc_back[0].r.right = 32;
+    rc_back[0].r.bottom = 16;
+    rc_back[1].r.left = 0;
+    rc_back[1].r.top = 16;
+    rc_back[1].r.right = 32;
+    rc_back[1].r.bottom = 48;
+    gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
+    gfx_set_texrect(&rc_back[1], SURFACE_ID_LEVEL_BACKGROUND);
+  } else {
+    rc_back[0].r.left = 0;
+    rc_back[0].r.top = 0;
+    rc_back[0].r.right = stage_bank->bk_width;
+    rc_back[0].r.bottom = stage_bank->bk_height;
+    gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
+  }
 
   printf("stage bank %02x loaded\nfree mem: %u bytes\n", id, mem_get_free_space());
 
@@ -230,9 +243,9 @@ void stage_update(void) {
 }
 
 static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
-  for (int y = start_y; y < VID_HEIGHT; y += rc_back.r.h) {
-    for (int x = start_x; x < VID_WIDTH; x += rc_back.r.w)
-      gfx_draw_texrect(&rc_back, GFX_LAYER_BACK, x, y);
+  for (int y = start_y; y < VID_HEIGHT; y += rc_back[0].r.h) {
+    for (int x = start_x; x < VID_WIDTH; x += rc_back[0].r.w)
+      gfx_draw_texrect(&rc_back[0], GFX_LAYER_BACK, x, y);
   }
 }
 
@@ -243,15 +256,15 @@ static inline void stage_draw_bg(const int cam_vx, const int cam_vy) {
       break;
 
     case BACKGROUND_TYPE_MOVE_DISTANT:
-      stage_draw_bg_grid(-((cam_vx / 2) % rc_back.r.w), -((cam_vy / 2) % rc_back.r.h));
+      stage_draw_bg_grid(-((cam_vx / 2) % rc_back[0].r.w), -((cam_vy / 2) % rc_back[0].r.h));
       break;
 
     case BACKGROUND_TYPE_MOVE_NEAR:
-      stage_draw_bg_grid(-(cam_vx % rc_back.r.w), -(cam_vy % rc_back.r.h));
+      stage_draw_bg_grid(-(cam_vx % rc_back[0].r.w), -(cam_vy % rc_back[0].r.h));
       break;
 
     case BACKGROUND_TYPE_AUTOSCROLL:
-      stage_draw_bg_grid(-(TO_INT(bg_x) % rc_back.r.w), -rc_back.r.h);
+      stage_draw_bg_grid(-(TO_INT(bg_x) % rc_back[0].r.w), -rc_back[0].r.h);
       break;
 
     case BACKGROUND_TYPE_CLOUDS:
@@ -262,7 +275,21 @@ static inline void stage_draw_bg(const int cam_vx, const int cam_vy) {
 }
 
 static inline void stage_draw_fg(const int cam_vx, const int cam_vy) {
-  // TODO
+  if (stage_data->bk_type != BACKGROUND_TYPE_WATER)
+    return;
+  const int x1 = cam_vx / 32;
+  const int x2 = x1 + (((VID_WIDTH + (32 - 1)) / 32) + 1);
+  const int vwatery = TO_INT(stage_water_y) - cam_vy;
+  for (int y = 0; y < 32; ++y) {
+    const int ypos = TO_INT(TO_FIX(y * 32)) + vwatery;
+    if (ypos < -32) continue;
+    if (ypos > VID_HEIGHT) break;
+    for (int x = x1; x < x2; ++x) {
+      const int xpos = TO_INT(TO_FIX(x * 32)) - cam_vx;
+      gfx_draw_texrect(&rc_back[1], GFX_LAYER_FRONT, xpos, ypos);
+      if (y == 0) gfx_draw_texrect(&rc_back[0], GFX_LAYER_FRONT, xpos, ypos);
+    }
+  }
 }
 
 static inline void stage_draw_map(int cam_vx, int cam_vy) {
