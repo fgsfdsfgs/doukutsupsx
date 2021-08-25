@@ -18,7 +18,10 @@ enum dir {
 };
 
 enum game_flags {
-  GFLAG_INPUT_ENABLED = 1 << 1,
+  GFLAG_UPDATE_OBJECTS = 1,
+  GFLAG_INPUT_ENABLED = 2,
+  GFLAG_TSC_RUNNING = 4,
+  GFLAG_SHOW_CREDITS = 8,
 };
 
 typedef struct {

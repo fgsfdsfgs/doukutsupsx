@@ -361,7 +361,7 @@ static void plr_act_normal(const bool input_enabled) {
   const struct phystab *phys = &phystab[(player.flags & 0x100) != 0];
   int a, x;
 
-  if (input_enabled && !(game_flags & 4))
+  if (input_enabled && !(game_flags & GFLAG_TSC_RUNNING))
     plr_update_air();
 
   if (player.cond & PLRCOND_INVISIBLE)
@@ -388,7 +388,7 @@ static void plr_act_normal(const bool input_enabled) {
 
     // Move in direction held
     if (input_enabled) {
-      if (input_trig == IN_DOWN && input_held == IN_DOWN && !(player.cond & PLRCOND_USE_BUTTON) && !(game_flags & 4)) {
+      if (input_trig == IN_DOWN && input_held == IN_DOWN && !(player.cond & PLRCOND_USE_BUTTON) && !(game_flags & GFLAG_TSC_RUNNING)) {
         player.cond |= PLRCOND_USE_BUTTON;
         player.question = TRUE;
       } else if (input_held == IN_DOWN) {

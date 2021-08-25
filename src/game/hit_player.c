@@ -695,7 +695,7 @@ static inline void hit_player_npc(void) {
     }
 
     // Run event on contact
-    if (!(game_flags & 4) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
+    if (!(game_flags & GFLAG_TSC_RUNNING) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
       tsc_start_event(npc->event_num);
 
     // NPC damage
@@ -705,13 +705,13 @@ static inline void hit_player_npc(void) {
         if (hit & 1 && npc->xvel > 0) plr_damage(npc->damage);
         if (hit & 8 && npc->yvel < 0) plr_damage(npc->damage);
         if (hit & 2 && npc->yvel > 0) plr_damage(npc->damage);
-      } else if (hit != 0 && npc->damage && !(game_flags & 4)) {
+      } else if (hit != 0 && npc->damage && !(game_flags & GFLAG_TSC_RUNNING)) {
         plr_damage(npc->damage);
       }
     }
 
     // Interaction
-    if (!(game_flags & 4) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
+    if (!(game_flags & GFLAG_TSC_RUNNING) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
       tsc_start_event(npc->event_num);
       player.xvel = 0;
       player.question = FALSE;
@@ -748,17 +748,17 @@ static inline void hit_player_boss(void) {
     }
 
     // Run event on contact
-    if (!(game_flags & 4) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
+    if (!(game_flags & GFLAG_TSC_RUNNING) && hit != 0 && npc->bits & NPC_EVENT_WHEN_TOUCHED)
       tsc_start_event(npc->event_num);
 
     if (npc->bits & NPC_REAR_AND_TOP_DONT_HURT) {
       if (hit & 4 && npc->xvel < 0) plr_damage(npc->damage);
       if (hit & 1 && npc->xvel > 0) plr_damage(npc->damage);
-    } else if (hit != 0 && npc->damage && !(game_flags & 4)) {
+    } else if (hit != 0 && npc->damage && !(game_flags & GFLAG_TSC_RUNNING)) {
       plr_damage(npc->damage);
     }
 
-    if (!(game_flags & 4) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
+    if (!(game_flags & GFLAG_TSC_RUNNING) && hit != 0 && player.cond & 1 && npc->bits & NPC_INTERACTABLE) {
       tsc_start_event(npc->event_num);
       player.xvel = 0;
       player.question = FALSE;

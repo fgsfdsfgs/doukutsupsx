@@ -50,7 +50,7 @@ void game_start_intro(void) {
   stage_transition(STAGE_OPENING_ID, 100, 3, 3);
   // set player to be invisible and intangible
   player.cond |= PLRCOND_INVISIBLE;
-  game_flags = GFLAG_INPUT_ENABLED | 1;
+  game_flags = GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS;
   // stage_transition(13, 200, 10, 8);
   // stage_transition(62, 90, 80, 9);
   // stage_transition(56, 90, 80, 9);
@@ -89,7 +89,7 @@ void game_reset(void) {
   cam_complete_fade();
   cam_target_player(16);
 
-  game_flags = 1 | GFLAG_INPUT_ENABLED;
+  game_flags = GFLAG_UPDATE_OBJECTS | GFLAG_INPUT_ENABLED;
   game_tick = 0;
 }
 
@@ -153,7 +153,7 @@ void game_frame(void) {
     }
   }
 
-  if (game_flags & 1) {
+  if (game_flags & GFLAG_UPDATE_OBJECTS) {
     // call `act` on all entities when game isn't frozen
     game_update_objects(input_enabled);
     // and move camera and update flash/quake effects
@@ -173,7 +173,7 @@ void game_frame(void) {
   // has to be checked *before* tsc_update()
   hud_update();
 
-  if (!(game_flags & 4)) {
+  if (!(game_flags & GFLAG_TSC_RUNNING)) {
     if (input_trig & IN_INVENTORY) {
       menu_open(MENU_INVENTORY);
       return;

@@ -137,7 +137,7 @@ void tsc_init(void) {
 void tsc_reset(void) {
   memset(text, 0, sizeof(text));
   memset(&tsc_state, 0, sizeof(tsc_state));
-  game_flags &= ~4;
+  game_flags &= ~GFLAG_TSC_RUNNING;
 }
 
 void tsc_set_stage_script(tsc_script_t *data, const u32 size) {
@@ -170,7 +170,7 @@ void tsc_start_event(const int num) {
   tsc_state.text_y = TEXT_TOP;
   tsc_clear_text();
 
-  game_flags |= 5;
+  game_flags |= (GFLAG_UPDATE_OBJECTS | GFLAG_TSC_RUNNING);
   player.shock = 0;
 
   tsc_state.readptr = tsc_find_event(num);
@@ -184,7 +184,7 @@ void tsc_jump_event(const int num) {
   tsc_state.blink = 0;
   tsc_clear_text();
 
-  game_flags |= 4;
+  game_flags |= GFLAG_TSC_RUNNING;
 
   tsc_state.readptr = tsc_find_event(num);
   if (!tsc_state.readptr)
@@ -194,8 +194,8 @@ void tsc_jump_event(const int num) {
 void tsc_stop_event(void) {
   tsc_state.mode = TSC_MODE_OFF;
   tsc_state.flags = 0;
-  game_flags &= ~4;
-  game_flags |= 3;
+  game_flags &= ~GFLAG_TSC_RUNNING;
+  game_flags |= (GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
 }
 
 void tsc_clear_text(void) {
@@ -210,7 +210,7 @@ void tsc_check_newline(void) {
   const int line = tsc_state.line % TSC_MAX_LINES;
   if (tsc_state.line_y[line] == 48) {
     tsc_state.mode = TSC_MODE_NEWLINE;
-    game_flags |= 4;
+    game_flags |= GFLAG_TSC_RUNNING;
     text[line][0] = 0;
   }
 }
@@ -354,7 +354,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       tsc_state.mode = TSC_MODE_OFF;
       tsc_state.face = 0;
       player.cond &= ~PLRCOND_USE_BUTTON;
-      game_flags |= 3;
+      game_flags |= (GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
       return TRUE;
     /* string output opcodes */
     case 0x01: // MSG
@@ -408,7 +408,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return tsc_op_condjmp(player.arms[args[0]].owned, args[1]);
     /* common opcodes */
     case 0x0E: // FRE
-      game_flags |= 0x03;
+      game_flags |= (GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
       return FALSE;
     case 0x0F: // FAI
       tsc_state.mode = TSC_MODE_FADE;
@@ -427,12 +427,12 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return TRUE;
     case 0x13: // KEY
       game_flags &= ~GFLAG_INPUT_ENABLED;
-      game_flags |= 1;
+      game_flags |= GFLAG_UPDATE_OBJECTS;
       player.up = FALSE;
       player.shock = 0;
       return FALSE;
     case 0x14: // PRI
-      game_flags &= ~3;
+      game_flags &= ~(GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
       player.shock = 0;
       return FALSE;
     case 0x15: // NOD
@@ -640,7 +640,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     case 0x52: // CRE
       printf("TODO: credits\n");
-      game_flags |= 8;
+      game_flags |= GFLAG_SHOW_CREDITS;
       return FALSE;
     case 0x53: // XX1
       printf("TODO: falling island\n");
@@ -788,9 +788,9 @@ bool tsc_update(void) {
   }
 
   if (tsc_state.mode == 0)
-    game_flags &= ~4;
+    game_flags &= ~GFLAG_TSC_RUNNING;
   else
-    game_flags |= 4;
+    game_flags |= GFLAG_TSC_RUNNING;
 
   return FALSE; // don't quit yet
 }

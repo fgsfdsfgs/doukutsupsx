@@ -685,11 +685,11 @@ static void menu_stagesel_act(void) {
   if (input_trig & IN_OK) {
     menu_close();
     tsc_start_event(tele_dest[stagesel.idx].event_num);
-    game_flags &= ~3;
+    game_flags &= ~(GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
   } else if (input_trig & (IN_CANCEL | IN_PAUSE)) {
     menu_close();
     tsc_start_event(0);
-    game_flags &= ~3;
+    game_flags &= ~(GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
   }
 }
 
