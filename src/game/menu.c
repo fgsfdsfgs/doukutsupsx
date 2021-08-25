@@ -57,6 +57,10 @@ static gfx_texrect_t rc_main_title = {{ 0, 0, 144, 40 }};
 
 static gfx_texrect_t rc_heart = {{ 32, 80, 48, 96 }};
 
+static gfx_texrect_t rc_island_sky = {{ 0, 0, 160, 80 }};
+static gfx_texrect_t rc_island_ground = {{ 0, 48, 160, 80 }};
+static gfx_texrect_t rc_island_sprite = {{ 0, 0, 40, 24 }};
+
 // common variables used by simple multiple-choice menus
 static int main_sel = 0;
 static int main_count = 0;
@@ -1203,6 +1207,67 @@ static void menu_options_draw(void) {
   }
 }
 
+/* falling island "menu" */
+
+static struct {
+  s32 mode; // 0 - fall to the ground, 1 - slow down mid-fall
+  s32 wait;
+  s32 x;
+  s32 y;
+} fall;
+
+static void menu_fall_open(void) {
+  // texrects for this are only loaded in one specific map, so we init them here
+  // HACK: surface is split into 2 160x80 surfaces to counteract alignment issues
+  if (!rc_island_sky.tpage)
+    gfx_set_texrect(&rc_island_sky, SURFACE_ID_LEVEL_SPRITESET_1);
+  if (!rc_island_ground.tpage)
+    gfx_set_texrect(&rc_island_ground, SURFACE_ID_LEVEL_SPRITESET_2);
+  if (!rc_island_sprite.tpage)
+    gfx_set_texrect(&rc_island_sprite, SURFACE_ID_LEVEL_SPRITESET_2);
+
+  fall.mode = (menu_id == MENU_FALLING_ISLAND_1);
+  fall.x = TO_FIX(168);
+  fall.y = TO_FIX(64);
+  fall.wait = 0;
+}
+
+static void menu_fall_act(void) {
+  ++fall.wait;
+
+  if (fall.wait > 900) {
+    menu_id = 0;
+    return;
+  }
+
+  switch (fall.mode) {
+    case 0:
+      // fall at constant speed
+      fall.y += FIX_SCALE / 10;
+      break;
+    case 1:
+      // slow down gradually
+      if (fall.wait < 350)
+        fall.y += FIX_SCALE / 10;
+      else if (fall.wait < 500)
+        fall.y += FIX_SCALE / 20;
+      else if (fall.wait < 600)
+        fall.y += FIX_SCALE / 40;
+      else if (fall.wait == 750)
+        fall.wait = 900; // end prematurely
+      break;
+  }
+}
+
+static void menu_fall_draw(void) {
+  gfx_draw_clear(main_black_rgb, GFX_LAYER_FRONT);
+  gfx_push_cliprect(GFX_LAYER_FRONT, 0, VID_HEIGHT / 2 - 40, VID_WIDTH, 80);
+  gfx_draw_texrect(&rc_island_sky, GFX_LAYER_FRONT, VID_WIDTH / 2 - 80, VID_HEIGHT / 2 - 40);
+  gfx_draw_texrect(&rc_island_sprite, GFX_LAYER_FRONT, TO_INT(fall.x) - 20, TO_INT(fall.y) - 12);
+  gfx_draw_texrect(&rc_island_ground, GFX_LAYER_FRONT, VID_WIDTH / 2 - 80, VID_HEIGHT / 2 + 40 - 32);
+  gfx_pop_cliprect(GFX_LAYER_FRONT);
+}
+
 /* -------------- */
 
 typedef void (*menu_func_t)(void);
@@ -1222,6 +1287,8 @@ static const struct menu_desc {
   { menu_saveload_open,  menu_saveload_act,  menu_saveload_draw,  FALSE }, // SAVE
   { menu_saveload_open,  menu_saveload_act,  menu_saveload_draw,  FALSE }, // LOAD
   { menu_options_open,   menu_options_act,   menu_options_draw,   FALSE }, // OPTIONS
+  { menu_fall_open,      menu_fall_act,      menu_fall_draw,      FALSE }, // FALLING_ISLAND_0
+  { menu_fall_open,      menu_fall_act,      menu_fall_draw,      FALSE }, // FALLING_ISLAND_1
 };
 
 void menu_open(const int menu) {

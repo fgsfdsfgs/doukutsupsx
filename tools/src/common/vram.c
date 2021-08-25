@@ -148,7 +148,7 @@ vram_surf_t *vram_fit_surf(const struct bitmap *bmp, const uint16_t clut, const 
   return NULL;
 }
 
-static inline void vram_transform_clut(uint16_t *dst, const uint8_t *src, const int len) {
+void vram_transform_clut(uint16_t *dst, const uint8_t *src, const int len) {
   for (int i = 0; i < len; ++i, ++dst, src += 4) {
     const uint16_t color = PSXRGB(src[2], src[1], src[0]);
     // if the original color wasn't pitch black but got transformed into pitch black, make it non-transparent,

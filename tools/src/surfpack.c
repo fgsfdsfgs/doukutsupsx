@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < surfnum; ++i) {
     if (load_surface(i) < 0)
       return -4;
-    if (convert_surface(surflist[i].id, &surflist[i].img) < 0)
+    if (convert_surface(surflist[i].id, &surflist[i].img, false) < 0)
       return -5;
   }
 

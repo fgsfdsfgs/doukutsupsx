@@ -12,6 +12,9 @@ enum menu_type {
   MENU_SAVE,
   MENU_LOAD,
   MENU_OPTIONS,
+  // HACK: this behaves similar enough to a menu
+  MENU_FALLING_ISLAND_0,
+  MENU_FALLING_ISLAND_1,
 };
 
 void menu_init(void);

@@ -99,7 +99,7 @@ int read_surflist(surf_list_t *list, FILE *f) {
   return num;
 }
 
-int convert_surface(const uint32_t id, const struct bitmap *img) {
+int convert_surface(const uint32_t id, const struct bitmap *img, const bool force_align) {
   const uint16_t mode = (img->numcolors > 16);
 
   const uint16_t clut = vram_fit_clut(img->palette, mode);
@@ -116,7 +116,8 @@ int convert_surface(const uint32_t id, const struct bitmap *img) {
     (id == SURFACE_ID_TEXT_BOX) ||
     (id == SURFACE_ID_FONT1) ||
     (id == SURFACE_ID_FONT2) ||
-    (id == SURFACE_ID_FADE);
+    (id == SURFACE_ID_FADE) ||
+    force_align;
   vram_surf_t *vsurf = vram_fit_surf(img, clut, align_to_page);
   if (!vsurf) {
     fprintf(stderr, "error: could not fit #%u in VRAM!\n", id);

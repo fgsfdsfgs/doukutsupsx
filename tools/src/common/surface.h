@@ -49,4 +49,4 @@ typedef struct surflist {
 
 int read_surflist(surf_list_t *list, FILE *f);
 int read_bmp(struct bitmap *bmp, FILE *f);
-int convert_surface(const uint32_t id, const struct bitmap *img);
+int convert_surface(const uint32_t id, const struct bitmap *img, const bool force_align);

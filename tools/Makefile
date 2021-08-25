@@ -2,7 +2,7 @@ CC ?= gcc
 CXX ?= g++
 LIBPSXAV_SRC := $(wildcard src/libpsxav/*.c)
 
-all: orgconv.exe sfxconv.exe surfpack.exe stagepack.exe trigcalc.exe tscc.exe
+all: orgconv.exe sfxconv.exe surfpack.exe stagepack.exe creditspack.exe trigcalc.exe tscc.exe
 
 orgconv.exe: src/orgconv.c $(LIBPSXAV_SRC)
 	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
@@ -14,6 +14,9 @@ surfpack.exe: src/surfpack.c src/common/vram.c src/common/surface.c
 	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
 
 stagepack.exe: src/stagepack.c src/common/vram.c src/common/surface.c src/common/stage.c src/common/tsc.c
+	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
+
+creditspack.exe: src/creditspack.c src/common/vram.c src/common/surface.c
 	$(CC) -std=gnu99 -g -Og -o $@ $^ -static
 
 trigcalc.exe: src/trigcalc.c

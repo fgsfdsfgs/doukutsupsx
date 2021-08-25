@@ -59,12 +59,29 @@ typedef struct {
 typedef struct {
   uint16_t numsurf;                      // total number of surfaces in bank
   uint16_t numclut;                      // total number of CLUTs in bank
-	vram_rect_t clut_rect[VRAM_NUM_PAGES]; // where to copy the data for each CLUT page
-	vram_rect_t surf_rect[VRAM_NUM_PAGES]; // where to copy the data for each surface page
+  vram_rect_t clut_rect[VRAM_NUM_PAGES]; // where to copy the data for each CLUT page
+  vram_rect_t surf_rect[VRAM_NUM_PAGES]; // where to copy the data for each surface page
   vram_surf_t surf[];                    // [numsurf] surface headers
   // [clutdata_h * VRAM_CLUT_PAGE_WIDTH] words of clut data follows
   // [surfdata_h * VRAM_PAGE_WIDTH] words of surface data follows
 } vram_surfbank_t;
+
+typedef struct {
+  int16_t mode;  // 1 for 256-color, 0 for 16-color, -1 for no image
+  uint16_t w;    // width, in words
+  uint16_t h;    // height, in vram lines
+  uint16_t size; // size, in words
+  uint32_t ofs;  // offset from beginning of ram_surfbank_t
+} ram_surf_t;
+
+typedef struct {
+  uint32_t numsurf;  // total number of surfaces in bank, each surface has its own clut
+  ram_surf_t surf[]; // [numsurf] surface headers
+  // surface data follows:
+  //   for each surface:
+  //     16 or 256 words: clut data
+  //     `size` words: image data
+} ram_surfbank_t;
 
 #pragma pack(pop)
 
@@ -99,3 +116,6 @@ const vram_rect_t *vram_get_filled_clut_rect(const int pg);
 
 // clear vram and surface list
 void vram_reset(void);
+
+// convert RGBA clut into RGB5551 clut
+void vram_transform_clut(uint16_t *dst, const uint8_t *src, const int len);

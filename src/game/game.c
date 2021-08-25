@@ -61,6 +61,7 @@ void game_start_intro(void) {
   // stage_transition(48, 93, 155, 1); // river
   // stage_transition(47, 92, 4, 17); // core
   // stage_transition(53, 92, 4, 165); // oside
+  // stage_transition(91, 100, 4, 4); // island
 }
 
 void game_start_new(void) {

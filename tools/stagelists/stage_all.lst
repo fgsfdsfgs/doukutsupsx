@@ -9,101 +9,101 @@ CLUTSET0, 0, 0, 320, 16
 # numbers at the end of STAGE are for ease of reference, they can be omitted
 
 #         tiles   map     bkType                        bkBmp    npcBmp  bossBmp bn name
-STAGE000, 0,      0,      BACKGROUND_TYPE_BLACK,        bk0,     Guest,  0,      0, Null
-STAGE001, Pens,   Pens1,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Arthur's House
-STAGE002, Eggs,   Eggs,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Eggs1,  Ravil,  0, Egg Corridor
-STAGE003, EggX,   EggX,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Egg No. 00
-STAGE004, EggIn,  Egg6,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Egg No. 06
-STAGE005, Store,  EggR,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Egg Observation Room
-STAGE006, Weed,   Weed,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Weed,   0,      0, Grasstown
-STAGE007, Barr,   Santa,  BACKGROUND_TYPE_BLACK,        bk0,     Weed,   0,      0, Santa's House
-STAGE008, Barr,   Chako,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Chaco's House
-STAGE009, Maze,   MazeI,  BACKGROUND_TYPE_BLACK,        bk0,     Maze,   0,      0, Labyrinth I
-STAGE010, Sand,   Sand,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Sand,   Omg,    1, Sand Zone
-STAGE011, Mimi,   Mimi,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Mimiga Village
-STAGE012, Cave,   Cave,   BACKGROUND_TYPE_BLACK,        bk0,     Cemet,  0,      0, First Cave
-STAGE013, Cave,   Start,  BACKGROUND_TYPE_BLACK,        bk0,     Cemet,  0,      0, Start Point
-STAGE014, Mimi,   Barr,   BACKGROUND_TYPE_BLACK,        bk0,     Cemet,  Bllg,   0, Shack
-STAGE015, Mimi,   Pool,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Reservoir
-STAGE016, Mimi,   Cemet,  BACKGROUND_TYPE_BLACK,        bk0,     Cemet,  0,      0, Graveyard
-STAGE017, Mimi,   Plant,  BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Plant,  0,      0, Yamashita Farm
-STAGE018, Store,  Shelt,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Shelter
-STAGE019, Pens,   Comu,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Assembly Hall
-STAGE020, Mimi,   MiBox,  BACKGROUND_TYPE_BLACK,        bk0,     0,      0,      0, Save Point
-STAGE021, Store,  EgEnd1, BACKGROUND_TYPE_BLACK,        bk0,     0,      0,      0, Side Room
-STAGE022, Store,  Cthu,   BACKGROUND_TYPE_BLACK,        bk0,     0,      0,      0, Cthulhu's Abode
-STAGE023, EggIn,  Egg1,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Egg No. 01
-STAGE024, Pens,   Pens2,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Arthur's House
-STAGE025, Barr,   Malco,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Weed,   Bllg,   0, Power Room
-STAGE026, Barr,   WeedS,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  0,      0,      0, Save Point
-STAGE027, Store,  WeedD,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  0,      0,      0, Execution Chamber
-STAGE028, Weed,   Frog,   BACKGROUND_TYPE_MOVE_NEAR,    bkGreen, Weed,   Frog,   2, Gum
-STAGE029, Sand,   Curly,  BACKGROUND_TYPE_BLACK,        bk0,     Sand,   Curly,  0, Sand Zone Residence
-STAGE030, Pens,   WeedB,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Ravil,  0,      0, Grasstown Hut
-STAGE031, River,  Stream, BACKGROUND_TYPE_AUTOSCROLL,   bkBlue,  Stream, IronH,  5, Main Artery
-STAGE032, Pens,   CurlyS, BACKGROUND_TYPE_BLACK,        bk0,     Sand,   Curly,  0, Small Room
-STAGE033, Barr,   Jenka1, BACKGROUND_TYPE_BLACK,        bk0,     Sand,   Bllg,   0, Jenka's House
-STAGE034, Sand,   Dark,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlack, Sand,   0,      0, Deserted House
-STAGE035, Gard,   Gard,   BACKGROUND_TYPE_MOVE_DISTANT, bkGard,  Toro,   Bllg,   0, Sand Zone Storehouse
-STAGE036, Barr,   Jenka2, BACKGROUND_TYPE_BLACK,        bk0,     Sand,   Bllg,   0, Jenka's House
-STAGE037, Sand,   SandE,  BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Sand,   Bllg,   0, Sand Zone
-STAGE038, Maze,   MazeH,  BACKGROUND_TYPE_BLACK,        bk0,     Maze,   0,      0, Labyrinth H
-STAGE039, Maze,   MazeW,  BACKGROUND_TYPE_MOVE_DISTANT, bkMaze,  Maze,   X,      3, Labyrinth W
-STAGE040, Maze,   MazeO,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,  0,      0, Camp
-STAGE041, Maze,   MazeD,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,  Dark,   0, Clinic Ruins
-STAGE042, Store,  MazeA,  BACKGROUND_TYPE_BLACK,        bk0,     Maze,   0,      0, Labyrinth Shop
-STAGE043, Maze,   MazeB,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Maze,   0,      0, Labyrinth B
-STAGE044, Maze,   MazeS,  BACKGROUND_TYPE_MOVE_NEAR,    bkGray,  Maze,   Bllg,   0, Boulder Chamber
-STAGE045, Maze,   MazeM,  BACKGROUND_TYPE_MOVE_DISTANT, bkRed,   Maze,   0,      0, Labyrinth M
-STAGE046, Cave,   Drain,  BACKGROUND_TYPE_WATER,        bkWater, Cemet,  0,      0, Dark Place
-STAGE047, Almond, Almond, BACKGROUND_TYPE_WATER,        bkWater, Cemet,  Almo1,  4, Core
-STAGE048, River,  River,  BACKGROUND_TYPE_MOVE_NEAR,    bkGreen, Weed,   0,      0, Waterway
-STAGE049, Eggs,   Eggs2,  BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Eggs2,  0,      0, Egg Corridor?
-STAGE050, Store,  Cthu2,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Cthulhu's Abode?
-STAGE051, Store,  EggR2,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  TwinD,  6, Egg Observation Room?
-STAGE052, EggX,   EggX2,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Egg No. 00
-STAGE053, Oside,  Oside,  BACKGROUND_TYPE_CLOUDS_WINDY, bkMoon,  Moon,   0,      0, Outer Wall
-STAGE054, Store,  EgEnd2, BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,  0,      0, Side Room
-STAGE055, Store,  Itoh,   BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Guest,  0,      0, Storehouse
-STAGE056, Cent,   Cent,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Guest,  Cent,   0, Plantation
-STAGE057, Jail,   Jail1,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,  Cent,   0, Jail No. 1
-STAGE058, Jail,   Momo,   BACKGROUND_TYPE_BLACK,        bk0,     Guest,  0,      0, Hideout
-STAGE059, Jail,   lounge, BACKGROUND_TYPE_BLACK,        bk0,     Guest,  0,      0, Rest Area
-STAGE060, Store,  CentW,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,  Cent,   0, Teleporter
-STAGE061, Store,  Jail2,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,  Cent,   0, Jail No. 2
-STAGE062, White,  Blcny1, BACKGROUND_TYPE_CLOUDS,       bkFog,   Ravil,  Heri,   0, Balcony
-STAGE063, Jail,   Priso1, BACKGROUND_TYPE_BLACK,        bkGray,  Red,    0,      0, Final Cave
-STAGE064, White,  Ring1,  BACKGROUND_TYPE_CLOUDS,       bkFog,   Guest,  Miza,   0, Throne Room
-STAGE065, White,  Ring2,  BACKGROUND_TYPE_CLOUDS,       bkFog,   Guest,  Dr,     0, The King's Table
-STAGE066, Pens,   Prefa1, BACKGROUND_TYPE_BLACK,        bk0,     0,      0,      0, Prefab Building
-STAGE067, Jail,   Priso2, BACKGROUND_TYPE_BLACK,        bkGray,  Red,    0,      0, Last Cave (Hidden
-STAGE068, White,  Ring3,  BACKGROUND_TYPE_BLACK,        bk0,     Miza,   Almo2,  7, Black Space
-STAGE069, Pens,   Little, BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Guest,  0,      0, Little House
-STAGE070, White,  Blcny2, BACKGROUND_TYPE_CLOUDS,       bkFog,   Ravil,  Heri,   0, Balcony
-STAGE071, Fall,   Fall,   BACKGROUND_TYPE_MOVE_DISTANT, bkFall,  Guest,  Heri,   0, Fall
-STAGE072, White,  Kings,  BACKGROUND_TYPE_BLACK,        bk0,     Kings,  0,      0, Studio Pixel presents
-STAGE073, Pens,   Pixel,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,  0,      0, Waterway Cabin
-STAGE074, Maze,   e_Maze, BACKGROUND_TYPE_MOVE_DISTANT, bkMaze,  Guest,  Maze,   3, 
-STAGE075, Barr,   e_Jenk, BACKGROUND_TYPE_BLACK,        bk0,     Sand,   Bllg,   0, 
-STAGE076, Barr,   e_Malc, BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Weed,   Bllg,   0, 
-STAGE077, Mimi,   e_Ceme, BACKGROUND_TYPE_BLACK,        bk0,     Plant,  0,      0, 
-STAGE078, Fall,   e_Sky,  BACKGROUND_TYPE_MOVE_DISTANT, bkFall,  Guest,  Heri,   0, 
-STAGE079, Pens,   Prefa2, BACKGROUND_TYPE_BLACK,        bk0,     0,      0,      0, Prefab House
-STAGE080, Hell,   Hell1,  BACKGROUND_TYPE_MOVE_NEAR,    bkRed,   Hell,   0,      0, Sacred Ground - B1
-STAGE081, Hell,   Hell2,  BACKGROUND_TYPE_MOVE_NEAR,    bkRed,   Hell,   0,      0, Sacred Ground - B2
-STAGE082, Hell,   Hell3,  BACKGROUND_TYPE_MOVE_DISTANT, bkRed,   Hell,   Press,  8, Sacred Ground - B3
-STAGE083, Cave,   Mapi,   BACKGROUND_TYPE_MOVE_NEAR,    bk0,     Cemet,  0,      0, Storage
-STAGE084, Hell,   Hell4,  BACKGROUND_TYPE_BLACK,        bk0,     Hell,   0,      0, Passage?
-STAGE085, Hell,   Hell42, BACKGROUND_TYPE_BLACK,        bk0,     Hell,   Press,  8, Passage?
-STAGE086, Hell,   Statue, BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  0,      Cent,   0, Statue Chamber
-STAGE087, Hell,   Ballo1, BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Priest, Ballos, 9, Seal Chamber
-STAGE088, White,  Ostep,  BACKGROUND_TYPE_CLOUDS,       bkFog,   0,      0,      0, Corridor
-STAGE089, Labo,   e_Labo, BACKGROUND_TYPE_BLACK,        bk0,     Guest,  0,      0, 
-STAGE090, Cave,   Pole,   BACKGROUND_TYPE_BLACK,        bk0,     Guest,  0,      0, Hermit Gunsmith
-STAGE091, 0,      Island, BACKGROUND_TYPE_BLACK,        bk0,     Island, 0,      0, 
-STAGE092, Hell,   Ballo2, BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Priest, Bllg,   9, Seal Chamber
-STAGE093, White,  e_Blcn, BACKGROUND_TYPE_CLOUDS,       bkFog,   Miza,   0,      9, 
-STAGE094, Oside,  Clock,  BACKGROUND_TYPE_CLOUDS_WINDY, bkMoon,  Moon,   0,      0, Clock Room
+STAGE000, 0,      0,      BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, Null
+STAGE001, Pens,   Pens1,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Arthur's House
+STAGE002, Eggs,   Eggs,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Eggs1,   Ravil,   0, Egg Corridor
+STAGE003, EggX,   EggX,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Egg No. 00
+STAGE004, EggIn,  Egg6,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Egg No. 06
+STAGE005, Store,  EggR,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Egg Observation Room
+STAGE006, Weed,   Weed,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Weed,    0,       0, Grasstown
+STAGE007, Barr,   Santa,  BACKGROUND_TYPE_BLACK,        bk0,     Weed,    0,       0, Santa's House
+STAGE008, Barr,   Chako,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Chaco's House
+STAGE009, Maze,   MazeI,  BACKGROUND_TYPE_BLACK,        bk0,     Maze,    0,       0, Labyrinth I
+STAGE010, Sand,   Sand,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Sand,    Omg,     1, Sand Zone
+STAGE011, Mimi,   Mimi,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Mimiga Village
+STAGE012, Cave,   Cave,   BACKGROUND_TYPE_BLACK,        bk0,     Cemet,   0,       0, First Cave
+STAGE013, Cave,   Start,  BACKGROUND_TYPE_BLACK,        bk0,     Cemet,   0,       0, Start Point
+STAGE014, Mimi,   Barr,   BACKGROUND_TYPE_BLACK,        bk0,     Cemet,   Bllg,    0, Shack
+STAGE015, Mimi,   Pool,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Reservoir
+STAGE016, Mimi,   Cemet,  BACKGROUND_TYPE_BLACK,        bk0,     Cemet,   0,       0, Graveyard
+STAGE017, Mimi,   Plant,  BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Plant,   0,       0, Yamashita Farm
+STAGE018, Store,  Shelt,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Shelter
+STAGE019, Pens,   Comu,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Assembly Hall
+STAGE020, Mimi,   MiBox,  BACKGROUND_TYPE_BLACK,        bk0,     0,       0,       0, Save Point
+STAGE021, Store,  EgEnd1, BACKGROUND_TYPE_BLACK,        bk0,     0,       0,       0, Side Room
+STAGE022, Store,  Cthu,   BACKGROUND_TYPE_BLACK,        bk0,     0,       0,       0, Cthulhu's Abode
+STAGE023, EggIn,  Egg1,   BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Egg No. 01
+STAGE024, Pens,   Pens2,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Arthur's House
+STAGE025, Barr,   Malco,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Weed,    Bllg,    0, Power Room
+STAGE026, Barr,   WeedS,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  0,       0,       0, Save Point
+STAGE027, Store,  WeedD,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  0,       0,       0, Execution Chamber
+STAGE028, Weed,   Frog,   BACKGROUND_TYPE_MOVE_NEAR,    bkGreen, Weed,    Frog,    2, Gum
+STAGE029, Sand,   Curly,  BACKGROUND_TYPE_BLACK,        bk0,     Sand,    Curly,   0, Sand Zone Residence
+STAGE030, Pens,   WeedB,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Ravil,   0,       0, Grasstown Hut
+STAGE031, River,  Stream, BACKGROUND_TYPE_AUTOSCROLL,   bkBlue,  Stream,  IronH,   5, Main Artery
+STAGE032, Pens,   CurlyS, BACKGROUND_TYPE_BLACK,        bk0,     Sand,    Curly,   0, Small Room
+STAGE033, Barr,   Jenka1, BACKGROUND_TYPE_BLACK,        bk0,     Sand,    Bllg,    0, Jenka's House
+STAGE034, Sand,   Dark,   BACKGROUND_TYPE_MOVE_DISTANT, bkBlack, Sand,    0,       0, Deserted House
+STAGE035, Gard,   Gard,   BACKGROUND_TYPE_MOVE_DISTANT, bkGard,  Toro,    Bllg,    0, Sand Zone Storehouse
+STAGE036, Barr,   Jenka2, BACKGROUND_TYPE_BLACK,        bk0,     Sand,    Bllg,    0, Jenka's House
+STAGE037, Sand,   SandE,  BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Sand,    Bllg,    0, Sand Zone
+STAGE038, Maze,   MazeH,  BACKGROUND_TYPE_BLACK,        bk0,     Maze,    0,       0, Labyrinth H
+STAGE039, Maze,   MazeW,  BACKGROUND_TYPE_MOVE_DISTANT, bkMaze,  Maze,    X,       3, Labyrinth W
+STAGE040, Maze,   MazeO,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, Camp
+STAGE041, Maze,   MazeD,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,   Dark,    0, Clinic Ruins
+STAGE042, Store,  MazeA,  BACKGROUND_TYPE_BLACK,        bk0,     Maze,    0,       0, Labyrinth Shop
+STAGE043, Maze,   MazeB,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Maze,    0,       0, Labyrinth B
+STAGE044, Maze,   MazeS,  BACKGROUND_TYPE_MOVE_NEAR,    bkGray,  Maze,    Bllg,    0, Boulder Chamber
+STAGE045, Maze,   MazeM,  BACKGROUND_TYPE_MOVE_DISTANT, bkRed,   Maze,    0,       0, Labyrinth M
+STAGE046, Cave,   Drain,  BACKGROUND_TYPE_WATER,        bkWater, Cemet,   0,       0, Dark Place
+STAGE047, Almond, Almond, BACKGROUND_TYPE_WATER,        bkWater, Cemet,   Almo1,   4, Core
+STAGE048, River,  River,  BACKGROUND_TYPE_MOVE_NEAR,    bkGreen, Weed,    0,       0, Waterway
+STAGE049, Eggs,   Eggs2,  BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Eggs2,   0,       0, Egg Corridor?
+STAGE050, Store,  Cthu2,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Cthulhu's Abode?
+STAGE051, Store,  EggR2,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   TwinD,   6, Egg Observation Room?
+STAGE052, EggX,   EggX2,  BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Egg No. 00
+STAGE053, Oside,  Oside,  BACKGROUND_TYPE_CLOUDS_WINDY, bkMoon,  Moon,    0,       0, Outer Wall
+STAGE054, Store,  EgEnd2, BACKGROUND_TYPE_BLACK,        bk0,     Eggs1,   0,       0, Side Room
+STAGE055, Store,  Itoh,   BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Guest,   0,       0, Storehouse
+STAGE056, Cent,   Cent,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Guest,   Cent,    0, Plantation
+STAGE057, Jail,   Jail1,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,   Cent,    0, Jail No. 1
+STAGE058, Jail,   Momo,   BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, Hideout
+STAGE059, Jail,   lounge, BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, Rest Area
+STAGE060, Store,  CentW,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,   Cent,    0, Teleporter
+STAGE061, Store,  Jail2,  BACKGROUND_TYPE_BLACK,        bk0,     Guest,   Cent,    0, Jail No. 2
+STAGE062, White,  Blcny1, BACKGROUND_TYPE_CLOUDS,       bkFog,   Ravil,   Heri,    0, Balcony
+STAGE063, Jail,   Priso1, BACKGROUND_TYPE_BLACK,        bkGray,  Red,     0,       0, Final Cave
+STAGE064, White,  Ring1,  BACKGROUND_TYPE_CLOUDS,       bkFog,   Guest,   Miza,    0, Throne Room
+STAGE065, White,  Ring2,  BACKGROUND_TYPE_CLOUDS,       bkFog,   Guest,   Dr,      0, The King's Table
+STAGE066, Pens,   Prefa1, BACKGROUND_TYPE_BLACK,        bk0,     0,       0,       0, Prefab Building
+STAGE067, Jail,   Priso2, BACKGROUND_TYPE_BLACK,        bkGray,  Red,     0,       0, Last Cave (Hidden
+STAGE068, White,  Ring3,  BACKGROUND_TYPE_BLACK,        bk0,     Miza,    Almo2,   7, Black Space
+STAGE069, Pens,   Little, BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Guest,   0,       0, Little House
+STAGE070, White,  Blcny2, BACKGROUND_TYPE_CLOUDS,       bkFog,   Ravil,   Heri,    0, Balcony
+STAGE071, Fall,   Fall,   BACKGROUND_TYPE_MOVE_DISTANT, bkFall,  Guest,   Heri,    0, Fall
+STAGE072, White,  Kings,  BACKGROUND_TYPE_BLACK,        bk0,     Kings,   0,       0, Studio Pixel presents
+STAGE073, Pens,   Pixel,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Waterway Cabin
+STAGE074, Maze,   e_Maze, BACKGROUND_TYPE_MOVE_DISTANT, bkMaze,  Guest,   Maze,    3, 
+STAGE075, Barr,   e_Jenk, BACKGROUND_TYPE_BLACK,        bk0,     Sand,    Bllg,    0, 
+STAGE076, Barr,   e_Malc, BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Weed,    Bllg,    0, 
+STAGE077, Mimi,   e_Ceme, BACKGROUND_TYPE_BLACK,        bk0,     Plant,   0,       0, 
+STAGE078, Fall,   e_Sky,  BACKGROUND_TYPE_MOVE_DISTANT, bkFall,  Guest,   Heri,    0, 
+STAGE079, Pens,   Prefa2, BACKGROUND_TYPE_BLACK,        bk0,     0,       0,       0, Prefab House
+STAGE080, Hell,   Hell1,  BACKGROUND_TYPE_MOVE_NEAR,    bkRed,   Hell,    0,       0, Sacred Ground - B1
+STAGE081, Hell,   Hell2,  BACKGROUND_TYPE_MOVE_NEAR,    bkRed,   Hell,    0,       0, Sacred Ground - B2
+STAGE082, Hell,   Hell3,  BACKGROUND_TYPE_MOVE_DISTANT, bkRed,   Hell,    Press,   8, Sacred Ground - B3
+STAGE083, Cave,   Mapi,   BACKGROUND_TYPE_MOVE_NEAR,    bk0,     Cemet,   0,       0, Storage
+STAGE084, Hell,   Hell4,  BACKGROUND_TYPE_BLACK,        bk0,     Hell,    0,       0, Passage?
+STAGE085, Hell,   Hell42, BACKGROUND_TYPE_BLACK,        bk0,     Hell,    Press,   8, Passage?
+STAGE086, Hell,   Statue, BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  0,       Cent,    0, Statue Chamber
+STAGE087, Hell,   Ballo1, BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Priest,  Ballos,  9, Seal Chamber
+STAGE088, White,  Ostep,  BACKGROUND_TYPE_CLOUDS,       bkFog,   0,       0,       0, Corridor
+STAGE089, Labo,   e_Labo, BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, 
+STAGE090, Cave,   Pole,   BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, Hermit Gunsmith
+STAGE091, 0,      Island, BACKGROUND_TYPE_BLACK,        bk0,     Island1, Island2, 0, 
+STAGE092, Hell,   Ballo2, BACKGROUND_TYPE_MOVE_NEAR,    bkBlue,  Priest,  Bllg,    9, Seal Chamber
+STAGE093, White,  e_Blcn, BACKGROUND_TYPE_CLOUDS,       bkFog,   Miza,    0,       9, 
+STAGE094, Oside,  Clock,  BACKGROUND_TYPE_CLOUDS_WINDY, bkMoon,  Moon,    0,       0, Clock Room
 
 # explicitly specifies which stages to link together into a single bank
 # numbers after BANK also don't matter; the resulting stage bank file will have the ID of the root stage

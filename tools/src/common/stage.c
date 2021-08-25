@@ -539,7 +539,9 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
       goto _end;
     }
 
-    if (convert_surface(surf_id_list[i], &bmp) < 0) {
+    // HACK: some NPC surfaces require alignment
+    const bool force_align = !strcmp(surf_list[i], "Island1") || !strcmp(surf_list[i], "Island2");
+    if (convert_surface(surf_id_list[i], &bmp, force_align) < 0) {
       fprintf(stderr, "error: could not convert surface '%s'\n", path);
       goto _end;
     }

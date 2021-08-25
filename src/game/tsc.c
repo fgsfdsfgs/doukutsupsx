@@ -112,7 +112,6 @@ void tsc_init(void) {
   const char *init_scripts[TSC_MAX_LOADED_SCRIPTS - 1] = {
     "\\MAIN\\ARMSITEM.BSC;1",
     "\\MAIN\\STAGESEL.BSC;1",
-    "\\MAIN\\CREDIT.BSC;1",
   };
 
   for (int i = 0; i < TSC_MAX_LOADED_SCRIPTS - 1; ++i) {
@@ -643,7 +642,8 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       game_flags |= GFLAG_SHOW_CREDITS;
       return FALSE;
     case 0x53: // XX1
-      printf("TODO: falling island\n");
+      // open the falling island "menu"
+      menu_open(MENU_FALLING_ISLAND_0 + args[0]);
       return TRUE;
     case 0x54: // SIL
       printf("TODO: credits show illust\n");
