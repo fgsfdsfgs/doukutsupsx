@@ -15,10 +15,12 @@
 
 profile_t profile;
 int profile_slot = -1;
+u32 profile_stopwatch = 0;
 
 void profile_reset(void) {
   memset(&profile, 0, sizeof(profile));
   profile_slot = -1;
+  profile_stopwatch = 0;
 }
 
 void profile_save(void) {
@@ -31,15 +33,26 @@ void profile_save(void) {
 
   // save globals
   profile.save.game_tick = game_tick;
+  profile.save.clock_tick = profile_stopwatch;
   memcpy(profile.save.npc_flags, npc_flags, sizeof(profile.save.npc_flags));
   memcpy(profile.save.map_flags, map_flags, sizeof(profile.save.map_flags));
   memcpy(profile.save.skip_flags, skip_flags, sizeof(profile.save.skip_flags));
   memcpy(profile.save.tele_dest, tele_dest, sizeof(profile.save.tele_dest));
-  memcpy(profile.save.stage_title, stage_data->title, sizeof(profile.save.stage_title));
   profile.save.tele_dest_num = tele_dest_num;
   profile.save.stage_id = stage_data->id;
   profile.save.stage_bank_id = stage_bank_id;
   profile.save.music_id = org_get_id();
+
+  // if this is a post game save, replace stage title with time
+  if (profile_stopwatch) {
+    const int total_seconds = profile_stopwatch / 50;
+    const int min = total_seconds / 60;
+    const int sec = total_seconds % 60;
+    const int sub = (profile_stopwatch / 5) % 10;
+    sprintf(profile.save.stage_title, "= %d'%02d\"%d =", min, sec, sub);
+  } else {
+    memcpy(profile.save.stage_title, stage_data->title, sizeof(profile.save.stage_title));
+  }
 
   // save player
   memcpy(profile.save.player.arms, player.arms, sizeof(profile.save.player.arms));
@@ -73,6 +86,7 @@ bool profile_load(void) {
 
   // load globals
   game_tick = profile.save.game_tick;
+  game_stopwatch = profile_stopwatch = profile.save.clock_tick;
   memcpy(npc_flags, profile.save.npc_flags, sizeof(npc_flags));
   memcpy(map_flags, profile.save.map_flags, sizeof(map_flags));
   memcpy(skip_flags, profile.save.skip_flags, sizeof(skip_flags));

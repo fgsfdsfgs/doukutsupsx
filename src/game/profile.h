@@ -65,6 +65,7 @@ typedef struct {
 
 extern profile_t profile;
 extern int profile_slot;
+extern u32 profile_stopwatch;
 
 void profile_reset(void);
 void profile_save(void);

@@ -74,6 +74,7 @@ gfx_texrect_t hud_rc_ammo[] = {
   {{ 40, 80, 80, 88 }}, // ExpFlash
 };
 
+
 static int map_name_time = 0;
 static int map_name_xofs = 0;
 
@@ -147,6 +148,17 @@ void hud_draw_number(int val, int x, int y) {
   } while(val);
 }
 
+static void hud_draw_time_number(int val, int x, int y) {
+  char buf[16];
+  // FIXME: this is probably slow as fuck, but I can't be arsed
+  sprintf(buf, "%02d", val);
+  buf[15] = 0;
+  for (char *p = buf; *p; ++p) {
+    gfx_draw_texrect_8x8(&hud_rc_digit[*p - '0'], GFX_LAYER_FRONT, x, y);
+    x += 8;
+  }
+}
+
 static inline void hud_draw_ammo(void) {
   if (player.arms_x > 16)
     player.arms_x -= 2;
@@ -207,10 +219,6 @@ static inline void hud_draw_air(void) {
       hud_draw_number(player.air / 10, x + 56, y);
     gfx_draw_texrect(&hud_rc_air[player.air % 30 <= 10], GFX_LAYER_FRONT, x, y);
   }
-}
-
-static inline void hud_draw_time(void) {
-
 }
 
 static inline void hud_draw_arms(void) {
@@ -293,7 +301,10 @@ static inline void hud_draw_debug(void) {
 }
 
 void hud_draw(void) {
-  hud_draw_time();
+  if (player.equip & EQUIP_NIKUMARU_COUNTER)
+    hud_draw_time(16, 48);
+  else
+    game_stopwatch = 0;
 
   if (game_flags & GFLAG_INPUT_ENABLED) {
     hud_draw_life();
@@ -317,6 +328,30 @@ void hud_draw_map_name(void) {
     gfx_draw_string(stage_data->title, GFX_LAYER_FRONT, x, y);
     --map_name_time;
   }
+}
+
+void hud_draw_time(const int x, const int y) {
+  int blink = 0;
+  if (game_flags & GFLAG_INPUT_ENABLED) {
+    // assume this is called every frame
+    if (game_stopwatch < 100 * 60 * 50)
+      ++game_stopwatch;
+    // blink icon to indicate passage of time
+    blink = (game_stopwatch % 30 <= 10);
+  }
+
+  // draw clock icon
+  gfx_draw_texrect_8x8(&hud_rc_time[blink], GFX_LAYER_FRONT, x, y);
+
+  // draw time
+  const int total_sec = game_stopwatch / 50;
+  const int min = total_sec / 60;
+  const int sec = total_sec % 60;
+  const int sub = (game_stopwatch / 5) % 10;
+  hud_draw_number(min, x + 24, y); // right aligned, no zero padding
+  hud_draw_time_number(sec, x + 35, y); // zero padded
+  gfx_draw_texrect_8x8(&hud_rc_digit[sub], GFX_LAYER_FRONT, x + 56, y);
+  gfx_draw_texrect(&hud_rc_time[2], GFX_LAYER_FRONT, x + 30, y);
 }
 
 void hud_show_map_name(void) {

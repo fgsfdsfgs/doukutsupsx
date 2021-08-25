@@ -30,6 +30,7 @@ typedef struct {
 } tele_dest_t;
 
 extern u32 game_tick;
+extern u32 game_stopwatch;
 extern u32 game_flags;
 
 extern u8 skip_flags[GAME_MAX_SKIPFLAGS];

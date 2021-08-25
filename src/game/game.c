@@ -19,6 +19,7 @@
 
 u32 game_flags = GFLAG_INPUT_ENABLED;
 u32 game_tick = 0;
+u32 game_stopwatch = 0;
 
 u8 skip_flags[GAME_MAX_SKIPFLAGS];
 u8 map_flags[GAME_MAX_MAPFLAGS];
@@ -52,7 +53,7 @@ void game_start_intro(void) {
   player.cond |= PLRCOND_INVISIBLE;
   game_flags = GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS;
   // stage_transition(13, 200, 10, 8);
-  // stage_transition(62, 90, 80, 9);
+  // stage_transition(62, 90, 80, 9); // balcony
   // stage_transition(56, 90, 80, 9);
   // stage_transition(2, 90, 5, 6);
   // stage_transition(28, 94, 6, 13); // balfrog
@@ -62,6 +63,7 @@ void game_start_intro(void) {
   // stage_transition(47, 92, 4, 17); // core
   // stage_transition(53, 92, 4, 165); // oside
   // stage_transition(91, 100, 4, 4); // island
+  // stage_transition(79, 94, 10, 8); // prefa2
 }
 
 void game_start_new(void) {
@@ -92,6 +94,7 @@ void game_reset(void) {
 
   game_flags = GFLAG_UPDATE_OBJECTS | GFLAG_INPUT_ENABLED;
   game_tick = 0;
+  game_stopwatch = 0;
 }
 
 static inline void game_draw_common(void) {

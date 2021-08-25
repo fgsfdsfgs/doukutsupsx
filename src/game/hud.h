@@ -18,3 +18,4 @@ void hud_draw_map_name(void);
 void hud_init_boss_life(npc_t *npc);
 void hud_clear(void);
 void hud_draw_number(int val, int x, int y);
+void hud_draw_time(const int x, const int y);

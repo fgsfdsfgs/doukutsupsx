@@ -208,6 +208,9 @@ static void menu_title_draw(void) {
   // draw the menu
   gfx_draw_texrect(&rc_main_title, GFX_LAYER_FRONT, MAIN_LEFT, MAIN_TOP);
   menu_generic_draw(MAIN_LEFT + 56, MAIN_TOP + 80);
+  // draw counter if it exists
+  if (game_stopwatch)
+    hud_draw_time(16, 16);
 }
 
 /* pause */
@@ -231,7 +234,7 @@ static void menu_pause_act(void) {
     npc_set_flag(201); // got missile launcher
     player.arm = 2;
     // heal
-    player.max_life = 50;
+    player.max_life = 999;
     player.life = player.life_bar = player.max_life;
     // give map
     player.items[2] = TRUE;
@@ -242,6 +245,8 @@ static void menu_pause_act(void) {
     // give whimsical star
     player.items[38] = TRUE;
     player.equip |= EQUIP_WHIMSICAL_STAR;
+    // give nikumaru counter
+    player.items[22] = TRUE;
     // give arthur's key and set flags
     player.items[1] = TRUE;
     npc_set_flag(390);
@@ -909,7 +914,9 @@ static inline void menu_saveload_act_select_save(const u32 btn) {
     return;
   }
 
-  const bool occupied = (saveload.slot_mask & (1 << main_sel)) != 0;
+  // don't allow to load post-game saves or empty saves
+  const bool occupied = ((saveload.slot_mask & (1 << main_sel)) != 0) &&
+    (saveload.slots[main_sel].stage[0] != '=');
 
   if (menu_id == MENU_SAVE) {
     if (occupied) {
@@ -1266,6 +1273,9 @@ static void menu_fall_draw(void) {
   gfx_draw_texrect(&rc_island_sprite, GFX_LAYER_FRONT, TO_INT(fall.x) - 20, TO_INT(fall.y) - 12);
   gfx_draw_texrect(&rc_island_ground, GFX_LAYER_FRONT, VID_WIDTH / 2 - 80, VID_HEIGHT / 2 + 40 - 32);
   gfx_pop_cliprect(GFX_LAYER_FRONT);
+  // draw counter
+  if (player.equip & EQUIP_NIKUMARU_COUNTER)
+    hud_draw_time(16, 16);
 }
 
 /* -------------- */

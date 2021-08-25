@@ -635,7 +635,9 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       }
       return TRUE;
     case 0x51: // STC
-      printf("TODO: save time\n");
+      profile_stopwatch = game_stopwatch;
+      profile_save();
+      // the updated post-game save will be later written in the credits logic
       return FALSE;
     case 0x52: // CRE
       printf("TODO: credits\n");
