@@ -29,11 +29,11 @@ void do_panic(void) {
 
   // load built in font
   FntLoad(960, 0);
-  FntOpen(0, 8, 320, 224, 0, MAX_ERROR);
+  long stream = FntOpen(8, 16, VID_WIDTH - 8, VID_HEIGHT - 16, 0, MAX_ERROR);
 
   // draw
-  FntPrint(-1, "ERROR:\n%s", error_msg);
-  FntFlush(-1);
+  FntPrint(stream, "ERROR:\n%s", error_msg);
+  FntFlush(stream);
   DrawSync(0);
   VSync(0);
   SetDispMask(1);
