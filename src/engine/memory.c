@@ -70,7 +70,7 @@ void *mem_realloc(void *ptr, const u32 newsize) {
     PANIC("mem_realloc: this is a stack allocator you dolt");
   if (mem_left < anewsize)
     PANIC("mem_realloc: failed to realloc %p from %u to %u bytes", oldsize, anewsize);
-  mem_left += newsize - oldsize;
+  mem_left -= (int)newsize - (int)oldsize;
   mem_ptr = mem_lastptr + newsize;
   mem_allocs[mem_numallocs - 1] = newsize;
   return mem_lastptr;
