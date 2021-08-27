@@ -150,6 +150,7 @@ void credits_stop(void) {
   game_flags &= ~GFLAG_SHOW_CREDITS;
 
   // ask the user to save
+  profile_save();
   menu_open(MENU_SAVE);
 }
 
