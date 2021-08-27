@@ -49,7 +49,7 @@ static inline bool parse_stage_entry(char **args, stage_list_t *list, const int 
 
   for (int i = 0; i < NUM_STAGE_ARGS; ++i) {
     args[i] = trim_whitespace(args[i]);
-    if (!strcmp(args[i], "0") && i != 1) // HACK: "0" is an actual map
+    if (!strcmp(args[i], "0") && i > 1) // HACK: "0" is an actual map
       args[i] = &empty;
   }
 
@@ -107,7 +107,7 @@ static inline bool parse_bank_entry(char **args, stage_list_t *list, const int l
 
   const char *rootname = args[0];
   if (!rootname || !rootname[0]) {
-    fprintf(stderr, "warning: bank root must not be empty\n");
+    fprintf(stderr, "warning: bank root must be a non-null stage\n");
     return false;
   }
 
@@ -130,6 +130,41 @@ static inline bool parse_bank_entry(char **args, stage_list_t *list, const int l
         root->links[root->numlinks++] = i;
         break;
       }
+    }
+  }
+
+  return true;
+}
+
+static inline bool parse_music_entry(char **args, stage_list_t *list, const int listlen) {
+  for (int i = 0; i < NUM_BANK_ARGS; ++i) {
+    args[i] = trim_whitespace(args[i]);
+    if (!args[i][0]) args[i] = NULL;
+  }
+
+  const char *rootname = args[0];
+  if (!rootname || !rootname[0]) {
+    fprintf(stderr, "warning: bank root must not be empty\n");
+    return false;
+  }
+
+  stage_list_t *root = NULL;
+  for (int i = 0; i < listlen; ++i) {
+    if (!strcasecmp(list[i].name, rootname)) {
+      root = &list[i];
+      break;
+    }
+  }
+  if (!root) {
+    fprintf(stderr, "warning: unknown bank root stage '%s'\n", rootname);
+    return false;
+  }
+
+  root->numsongs = 0;
+  for (int a = 1; a < NUM_BANK_ARGS; ++a) {
+    if (args[a]) {
+      const int x = atoi(args[a]);
+      if (x) root->songs[root->numsongs++] = x;
     }
   }
 
@@ -196,6 +231,8 @@ int read_stagelist(stage_list_t *list, FILE *f) {
       parse_vram_surf_rect(token);
     else if (!strncasecmp(token[0], "CLUTSET", 7) && i >= NUM_RECT_ARGS)
       parse_vram_clut_rect(token);
+    else if (!strncasecmp(token[0], "MUSIC", 5) && i >= NUM_BANK_ARGS)
+      parse_music_entry(&token[1], list, num);
   }
 
   return num;

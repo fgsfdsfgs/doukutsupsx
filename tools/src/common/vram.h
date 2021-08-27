@@ -79,8 +79,8 @@ typedef struct {
   ram_surf_t surf[]; // [numsurf] surface headers
   // surface data follows:
   //   for each surface:
-  //     16 or 256 words: clut data
-  //     `size` words: image data
+  //     some words: image data     \ total: `size` words
+  //     16 or 256 words: clut data /
 } ram_surfbank_t;
 
 #pragma pack(pop)

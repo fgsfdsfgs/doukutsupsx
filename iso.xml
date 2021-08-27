@@ -21,8 +21,10 @@
         <file name="armsitem.bsc" type="data"/>
         <file name="credit.bsc" type="data"/>
         <file name="stagesel.bsc" type="data"/>
+        <file name="credit.crd" type="data"/>
       </dir>
       <dir name="0" srcdir="data/0">
+        <file name="stage00.stg" type="data"/>
         <file name="stage01.stg" type="data"/>
         <file name="stage02.stg" type="data"/>
         <file name="stage03.stg" type="data"/>

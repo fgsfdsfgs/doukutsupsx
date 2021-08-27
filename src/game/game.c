@@ -15,6 +15,7 @@
 #include "game/dmgnum.h"
 #include "game/hud.h"
 #include "game/menu.h"
+#include "game/credits.h"
 #include "game/game.h"
 
 u32 game_flags = GFLAG_INPUT_ENABLED;
@@ -63,7 +64,9 @@ void game_start_intro(void) {
   // stage_transition(47, 92, 4, 17); // core
   // stage_transition(53, 92, 4, 165); // oside
   // stage_transition(91, 100, 4, 4); // island
+  // stage_transition(92, 500, 8, 52); // ballo2
   // stage_transition(79, 94, 10, 8); // prefa2
+  // stage_transition(0, 100, 1, 15); // null
 }
 
 void game_start_new(void) {
@@ -164,6 +167,9 @@ void game_frame(void) {
     cam_update();
   }
 
+  if (game_flags & GFLAG_SHOW_CREDITS)
+    credits_update();
+
   // fade always updates
   cam_update_fade();
 
@@ -203,6 +209,9 @@ void game_frame(void) {
   cam_draw_fade();
   hud_draw_map_name(); // this has to be above the fade
   tsc_draw();
+
+  if (game_flags & GFLAG_SHOW_CREDITS)
+    credits_draw();
 
   ++game_tick;
 }

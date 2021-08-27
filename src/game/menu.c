@@ -557,7 +557,7 @@ static void menu_map_open(void) {
   // append CLUT
   memcpy(data + aw * ah, map_clut, sizeof(map_clut));
   // upload for later
-  gfx_upload_image(data, aw, ah, 1, SURFACE_ID_MAP);
+  gfx_upload_image(data, aw, ah, 1, SURFACE_ID_MAP, TRUE);
   mem_free(data);
 
   map.texrect.r.left = 0;
@@ -784,9 +784,14 @@ static inline void menu_saveload_close(const bool success) {
   // close menu
   menu_id = 0;
 
-  // if we're in the intro stage, re-open the main menu
-  if (!stage_data || stage_data->id == STAGE_OPENING_ID) {
-    menu_open(MENU_TITLE);
+  // if we're in the intro or ending stage, re-open the main menu
+  if (!stage_data || stage_data->id == STAGE_OPENING_ID || stage_data->id == STAGE_CREDITS_ID) {
+    if (stage_data->id == STAGE_CREDITS_ID) {
+      game_reset();
+      game_start_intro();
+    } else {
+      menu_open(MENU_TITLE);
+    }
   } else {
     // nuke the old "want to save?" prompt
     tsc_clear_text();

@@ -43,13 +43,16 @@ void profile_save(void) {
   profile.save.stage_bank_id = stage_bank_id;
   profile.save.music_id = org_get_id();
 
-  // if this is a post game save, replace stage title with time
   if (profile_stopwatch) {
+    // this is a post-game save with nikumaru timer on, save the record
     const int total_seconds = profile_stopwatch / 50;
     const int min = total_seconds / 60;
     const int sec = total_seconds % 60;
     const int sub = (profile_stopwatch / 5) % 10;
     sprintf(profile.save.stage_title, "= %d'%02d\"%d =", min, sec, sub);
+  } else if (stage_data->id == STAGE_CREDITS_ID) {
+    // this is a post-game save without nikumaru timer on, mark it as such
+    strcpy(profile.save.stage_title, "= End =");
   } else {
     memcpy(profile.save.stage_title, stage_data->title, sizeof(profile.save.stage_title));
   }

@@ -29,9 +29,10 @@ int main(int argc, char **argv) {
   timer_init();
   game_init();
 
-  // lo mark: all allocations after game_init() are unloaded every stagebank change
-  // hi mark: dynamic allocations after stagebank load, if any
+  // all allocations after game_init() are unloaded every stagebank change
+  // high mark is changed during credits
   mem_set_mark(MEM_MARK_LO);
+  mem_set_mark(MEM_MARK_HI);
 
   u32 now = timer_ticks;
   u32 next_frame = now;

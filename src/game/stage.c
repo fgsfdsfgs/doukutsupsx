@@ -136,7 +136,7 @@ void stage_free_stage_bank(void) {
   stage_data = NULL;
   stage_bank_id = 0;
 
-  mem_free_to_mark(MEM_MARK_LO);
+  mem_free_to_mark(MEM_MARK_HI);
 }
 
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
@@ -199,7 +199,7 @@ static inline void stage_load_music(const u32 id) {
   // bail if this song is from a different stage bank
   // this can theoretically happen if we load into a stage bank different than where the music started
   if (!sng) {
-    printf("stage_load_music(): music %02x is not in stage bank %02x", id, stage_bank_id);
+    printf("stage_load_music(): music %02x is not in stage bank %02x\n", id, stage_bank_id);
     // ensure that next time the proper music does start
     music_prev = 0;
     music_prev_pos = 0;
@@ -363,7 +363,7 @@ static inline void stage_draw_map(int cam_vx, int cam_vy) {
       atrb = stage_data->atrb[tile];
       if (atrb == 0x43)
         gfx_draw_texrect_16x16(&rc_snack_tile, GFX_LAYER_FRONT, (tx << 4) - cam_vx, (ty << 4) - cam_vy);
-      else if (atrb < 0x20 || (atrb >= 0x40 && atrb < 0x80))
+      else if ((atrb < 0x20) || (atrb >= 0x40 && atrb < 0x80))
         gfx_draw_tile(tile & 0xF, tile >> 4, (atrb >= 0x40), (tx << 4) - cam_vx, (ty << 4) - cam_vy);
     }
   }

@@ -25,8 +25,10 @@ int main(int argc, char **argv) {
   const char *outpath = argv[3];
 
   // init stage list
-  for (int i = 0; i < MAX_STAGES; ++i)
+  for (int i = 0; i < MAX_STAGES; ++i) {
     stages[i].numlinks = -1;
+    stages[i].numsongs = -1;
+  }
 
   FILE *f = fopen(listname, "r");
   if (!f) {
@@ -77,11 +79,9 @@ int main(int argc, char **argv) {
     stage->bk_type = stages[i].bktype;
     strncpy(stage->title, stages[i].title, sizeof(stage->title) - 1);
 
-    //scan for songs used by the stage
-    stages[i].numsongs = tsc_scan_music(tsc_src, stages[i].songs, MAX_STAGE_SONGS);
-    // HACK: add extra title song if this is the intro stage
-    if (stages[i].titlesheet[0] && stages[i].numsongs < MAX_STAGE_SONGS)
-      stages[i].songs[stages[i].numsongs++] = 0x18;
+    // scan for songs used by the stage if they weren't specified manually with a MUSIC directive
+    if (stages[i].numsongs < 0)
+      stages[i].numsongs = tsc_scan_music(tsc_src, stages[i].songs, MAX_STAGE_SONGS);
 
     // scan for transitions if they weren't specified manually with a BANK directive
     if (stages[i].numlinks < 0)

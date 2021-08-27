@@ -8,7 +8,7 @@ CLUTSET0, 0, 0, 320, 16
 # copied right from Stage.cpp, some capitalization mistakes fixed
 # numbers at the end of STAGE are for ease of reference, they can be omitted
 
-#         tiles   map     bkType                        bkBmp    npcBmp  bossBmp bn name
+#         tiles   map     bkType                        bkBmp    npcBmp   bossBmp bn name
 STAGE000, 0,      0,      BACKGROUND_TYPE_BLACK,        bk0,     Guest,   0,       0, Null
 STAGE001, Pens,   Pens1,  BACKGROUND_TYPE_MOVE_DISTANT, bkBlue,  Guest,   0,       0, Arthur's House
 STAGE002, Eggs,   Eggs,   BACKGROUND_TYPE_MOVE_DISTANT, bkGreen, Eggs1,   Ravil,   0, Egg Corridor
@@ -113,3 +113,18 @@ STAGE094, Oside,  Clock,  BACKGROUND_TYPE_CLOUDS_WINDY, bkMoon,  Moon,    0,    
  
 BANK0000, Pens1,  0,      0,      0,      0,      0,      0,      0,      0,      disallow linking arthur's house 1 and 2
 BANK0001, Pens2,  0,      0,      0,      0,      0,      0,      0,      0,      disallow linking arthur's house 2 and 1
+
+# explicitly specifies which music tracks to link into a stage bank; this overrides autodetect completely
+# numbers after MUSIC also don't matter; music is put into the root bank
+
+#         root    mus0    mus1    mus2    mus3    mus4    mus5    mus6    mus7    comment (always keep the trailing comma)
+
+MUSIC000, 0,      33,     1,      0,      0,      0,      0,      0,      0,      credits
+MUSIC072, Kings,  24,     0,      0,      0,      0,      0,      0,      0,      title screen
+MUSIC074, e_Maze, 0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages
+MUSIC075, e_Jenk, 0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages
+MUSIC076, e_Malc, 0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages
+MUSIC077, e_Ceme, 0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages
+MUSIC078, e_Sky,  0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages
+MUSIC089, e_Labo, 0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages
+MUSIC093, e_Blcn, 0,      0,      0,      0,      0,      0,      0,      0,      don't pack any music into the ending stages

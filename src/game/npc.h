@@ -90,9 +90,9 @@ typedef struct npc {
   s16 count1;
   s16 count2;
   s16 size;
+  s16 dir;
 
   u8 cond;
-  s8 dir;
   u8 shock;
   u8 snd_die;
   u8 snd_hit;

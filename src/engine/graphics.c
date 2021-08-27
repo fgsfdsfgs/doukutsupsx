@@ -52,6 +52,9 @@ gfx_surf_t gfx_surf[GFX_MAX_SURFACES];
 // common clear color
 const u8 gfx_clear_rgb[3] = { 0x00, 0x00, 0x20 };
 
+// when TRUE, don't show loading screens
+bool gfx_suppress_loading = FALSE;
+
 static struct fb
 {
   DRAWENV draw;
@@ -355,6 +358,8 @@ void gfx_draw_clear_immediate(const u8 *rgb) {
 }
 
 void gfx_draw_loading(void) {
+  if (gfx_suppress_loading)
+    return;
   // clear both framebuffers
   gfx_draw_clear_immediate(gfx_clear_rgb);
   // just plop it into the currently shown framebuffer
@@ -368,19 +373,40 @@ void gfx_draw_loading(void) {
   LoadImage(&rc, (u_long *)img_loading);
 }
 
-void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id) {
+void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id, const bool sync) {
   const int shift = 2 - mode;
   w >>= shift;
-  if (shift) ++h; // CLUT underneath image
-  // upload into bottom right corner of VRAM and hope it doesn't hit anything
-  RECT rect = { 1024 - ALIGN(w, 16), 512 - h, w, h };
-  gfx_surf[surf_id].clut = shift ? getClut(rect.x, rect.y + h - 1) : 0;
+
+  RECT rect = { 0, 0, w, h };
+  if (gfx_surf[surf_id].tex_x || gfx_surf[surf_id].tex_y) {
+    // there's already a surface with this ID, overwrite it
+    rect.x = gfx_surf[surf_id].tex_x;
+    rect.y = gfx_surf[surf_id].tex_y;
+  } else {
+    // slam it into the bottom right corner and hope it doesn't overwrite anything
+    rect.x = 1024 - ALIGN(w, 16);
+    rect.y = 512 - h - 1;
+  }
+
+  if (mode == 0) {
+    // 16 colors; CLUT is safely underneath image
+    ++rect.h;
+    gfx_surf[surf_id].clut = getClut(rect.x, rect.y + h);
+  } else if (mode == 1) {
+    // 256 colors; CLUT is too big for this shit, we have to do a separate upload
+    // shove it into the bottommost line under the framebuffer
+    RECT clutrect = { 0, 511, 256, 1 };
+    u8 *clutptr = data + (rect.w * rect.h * 2);
+    LoadImage(&clutrect, (u_long *)clutptr);
+    gfx_surf[surf_id].clut = getClut(clutrect.x, clutrect.y);
+  }
+
   gfx_surf[surf_id].mode = mode;
   gfx_surf[surf_id].id = surf_id;
   gfx_surf[surf_id].tex_x = rect.x;
   gfx_surf[surf_id].tex_y = rect.y;
   LoadImage(&rect, (u_long *)data);
-  DrawSync(0);
+  if (sync) DrawSync(0);
 }
 
 int gfx_upload_gfx_bank(gfx_bank_t *bank, u8 *bank_data) {

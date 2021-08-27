@@ -41,10 +41,30 @@ typedef struct {
   // [surfdata_h * VRAM_PAGE_WIDTH] words of surface data follows
 } gfx_bank_t;
 
+/* essentially same shit but for RAM storage */
+
+typedef struct {
+  s16 mode; // 1 for 256-color, 0 for 16-color, -1 for no image
+  u16 w;    // width, in words
+  u16 h;    // height, in vram lines
+  u16 size; // size, in words
+  u32 ofs;  // offset from beginning of ram_surfbank_t
+} gfx_ramsurf_t;
+
+typedef struct {
+  u32 numsurf;          // total number of surfaces in bank, each surface has its own clut
+  gfx_ramsurf_t surf[]; // [numsurf] surface headers
+  // surface data follows:
+  //   for each surface:
+  //     some words: image data     \ total: `size` words
+  //     16 or 256 words: clut data /
+} gfx_rambank_t;
+
 #pragma pack(pop)
 
 extern gfx_surf_t gfx_surf[];
 extern const u8 gfx_clear_rgb[3];
+extern bool gfx_suppress_loading;
 
 typedef struct {
   rect_t r;  // rect inside surface
@@ -81,7 +101,7 @@ void gfx_pop_cliprect(const int layer);
 
 // if mode != 2, CLUT is immediately after the image (data + w * h) and may be up to w bytes in size
 // w must be aligned to 16
-void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id);
+void gfx_upload_image(u8 *data, int w, int h, const int mode, const int surf_id, const bool sync);
 
 // converts the `rect` field of `r` into tpage address, UVs and XYWH instead of LTRB
 static inline void gfx_set_texrect(gfx_texrect_t *tr, const int s) {

@@ -17,6 +17,7 @@
 #include "game/hud.h"
 #include "game/menu.h"
 #include "game/profile.h"
+#include "game/credits.h"
 #include "game/tsc.h"
 
 #define FACE_SIZE 48
@@ -314,7 +315,8 @@ static inline bool tsc_parse_string(const char in_ch) {
     if (ch[1]) text[line][tsc_state.writepos++] = ch[1];
     text[line][tsc_state.writepos] = 0; // terminate for now
 
-    snd_play_sound(PRIO_HIGH, 2, FALSE);
+    if (tsc_state.flags & 2)
+      snd_play_sound(PRIO_HIGH, 2, FALSE);
     tsc_state.blink = 0;
 
     if (tsc_state.writepos >= TSC_LINE_LEN) {
@@ -635,23 +637,24 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       }
       return TRUE;
     case 0x51: // STC
-      profile_stopwatch = game_stopwatch;
-      profile_save();
-      // the updated post-game save will be later written in the credits logic
+      if (player.equip & EQUIP_NIKUMARU_COUNTER) {
+        profile_stopwatch = game_stopwatch;
+        profile_save();
+        // the updated post-game save will be later written in the credits logic
+      }
       return FALSE;
     case 0x52: // CRE
-      printf("TODO: credits\n");
-      game_flags |= GFLAG_SHOW_CREDITS;
+      credits_start();
       return FALSE;
     case 0x53: // XX1
       // open the falling island "menu"
       menu_open(MENU_FALLING_ISLAND_0 + args[0]);
       return TRUE;
     case 0x54: // SIL
-      printf("TODO: credits show illust\n");
+      credits_show_image(args[0]);
       return FALSE;
     case 0x55: // CIL
-      printf("TODO: credits hide illust\n");
+      credits_hide_image();
       return FALSE;
     case 0x56: // ESC
       // can't exit, so we restart instead in both cases

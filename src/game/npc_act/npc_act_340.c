@@ -1326,6 +1326,7 @@ void npc_act_352(npc_t *npc) {
   };
 
   npc->rect = &rc[npc->anim + (npc->count1 * 2)];
+  npc->rect_prev = NULL; // always update rect
 }
 
 // Bute with sword (flying)
