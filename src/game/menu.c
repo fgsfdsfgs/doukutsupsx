@@ -634,6 +634,7 @@ static void menu_map_draw(void) {
       gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs - 4, yofs - 4, cw + 8, ch + 8);
       // draw map
       map.texrect.r.h = map.count;
+      map.texrect_wide.r.h = map.count;
       if (map.scale == 1) {
         gfx_draw_texrect(&map.texrect, GFX_LAYER_FRONT, xofs, yofs);
         if (map.texrect_wide.tpage)
