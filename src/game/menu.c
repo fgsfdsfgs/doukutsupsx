@@ -557,6 +557,8 @@ static void menu_map_open(void) {
   // append CLUT
   memcpy(data + aw * ah, map_clut, sizeof(map_clut));
   // upload for later
+  gfx_surf[SURFACE_ID_MAP].tex_x = 0; // let gfx_upload image determine the coords
+  gfx_surf[SURFACE_ID_MAP].tex_y = 0;
   gfx_upload_image(data, aw, ah, 1, SURFACE_ID_MAP, TRUE);
   mem_free(data);
 
