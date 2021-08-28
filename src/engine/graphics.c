@@ -243,7 +243,7 @@ void gfx_draw_texrect_wide(const gfx_texrect_t *texrect, const int layer, const 
       prim = (SPRT *)primptr;
       setSprt(prim);
       setRGB0(prim, 0x80, 0x80, 0x80);
-      setXY0(prim, x + w0, y);
+      setXY0(prim, x1, y);
       setUV0(prim, 0, v0);
       setWH(prim, w1, h0);
       prim->clut = gfx_surf[texrect->surf].clut;
