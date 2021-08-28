@@ -64,7 +64,7 @@ static gfx_texrect_t rc_island_sprite = {{ 0, 0, 40, 24 }};
 // common variables used by simple multiple-choice menus
 static int main_sel = 0;
 static int main_count = 0;
-static int main_tick = 0;
+static u32 main_tick = 0;
 static const char **main_choices;
 static const u8 main_bg_rgb[] = { 32, 32, 32 };
 static const u8 main_title_rgb[] = { 243, 226, 152 };
@@ -244,7 +244,7 @@ static void menu_pause_act(void) {
     player.equip |= EQUIP_BOOSTER_2_0;
     // give whimsical star
     player.items[38] = TRUE;
-    player.equip |= EQUIP_WHIMSICAL_STAR;
+    player.equip |= EQUIP_WHIMSICAL_STAR | EQUIP_AIR_TANK;
     // give nikumaru counter
     player.items[22] = TRUE;
     // give arthur's key and set flags
@@ -497,7 +497,7 @@ static struct {
   u32 title_w;
   s32 player_x;
   s32 player_y;
-  s32 wait;
+  u32 wait;
   s32 scale;
 } map;
 
