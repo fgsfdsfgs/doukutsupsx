@@ -251,7 +251,7 @@ static inline void plr_draw_char(int plr_vx, int plr_vy, int cam_vx, int cam_vy)
 
 static inline void plr_draw_bubble(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
   ++player.bubble;
-  if ((player.equip & EQUIP_AIR_TANK) || player.unit == 1)
+  if (((player.equip & EQUIP_AIR_TANK) && (player.flags & 0x100)) || player.unit == 1)
     gfx_draw_texrect(&rc_bubble[player.bubble / 2 % 2], GFX_LAYER_BACK, plr_vx - 4 - cam_vx, plr_vy - 4 - cam_vy);
 }
 
