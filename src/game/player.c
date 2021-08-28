@@ -154,6 +154,8 @@ void plr_reset(void) {
   player.arm = 0;
   player.arms_x = 16;
 
+  player.air = 1000;
+
   plr_star_reset();
 }
 
