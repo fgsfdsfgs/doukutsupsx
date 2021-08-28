@@ -36,6 +36,9 @@ static char bank_path[CD_MAX_PATH] = STAGE_PATH_PREFIX STAGE_PATH_FORMAT;
 // rect for that one stupid tile in NpcSym
 static gfx_texrect_t rc_snack_tile = { 256, 48, 272, 64 };
 
+// rects for water/wind currents
+static gfx_texrect_t rc_wind_tile[4][16];
+
 // rect for the background
 static gfx_texrect_t rc_back[2];
 // background position
@@ -47,10 +50,36 @@ static u32 music_prev = 0;
 // position in previous music track
 static u32 music_prev_pos = 0;
 
+// water/wind current animation frame
+static int wind_count = 0;
+
 void stage_init(void) {
   // the surface should be already loaded by now
   if (rc_snack_tile.tpage == 0)
     gfx_set_texrect(&rc_snack_tile, SURFACE_ID_NPC_SYM);
+  // water current tiles
+  if (rc_wind_tile[0][0].tpage == 0) {
+    for (int i = 0; i < 16; ++i) {
+      rc_wind_tile[0][i].r.left = 224 + i;
+      rc_wind_tile[0][i].r.top = 48;
+      gfx_set_texrect(&rc_wind_tile[0][i], SURFACE_ID_CARET);
+    }
+    for (int i = 0; i < 16; ++i) {
+      rc_wind_tile[1][i].r.left = 224;
+      rc_wind_tile[1][i].r.top = 48 + i;
+      gfx_set_texrect(&rc_wind_tile[1][i], SURFACE_ID_CARET);
+    }
+    for (int i = 0; i < 16; ++i) {
+      rc_wind_tile[2][i].r.left = 240 - i;
+      rc_wind_tile[2][i].r.top = 48;
+      gfx_set_texrect(&rc_wind_tile[2][i], SURFACE_ID_CARET);
+    }
+    for (int i = 0; i < 16; ++i) {
+      rc_wind_tile[3][i].r.left = 224;
+      rc_wind_tile[3][i].r.top = 64 - i;
+      gfx_set_texrect(&rc_wind_tile[3][i], SURFACE_ID_CARET);
+    }
+  }
 }
 
 void stage_reset(void) {
@@ -239,6 +268,7 @@ void stage_update(void) {
       bg_x = (bg_x + 1) % (VID_WIDTH * 2);
       break;
   }
+  wind_count += 2;
 }
 
 static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
@@ -340,6 +370,14 @@ static inline void stage_draw_fg(const int cam_vx, const int cam_vy) {
   }
 }
 
+static inline void stage_draw_current(const int atrb, const int x, const int y) {
+  const int idx = wind_count % 16;
+  if (atrb < 0x84)
+    gfx_draw_texrect_16x16(&rc_wind_tile[atrb - 0x80][idx], GFX_LAYER_FRONT, x, y);
+  else if (atrb >= 0xA0 && atrb < 0xA4)
+    gfx_draw_texrect_16x16(&rc_wind_tile[atrb - 0xA0][idx], GFX_LAYER_FRONT, x, y);
+}
+
 static inline void stage_draw_map(int cam_vx, int cam_vy) {
   const int start_tx = (cam_vx + TILE_SIZE / 2) >> TILE_SHIFT;
   const int start_ty = (cam_vy + TILE_SIZE / 2) >> TILE_SHIFT;
@@ -360,11 +398,15 @@ static inline void stage_draw_map(int cam_vx, int cam_vy) {
     ptr = line;
     for (tx = start_tx; tx < end_tx; ++tx, ++ptr) {
       tile = *ptr;
-      atrb = stage_data->atrb[tile];
-      if (atrb == 0x43)
-        gfx_draw_texrect_16x16(&rc_snack_tile, GFX_LAYER_FRONT, (tx << 4) - cam_vx, (ty << 4) - cam_vy);
-      else if ((atrb < 0x20) || (atrb >= 0x40 && atrb < 0x80))
-        gfx_draw_tile(tile & 0xF, tile >> 4, (atrb >= 0x40), (tx << 4) - cam_vx, (ty << 4) - cam_vy);
+      if (tile) {
+        atrb = stage_data->atrb[tile];
+        if (atrb == 0x43)
+          gfx_draw_texrect_16x16(&rc_snack_tile, GFX_LAYER_FRONT, (tx << 4) - cam_vx, (ty << 4) - cam_vy);
+        else if ((atrb < 0x20) || (atrb >= 0x40 && atrb < 0x80))
+          gfx_draw_tile(tile & 0xF, tile >> 4, (atrb >= 0x40), (tx << 4) - cam_vx, (ty << 4) - cam_vy);
+        else if (atrb >= 0x80)
+          stage_draw_current(atrb, (tx << 4) - cam_vx, (ty << 4) - cam_vy);
+      }
     }
   }
 }
