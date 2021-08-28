@@ -1001,11 +1001,11 @@ static inline void menu_saveload_draw_select_save(void) {
       draw_string_centered("EMPTY FILE", NULL, VID_WIDTH / 2, yofs + 10);
     } else {
       // draw stage name
-      gfx_draw_string(saveload.slots[i].stage, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 30, yofs + 10);
+      draw_string_shadow(saveload.slots[i].stage, NULL, TEXT_BOX_LEFT + 30, yofs + 10);
       // draw life at the right edge
       sprintf(lifetext, "%02d/%02d", saveload.slots[i].life, saveload.slots[i].max_life);
       gfx_draw_texrect_16x16(&rc_heart, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 46, yofs + 7);
-      gfx_draw_string(lifetext, GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 40 - 6 * GFX_FONT_WIDTH, yofs + 10);
+      draw_string_shadow(lifetext, NULL, TEXT_BOX_LEFT + 244 - 40 - 6 * GFX_FONT_WIDTH, yofs + 10);
       // draw current weapon (unfortunately weapon list won't fit)
       gfx_draw_texrect_16x16(&hud_rc_arms[saveload.slots[i].arm], GFX_LAYER_FRONT, TEXT_BOX_LEFT + 244 - 24, yofs + 8);
     }
