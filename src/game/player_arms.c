@@ -993,8 +993,9 @@ bool plr_arm_trade(const int id, const int new_id, const int new_max_ammo) {
 
   player.arms[new_id].owned = TRUE;
   player.arms[new_id].level = 1;
-  player.arms[new_id].max_ammo = new_max_ammo;
-  player.arms[new_id].ammo = new_max_ammo;
+  player.arms[new_id].exp = 0;
+  player.arms[new_id].max_ammo = player.arms[id].max_ammo + new_max_ammo;
+  player.arms[new_id].ammo = player.arms[id].ammo + new_max_ammo;
 
   player.arms[id].owned = FALSE;
   player.arms[id].ammo = 0;
