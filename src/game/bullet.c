@@ -1944,9 +1944,9 @@ static void bullet_act_spurtrail(bullet_t *bul) {
   };
 
   static const rect_t rc_v_lv1[3] = {
-  {192, 40, 200, 48},
-  {200, 40, 208, 48},
-  {208, 40, 216, 48},
+    {192, 40, 200, 48},
+    {200, 40, 208, 48},
+    {208, 40, 216, 48},
   };
 
   static const rect_t rc_h_lv2[3] = {

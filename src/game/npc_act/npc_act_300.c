@@ -870,6 +870,17 @@ void npc_act_312(npc_t *npc) {
   }
 }
 
+static inline bool mapignon_bullet_check(void) {
+  for (int i = 0; i <= bullet_list_max; ++i) {
+    const bullet_t *b = &bullet_list[i];
+    if (b->cond) {
+      if ((b->class_num >= 13 && b->class_num <= 18) || (b->class_num >= 25 && b->class_num <= 33) || (b->class_num == 23))
+        return TRUE;
+    }
+  }
+  return FALSE;
+}
+
 // Ma Pignon
 void npc_act_313(npc_t *npc) {
   static const rect_t rc_left[14] = {
@@ -1145,7 +1156,7 @@ void npc_act_313(npc_t *npc) {
   }
 
   if (npc->act > 100 && npc->act < 500 && npc->act != 210 && npc->act != 320) {
-    if (bullet_any_exist()) {
+    if (mapignon_bullet_check()) {
       npc->bits &= ~NPC_SHOOTABLE;
       npc->bits |= NPC_INVULNERABLE;
     } else {
@@ -1332,7 +1343,7 @@ void npc_act_315(npc_t *npc) {
   }
 
   if (npc->act > 100) {
-    if (bullet_any_exist()) {
+    if (mapignon_bullet_check()) {
       npc->bits &= ~NPC_SHOOTABLE;
       npc->bits |= NPC_INVULNERABLE;
     } else {
