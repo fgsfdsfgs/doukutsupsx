@@ -184,8 +184,14 @@ int read_bmp(struct bitmap *bmp, FILE *f) {
 
   if (bmp->numcolors == 2) {
     bmp->numcolors = 16;
-    // assume the image is all black
+    // assume the image is all black (palette index 0)
     // this trips us up on Fade.pbm, but we can just use a copy with 3 colors
+    // HACK: bkBlack is not actually black, so copy palette index 1 to index 0
+    if (bmp->palette[4] || bmp->palette[5] || bmp->palette[6]) {
+      bmp->palette[0] = bmp->palette[4];
+      bmp->palette[1] = bmp->palette[5];
+      bmp->palette[2] = bmp->palette[6];
+    }
     return 0;
   }
 
