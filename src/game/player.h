@@ -94,7 +94,7 @@ typedef struct {
 
 extern const s16 plr_arms_exptab[PLR_MAX_ARMS][3];
 extern const s8 plr_arms_order[];
-extern const s8 plr_arms_order_reverse[PLR_MAX_ARMS];
+extern s8 plr_arms_order_reverse[PLR_MAX_ARMS];
 extern const int plr_arms_order_num;
 
 extern player_t player;

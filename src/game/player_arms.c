@@ -27,18 +27,16 @@ const s16 plr_arms_exptab[PLR_MAX_ARMS][3] = {
   { 40, 60, 200 }
 };
 
-// snake, machinegun, nemesis and spur are first, since they can be traded for;
+// snake, machinegun and spur are first, since they can be traded for;
 // weapons #6, #8 and #11 do not exist
 const s8 plr_arms_order[] = {
-  1, 4, 12, 13, 2, 5, 3, 7, 9, 10,
+  1, 4, 13, 2, 5, 3, 7, 9, 10, 12,
 };
 
 const int plr_arms_order_num = sizeof(plr_arms_order) / sizeof(*plr_arms_order);
 
 // reverse lookup (arm id -> arm order)
-const s8 plr_arms_order_reverse[PLR_MAX_ARMS] = {
-  -1, 0, 4, 6, 1, 5, -1, 7, -1, 8, 9, -1, 2, 3,
-};
+s8 plr_arms_order_reverse[PLR_MAX_ARMS];
 
 // using statics for these counters is not good, but that's how the original does it
 // if I change this, this will probably fuck up some delicate timings or something

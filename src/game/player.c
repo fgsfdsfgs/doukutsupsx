@@ -98,6 +98,13 @@ static struct {
 static int star_idx = 0;
 
 void plr_init(void) {
+  // fill reverse lookup for arm order
+
+  for (int i = 0; i < PLR_MAX_ARMS; ++i)
+    plr_arms_order_reverse[i] = -1;
+  for (int i = 0; i < plr_arms_order_num; ++i)
+    plr_arms_order_reverse[plr_arms_order[i]] = i;
+
   // init player struct
 
   plr_reset();
