@@ -16,6 +16,9 @@ void dmgnum_init(void) {
 }
 
 void dmgnum_spawn(int *tgt_x, int *tgt_y, int val) {
+  if (val == 0)
+    return;
+
   int i;
   for (i = 0; i < DMGNUM_MAX; ++i) {
     const dmgnum_t *tnum = &dmgnum_list[i];
@@ -45,28 +48,23 @@ void dmgnum_spawn(int *tgt_x, int *tgt_y, int val) {
   dnum->tgt_y = tgt_y;
   dnum->vofs = 0;
 
-  const int div[4] = { 1000, 100, 10, 1 };
-  int digits[5] = { 20, 0, 0, 0, 0 };
-  int numdigits = 1; // includes sign
-  if (val < 0) {
-    digits[0] = 21;
-    digits[1] = digits[2] = digits[3] = digits[4] = 10;
-    val = -val;
+  const int ofs = (val < 0) ? 10 : 0;
+  int digits[5] = { 0, 0, 0, 0, 0 };
+  int first = 4;
+  if (ofs) val = -val;
+
+  for (; val && first > 0; --first) {
+    digits[first] = ofs + (val % 10);
+    val /= 10;
   }
 
-  for (int i = 0; i < 4; ++i) {
-    int d = val / div[i];
-    if (d) {
-      digits[numdigits++] += d;
-      val -= d * div[i];
-    }
-  }
+  digits[first] = 20 + !!ofs;
 
-  dnum->digits = numdigits;
-  dnum->xofs = -TO_FIX(8 * numdigits / 2);
+  dnum->digits = 5 - first;
+  dnum->xofs = -TO_FIX(8 * dnum->digits / 2);
 
-  for (int i = 0; i < numdigits; ++i)
-    dnum->texrects[i] = &hud_rc_digit[digits[i]];
+  for (i = first; i < 5; ++i)
+    dnum->texrects[i - first] = &hud_rc_digit[digits[i]];
 }
 
 void dmgnum_act(void) {
