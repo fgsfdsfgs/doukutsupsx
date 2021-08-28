@@ -126,26 +126,6 @@ int stage_load_stage_bank(const u32 id) {
   stage_bank = bank;
   stage_bank_id = id;
 
-  // set background texrect
-  if (stage_data->bk_type == BACKGROUND_TYPE_WATER) {
-    rc_back[0].r.left = 0;
-    rc_back[0].r.top = 0;
-    rc_back[0].r.right = 32;
-    rc_back[0].r.bottom = 16;
-    rc_back[1].r.left = 0;
-    rc_back[1].r.top = 16;
-    rc_back[1].r.right = 32;
-    rc_back[1].r.bottom = 48;
-    gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
-    gfx_set_texrect(&rc_back[1], SURFACE_ID_LEVEL_BACKGROUND);
-  } else {
-    rc_back[0].r.left = 0;
-    rc_back[0].r.top = 0;
-    rc_back[0].r.right = stage_bank->bk_width;
-    rc_back[0].r.bottom = stage_bank->bk_height;
-    gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
-  }
-
   printf("stage bank %02x loaded\nfree mem: %u bytes\n", id, mem_get_free_space());
 
   return TRUE;
@@ -168,6 +148,28 @@ void stage_free_stage_bank(void) {
   mem_free_to_mark(MEM_MARK_HI);
 }
 
+static inline void stage_init_background(void) {
+  // set background texrects
+  if (stage_data->bk_type == BACKGROUND_TYPE_WATER) {
+    rc_back[0].r.left = 0;
+    rc_back[0].r.top = 0;
+    rc_back[0].r.right = 32;
+    rc_back[0].r.bottom = 16;
+    rc_back[1].r.left = 0;
+    rc_back[1].r.top = 16;
+    rc_back[1].r.right = 32;
+    rc_back[1].r.bottom = 48;
+    gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
+    gfx_set_texrect(&rc_back[1], SURFACE_ID_LEVEL_BACKGROUND);
+  } else {
+    rc_back[0].r.left = 0;
+    rc_back[0].r.top = 0;
+    rc_back[0].r.right = stage_bank->bk_width;
+    rc_back[0].r.bottom = stage_bank->bk_height;
+    gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
+  }
+}
+
 int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   if (!stages[id]) {
     gfx_draw_loading();
@@ -178,6 +180,7 @@ int stage_transition(const u32 id, const u32 event, int plr_x, int plr_y) {
   ASSERT(stages[id]);
 
   stage_data = stages[id];
+  stage_init_background();
 
   tsc_script_t *script = (tsc_script_t *)&stage_data->map_data[stage_data->tsc_offset];
   tsc_set_stage_script(script, stage_data->tsc_size);
@@ -359,11 +362,11 @@ static inline void stage_draw_fg(const int cam_vx, const int cam_vy) {
   const int x2 = x1 + (((VID_WIDTH + (32 - 1)) / 32) + 1);
   const int vwatery = TO_INT(stage_water_y) - cam_vy;
   for (int y = 0; y < 32; ++y) {
-    const int ypos = TO_INT(TO_FIX(y * 32)) + vwatery;
+    const int ypos = y * 32 + vwatery;
     if (ypos < -32) continue;
     if (ypos > VID_HEIGHT) break;
     for (int x = x1; x < x2; ++x) {
-      const int xpos = TO_INT(TO_FIX(x * 32)) - cam_vx;
+      const int xpos = x * 32 - cam_vx;
       gfx_draw_texrect(&rc_back[1], GFX_LAYER_FRONT, xpos, ypos);
       if (y == 0) gfx_draw_texrect(&rc_back[0], GFX_LAYER_FRONT, xpos, ypos);
     }
