@@ -244,7 +244,9 @@ static void menu_pause_act(void) {
     player.equip |= EQUIP_BOOSTER_2_0;
     // give whimsical star
     player.items[38] = TRUE;
-    player.equip |= EQUIP_WHIMSICAL_STAR | EQUIP_AIR_TANK;
+    player.equip |= EQUIP_WHIMSICAL_STAR;
+    // give air tank
+    player.equip |= EQUIP_AIR_TANK;
     // give nikumaru counter
     player.items[22] = TRUE;
     // give arthur's key and set flags
@@ -491,7 +493,6 @@ static void menu_inventory_draw(void) {
 
 static struct {
   gfx_texrect_t texrect;
-  gfx_texrect_t texrect_wide;
   u32 mode;
   s32 count;
   u32 title_w;
@@ -567,18 +568,6 @@ static void menu_map_open(void) {
   map.texrect.r.right = stage_data->width;
   map.texrect.r.bottom = stage_data->height;
   gfx_set_texrect(&map.texrect, SURFACE_ID_MAP);
-
-  // if the map is too wide to fit into one texture page, add another texrect
-  map.texrect_wide.tpage = 0;
-  if ((int)map.texrect.u + map.texrect.r.w > 256) {
-    const int part_w = (256 - (int)map.texrect.u);
-    map.texrect_wide.r.x = map.texrect.r.x + part_w;
-    map.texrect_wide.r.y = map.texrect.r.y;
-    map.texrect_wide.r.right = map.texrect_wide.r.x + map.texrect.r.w - part_w;
-    map.texrect_wide.r.bottom = map.texrect.r.y + map.texrect.r.h;
-    gfx_set_texrect(&map.texrect_wide, SURFACE_ID_MAP);
-    map.texrect.r.w = part_w;
-  }
 }
 
 static void menu_map_act(void) {
@@ -608,7 +597,7 @@ static void menu_map_draw(void) {
         ch = map.scale * stage_data->height - ch;
       }
       xofs = (VID_WIDTH - cw) / 2;
-      yofs = (VID_HEIGHT - ch) / 2;
+      yofs = 32 + ((VID_HEIGHT - 32) - ch) / 2;
       gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs, yofs, cw, ch);
       if (++map.count > 8) {
         if (map.mode == 3)
@@ -629,19 +618,15 @@ static void menu_map_draw(void) {
       cw = map.scale * stage_data->width;
       ch = map.scale * stage_data->height;
       xofs = (VID_WIDTH - cw) / 2;
-      yofs = (VID_HEIGHT - ch) / 2;
+      yofs = 32 + ((VID_HEIGHT - 32) - ch) / 2;
       // draw background
       gfx_draw_fillrect(colors[0], GFX_LAYER_FRONT, xofs - 4, yofs - 4, cw + 8, ch + 8);
       // draw map
       map.texrect.r.h = map.count;
-      map.texrect_wide.r.h = map.count;
-      if (map.scale == 1) {
-        gfx_draw_texrect(&map.texrect, GFX_LAYER_FRONT, xofs, yofs);
-        if (map.texrect_wide.tpage)
-          gfx_draw_texrect(&map.texrect_wide, GFX_LAYER_FRONT, xofs + map.texrect.r.w, yofs);
-      } else {
+      if (map.scale == 1)
+        gfx_draw_texrect_wide(&map.texrect, GFX_LAYER_FRONT, xofs, yofs);
+      else
         gfx_draw_texrect_scaled(&map.texrect, GFX_LAYER_FRONT, xofs, yofs, map.scale);
-      }
       // draw player
       if ((map.mode == 2) && ((++map.wait / 8) % 2)) {
         xofs += map.player_x * map.scale - map.scale / 2;

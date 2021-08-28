@@ -284,24 +284,7 @@ static inline void stage_draw_bg_grid(const int start_x, const int start_y) {
 static void stage_draw_bg_wide_strip(const rect_t *r, const int x, const int y) {
   rc_back[0].r = *r;
   gfx_set_texrect(&rc_back[0], SURFACE_ID_LEVEL_BACKGROUND);
-
-  // if the strip intersects the texture page boundary, draw a second texrect
-  if ((int)rc_back[0].u + rc_back[0].r.w > 256) {
-    const int part_w = (256 - (int)rc_back[0].u);
-    const int next_x = x + part_w;
-    // no point rendering the second part if it goes completely off screen
-    if (next_x < VID_WIDTH) {
-      rc_back[1].r.x = rc_back[0].r.x + part_w;
-      rc_back[1].r.y = rc_back[0].r.y;
-      rc_back[1].r.right = rc_back[1].r.x + rc_back[0].r.w - part_w;
-      rc_back[1].r.bottom = rc_back[0].r.y + rc_back[0].r.h;
-      gfx_set_texrect(&rc_back[1], SURFACE_ID_LEVEL_BACKGROUND);
-      gfx_draw_texrect(&rc_back[1], GFX_LAYER_BACK, next_x, y);
-      rc_back[0].r.w = part_w; // shorten the first part
-    }
-  }
-
-  gfx_draw_texrect(&rc_back[0], GFX_LAYER_BACK, x, y);
+  gfx_draw_texrect_wide(&rc_back[0], GFX_LAYER_BACK, x, y);
 }
 
 // FIXME: drawing the rects right away causes a lot of tpage switching,

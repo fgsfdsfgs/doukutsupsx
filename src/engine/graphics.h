@@ -84,6 +84,7 @@ int gfx_load_gfx_bank(const char *path);
 
 void gfx_swap_buffers(void);
 void gfx_draw_texrect(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
+void gfx_draw_texrect_wide(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
 void gfx_draw_texrect_ofs(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int du, const int dv);
 void gfx_draw_texrect_scaled(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int scale);
 void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const int x, const int y);

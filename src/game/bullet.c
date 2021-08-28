@@ -153,7 +153,7 @@ static inline void bullet_draw_instance(bullet_t *b, const int cam_vx, const int
   // TODO: cache bullet texrects
   if (!b->texrect.tpage)
     gfx_set_texrect(&b->texrect, SURFACE_ID_BULLET);
-  gfx_draw_texrect(&b->texrect, GFX_LAYER_BACK, x - cam_vx, y - cam_vy);
+  gfx_draw_texrect_wide(&b->texrect, GFX_LAYER_BACK, x - cam_vx, y - cam_vy);
 }
 
 void bullet_draw(int cam_x, int cam_y) {

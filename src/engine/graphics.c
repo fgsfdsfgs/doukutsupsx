@@ -209,6 +209,49 @@ void gfx_draw_texrect(const gfx_texrect_t *texrect, const int layer, const int x
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
+void gfx_draw_texrect_wide(const gfx_texrect_t *texrect, const int layer, const int x, const int y) {
+  int u0 = texrect->u;
+  int w0 = texrect->r.w;
+  const int v0 = texrect->v;
+  const int h0 = texrect->r.h;
+  const u16 tpage0 = texrect->tpage;
+  int w1 = 0;
+  if (u0 + w0 > 256) {
+    // texrect intersects texpage boundary
+    const int wt = 256 - u0;
+    w1 = w0 - wt;
+    w0 = wt;
+  }
+
+  // draw first half
+  gfx_update_tpage(layer, tpage0);
+  SPRT *prim = (SPRT *)primptr;
+  setSprt(prim);
+  setRGB0(prim, 0x80, 0x80, 0x80);
+  setXY0(prim, x, y);
+  setUV0(prim, u0, v0);
+  setWH(prim, w0, h0);
+  prim->clut = gfx_surf[texrect->surf].clut;
+  plist_append(&primlist[layer], sizeof(*prim));
+
+  // draw second half if required
+  if (w1) {
+    const int x1 = x + w0;
+    if (x1 < VID_WIDTH) {
+      // advance tpage by 1 to the right
+      gfx_update_tpage(layer, tpage0 + 1);
+      prim = (SPRT *)primptr;
+      setSprt(prim);
+      setRGB0(prim, 0x80, 0x80, 0x80);
+      setXY0(prim, x + w0, y);
+      setUV0(prim, 0, v0);
+      setWH(prim, w1, h0);
+      prim->clut = gfx_surf[texrect->surf].clut;
+      plist_append(&primlist[layer], sizeof(*prim));
+    }
+  }
+}
+
 void gfx_draw_texrect_scaled(const gfx_texrect_t *texrect, const int layer, int x, int y, const int scale) {
   const int w = texrect->r.w;
   const int h = texrect->r.h;
