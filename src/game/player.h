@@ -79,7 +79,7 @@ typedef struct {
   s16 air_count;
   s16 star;
   s16 cooldown;
-  s16 bubble;
+  u16 bubble;
   s16 arms_x;
 
   u8 cond;

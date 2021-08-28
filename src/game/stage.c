@@ -51,7 +51,7 @@ static u32 music_prev = 0;
 static u32 music_prev_pos = 0;
 
 // water/wind current animation frame
-static int wind_count = 0;
+static u32 wind_count = 0;
 
 void stage_init(void) {
   // the surface should be already loaded by now
