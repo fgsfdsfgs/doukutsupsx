@@ -14,18 +14,19 @@
 #pragma pack(push, 1)
 
 typedef struct {
-  plr_arm_data_t arms[PLR_MAX_ARMS];
-  u8 items[PLR_MAX_ITEMS];
+  plr_arm_data_t arms[PLR_MAX_HELD_ARMS];
+  u8 items[PLR_MAX_HELD_ITEMS];
   s32 x;
   s32 y;
   s16 dir;
   s16 life;
   s16 max_life;
   s16 star;
-  u16 arm_id;
+  u16 arm;
   u16 equip;
   u16 unit;
-  u16 reserved;
+  u8 num_arms;
+  u8 num_items;
 } profile_player_t;
 
 typedef struct {
@@ -54,7 +55,7 @@ typedef struct {
 #define PROFILE_DATA_SIZE (sizeof(profile_save_t) + sizeof(profile_config_t) + 4)
 
 typedef struct {
-  char magic[4]; // 'CSPF'
+  char magic[4]; // 'CSP\x02'
   profile_save_t save;
   profile_config_t config;
   // padding to align with memcard sectors

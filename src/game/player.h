@@ -6,7 +6,9 @@
 // also known as MyChar.h
 
 #define PLR_MAX_ARMS 14
+#define PLR_MAX_HELD_ARMS 8
 #define PLR_MAX_ITEMS 48
+#define PLR_MAX_HELD_ITEMS 32
 #define PLR_MAX_LIFE 232
 #define PLR_MAX_STAR 3
 
@@ -32,7 +34,7 @@ enum plr_cond_flags {
 };
 
 typedef struct {
-  u8 owned;
+  u8 id;
   u8 level;
   s16 exp;
   s16 ammo;
@@ -81,6 +83,8 @@ typedef struct {
   s16 cooldown;
   u16 bubble;
   s16 arms_x;
+  s16 num_arms;
+  s16 num_items;
 
   u8 cond;
   s8 dir;
@@ -93,9 +97,6 @@ typedef struct {
 } player_t;
 
 extern const s16 plr_arms_exptab[PLR_MAX_ARMS][3];
-extern const s8 plr_arms_order[];
-extern s8 plr_arms_order_reverse[PLR_MAX_ARMS];
-extern const int plr_arms_order_num;
 
 extern player_t player;
 
@@ -110,13 +111,15 @@ void plr_jump_back(int from);
 void plr_face_towards(int what);
 void plr_add_life(int val);
 void plr_add_max_life(int val);
-void plr_add_exp(int val);
-void plr_add_ammo(int arm, int val);
+void plr_add_ammo(int arm_id, int val);
 
+int plr_item_find(const u32 item);
 void plr_item_equip(const u32 item, const bool equip);
 void plr_item_give(const u32 item);
 void plr_item_take(const u32 item);
 
+plr_arm_data_t *plr_arm_find(const u8 id);
+plr_arm_data_t *plr_arm_find_missile_launcher(void);
 void plr_arm_reset_exp(void);
 void plr_arm_add_exp(int val);
 bool plr_arm_at_max_exp(void);

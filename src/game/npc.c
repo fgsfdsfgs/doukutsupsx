@@ -356,7 +356,7 @@ npc_t *npc_spawn_life(int x, int y, int val) {
 
 npc_t *npc_spawn_ammo(int x, int y, int val) {
   // don't spawn anything if the player has no missile launchers
-  if (!player.arms[5].owned && !player.arms[10].owned)
+  if (!plr_arm_find_missile_launcher())
     return NULL;
   npc_t *npc = npc_spawn(86, x, y, 0, 0, 0, NULL, NPC_STARTIDX_DYNAMIC);
   if (!npc) return NULL;

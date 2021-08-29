@@ -226,31 +226,31 @@ static void menu_pause_act(void) {
     // debug cheat
     snd_play_sound(PRIO_HIGH, 1, FALSE);
     // give weapons
-    plr_arm_give(2, 0);
     plr_arm_give(3, 0);
     plr_arm_give(5, 100);
     plr_arm_give(7, 100);
+    plr_arm_give(12, 0);
     plr_arm_give(13, 0);
     npc_set_flag(201); // got missile launcher
-    player.arm = 2;
+    player.arm = 0;
     // heal
     player.max_life = 999;
     player.life = player.life_bar = player.max_life;
     // give map
-    player.items[2] = TRUE;
+    plr_item_give(2);
     player.equip |= EQUIP_MAP;
     // give booster 2.0
-    player.items[23] = TRUE;
+    plr_item_give(23);
     player.equip |= EQUIP_BOOSTER_2_0;
     // give whimsical star
-    player.items[38] = TRUE;
+    plr_item_give(38);
     player.equip |= EQUIP_WHIMSICAL_STAR;
     // give air tank
     player.equip |= EQUIP_AIR_TANK;
     // give nikumaru counter
-    player.items[22] = TRUE;
+    plr_item_give(22);
     // give arthur's key and set flags
-    player.items[1] = TRUE;
+    plr_item_give(1);
     npc_set_flag(390);
     npc_set_flag(320);
     npc_set_flag(321);
@@ -281,11 +281,7 @@ static void menu_pause_draw(void) {
 #define INV_ITEM_TOP (INV_CUR_TOP + 52)
 
 static struct {
-  s32 arms_owned[PLR_MAX_ARMS];
-  s32 num_arms;
   s32 arm_idx;
-  s32 items_owned[PLR_MAX_ITEMS];
-  s32 num_items;
   s32 item_idx;
   s32 title_y;
   u32 flash;
@@ -295,39 +291,19 @@ static struct {
 static void menu_inventory_open(void) {
   tsc_switch_script(TSC_SCRIPT_ARMS_ITEM);
 
-  // this is one of the places where the original system wins
-
   inventory.in_items = FALSE;
   inventory.title_y = INV_BOX_TOP + 16;
-
-  inventory.num_arms = 0;
-  inventory.arm_idx = 0;
-  inventory.arms_owned[0] = 0;
-  for (int i = 0; i < plr_arms_order_num; ++i) {
-    const int arm_id = plr_arms_order[i];
-    if (player.arms[arm_id].owned) {
-      if (player.arm == arm_id)
-        inventory.arm_idx = inventory.num_arms;
-      inventory.arms_owned[inventory.num_arms++] = arm_id;
-    }
-  }
-
-  inventory.num_items = 0;
+  inventory.arm_idx = player.arm;
   inventory.item_idx = 0;
-  inventory.items_owned[0] = 0;
-  for (int i = 0; i < PLR_MAX_ITEMS; ++i) {
-    if (player.items[i])
-      inventory.items_owned[inventory.num_items++] = i;
-  }
 
-  if (inventory.num_arms)
-    tsc_start_event(1000 + inventory.arms_owned[inventory.arm_idx]);
+  if (player.num_arms)
+    tsc_start_event(1000 + player.arms[inventory.arm_idx].id);
   else
-    tsc_start_event(5000 + inventory.items_owned[inventory.item_idx]);
+    tsc_start_event(5000 + player.items[inventory.item_idx]);
 }
 
 static inline void menu_inventory_controls(void) {
-  if (!inventory.num_items && !inventory.num_arms)
+  if (!player.num_items && !player.num_arms)
     return; // empty
 
   bool changed = FALSE;
@@ -342,7 +318,7 @@ static inline void menu_inventory_controls(void) {
         inventory.item_idx += 5; // loop around to end of row
       changed = TRUE;
     } else if (input_trig & IN_RIGHT) {
-      if (inventory.item_idx == inventory.num_items - 1)
+      if (inventory.item_idx == player.num_items - 1)
         inventory.item_idx = (inventory.item_idx / 6) * 6; // loop around to end of row
       else if (inventory.item_idx % 6 == 5)
         inventory.item_idx -= 5; // loop around to end of row
@@ -358,7 +334,7 @@ static inline void menu_inventory_controls(void) {
         inventory.item_idx -= 6; // move one row up
       changed = TRUE;
     } else if (input_trig & IN_DOWN) {
-      if (inventory.item_idx / 6 == (inventory.num_items - 1) / 6)
+      if (inventory.item_idx / 6 == (player.num_items - 1) / 6)
         inventory.in_items = FALSE; // cursor was on last row, swap to arms menu
       else
         inventory.item_idx += 6; // move one row down
@@ -366,12 +342,12 @@ static inline void menu_inventory_controls(void) {
     }
 
     // keep index in range
-    if (inventory.item_idx >= inventory.num_items)
-      inventory.item_idx = inventory.num_items - 1;
+    if (inventory.item_idx >= player.num_items)
+      inventory.item_idx = player.num_items - 1;
 
     // select item if OK is pressed and we're still in items
     if ((inventory.in_items) && (input_trig & IN_OK))
-      tsc_start_event(6000 + inventory.items_owned[inventory.item_idx]);
+      tsc_start_event(6000 + player.items[inventory.item_idx]);
   } else {
     // in arms menu
 
@@ -385,15 +361,15 @@ static inline void menu_inventory_controls(void) {
 
     if (input_trig & (IN_UP | IN_DOWN)) {
       // if there are items, change to items menu
-      if (inventory.num_items)
+      if (player.num_items)
         inventory.in_items = TRUE;
       changed = TRUE;
     }
 
     // keep index in range
     if (inventory.arm_idx < 0)
-      inventory.arm_idx = inventory.num_arms - 1;
-    if (inventory.arm_idx >= inventory.num_arms)
+      inventory.arm_idx = player.num_arms - 1;
+    if (inventory.arm_idx >= player.num_arms)
       inventory.arm_idx = 0;
   }
 
@@ -401,12 +377,13 @@ static inline void menu_inventory_controls(void) {
     if (inventory.in_items) {
       // change item and display new item's name
       snd_play_sound(PRIO_HIGH, 1, FALSE);
-      tsc_start_event(5000 + inventory.items_owned[inventory.item_idx]);
+      tsc_start_event(5000 + player.items[inventory.item_idx]);
     } else {
       // change weapon and display new weapon's name
       snd_play_sound(PRIO_HIGH, 4, FALSE);
-      player.arm = inventory.arms_owned[inventory.arm_idx];
-      tsc_start_event(1000 + inventory.arms_owned[inventory.arm_idx]);
+      player.arm = inventory.arm_idx;
+      player.arms_x = 32;
+      tsc_start_event(1000 + player.arms[inventory.arm_idx].id);
     }
   }
 }
@@ -449,20 +426,17 @@ static void menu_inventory_draw(void) {
   gfx_draw_texrect(&rc_cursor_arms[cur_idx], GFX_LAYER_FRONT, (inventory.arm_idx * 40) + INV_CUR_LEFT, INV_CUR_TOP);
 
   // draw arms
-  for (i = 0; i < inventory.num_arms; ++i) {
-    const int arm_id = inventory.arms_owned[i];
-    if (arm_id == 0) break; // probably nothing else owned
-
+  for (i = 0; i < player.num_arms; ++i) {
     // draw icon, slash and Lv
-    gfx_draw_texrect(&hud_rc_arms[arm_id], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP);
+    gfx_draw_texrect(&hud_rc_arms[player.arms[i].id], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP);
     gfx_draw_texrect(&hud_rc_ammo[0], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP + 32);
     gfx_draw_texrect(&hud_rc_ammo[1], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT, INV_CUR_TOP + 16);
-    hud_draw_number(player.arms[arm_id].level, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 16);
+    hud_draw_number(player.arms[i].level, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 16);
 
     // draw ammo (or "--" if infinite)
-    if (player.arms[arm_id].max_ammo) {
-      hud_draw_number(player.arms[arm_id].ammo, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 24);
-      hud_draw_number(player.arms[arm_id].max_ammo, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 32);
+    if (player.arms[i].max_ammo) {
+      hud_draw_number(player.arms[i].ammo, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 24);
+      hud_draw_number(player.arms[i].max_ammo, (i * 40) + INV_CUR_LEFT + 24, INV_CUR_TOP + 32);
     } else {
       gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT + 16, INV_CUR_TOP + 24); // "--"
       gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, (i * 40) + INV_CUR_LEFT + 16, INV_CUR_TOP + 32); // "--"
@@ -476,10 +450,8 @@ static void menu_inventory_draw(void) {
   gfx_draw_texrect(&rc_cursor_items[cur_idx], GFX_LAYER_FRONT, icol * 32 + INV_CUR_LEFT, irow * 16 + INV_ITEM_TOP);
 
   // draw items
-  for (i = 0; i < inventory.num_items; ++i) {
-    const int item_id = inventory.items_owned[i];
-    if (item_id == 0)
-      break; // probably nothing else owned
+  for (i = 0; i < player.num_items; ++i) {
+    const int item_id = player.items[i];
     icol = (i % 6);
     irow = (i / 6);
     gfx_draw_texrect(&hud_rc_item[item_id], GFX_LAYER_FRONT, icol * 32 + INV_CUR_LEFT, irow * 16 + INV_ITEM_TOP);
@@ -808,7 +780,7 @@ static void menu_saveload_update_slots(void) {
     memcpy(saveload.slots[i].stage, prof.save.stage_title, MAX_STAGE_TITLE);
     saveload.slots[i].life = prof.save.player.life;
     saveload.slots[i].max_life = prof.save.player.max_life;
-    saveload.slots[i].arm = prof.save.player.arm_id;
+    saveload.slots[i].arm = prof.save.player.arms[prof.save.player.arm].id;
   }
 }
 
@@ -982,8 +954,11 @@ static inline void menu_saveload_draw_select_save(void) {
     gfx_draw_texrect(&rc_menubox[2], GFX_LAYER_FRONT, TEXT_BOX_LEFT, yofs + 24);
 
     if (!(saveload.slot_mask & (1 << i))) {
-      //slot is empty
+      // slot is empty
       draw_string_centered("EMPTY FILE", NULL, VID_WIDTH / 2, yofs + 10);
+    } else if (saveload.slots[i].max_life <= 0) {
+      // corrupted save?
+      draw_string_centered("CORRUPTED FILE", NULL, VID_WIDTH / 2, yofs + 10);
     } else {
       // draw stage name
       draw_string_shadow(saveload.slots[i].stage, NULL, TEXT_BOX_LEFT + 30, yofs + 10);

@@ -678,7 +678,7 @@ static inline void hit_player_npc(void) {
     // Special NPCs (pickups)
     if (hit != 0 && npc->class_num == 1) {
       snd_play_sound(PRIO_NORMAL, 14, FALSE);
-      plr_add_exp(npc->exp);
+      plr_arm_add_exp(npc->exp);
       npc->cond = 0;
     }
 

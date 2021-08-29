@@ -11,7 +11,7 @@
 #include "game/menu.h"
 #include "game/profile.h"
 
-#define PROFILE_MAGIC "CSPF"
+#define PROFILE_MAGIC "CSP\x02"
 
 profile_t profile;
 int profile_slot = -1;
@@ -67,7 +67,9 @@ void profile_save(void) {
   profile.save.player.max_life = player.max_life;
   profile.save.player.equip = player.equip;
   profile.save.player.star = player.star;
-  profile.save.player.arm_id = player.arm;
+  profile.save.player.arm = player.arm;
+  profile.save.player.num_arms = player.num_arms;
+  profile.save.player.num_items = player.num_items;
   profile.save.player.unit = player.unit;
 
   printf("profile_save(): stage=%02x stage_bank=%02x\n", profile.save.stage_id, profile.save.stage_bank_id);
@@ -114,7 +116,9 @@ bool profile_load(void) {
   player.max_life = profile.save.player.max_life;
   player.equip = profile.save.player.equip;
   player.star = profile.save.player.star;
-  player.arm = profile.save.player.arm_id;
+  player.arm = profile.save.player.arm;
+  player.num_arms = profile.save.player.num_arms;
+  player.num_items = profile.save.player.num_items;
   player.unit = profile.save.player.unit;
 
   // recenter whimsical star projectiles

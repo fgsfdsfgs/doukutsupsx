@@ -98,13 +98,6 @@ static struct {
 static int star_idx = 0;
 
 void plr_init(void) {
-  // fill reverse lookup for arm order
-
-  for (int i = 0; i < PLR_MAX_ARMS; ++i)
-    plr_arms_order_reverse[i] = -1;
-  for (int i = 0; i < plr_arms_order_num; ++i)
-    plr_arms_order_reverse[plr_arms_order[i]] = i;
-
   // init player struct
 
   plr_reset();
@@ -151,7 +144,6 @@ void plr_reset(void) {
   player.life_bar = 3;
   player.max_life = 3;
 
-  player.arm = 0;
   player.arms_x = 16;
 
   player.air = 1000;
@@ -220,7 +212,7 @@ void plr_animate(const bool input_enabled) {
 static inline void plr_draw_arm(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
   int arm_ofs_y = 0;
 
-  player.rect_arms = rc_arms[player.arm];
+  player.rect_arms = rc_arms[player.arms[player.arm].id];
 
   if (player.dir == DIR_RIGHT)
     player.rect_arms.v += ARMS_FRAME_H;
@@ -839,22 +831,23 @@ void plr_damage(int val) {
     player.star = (s16)player.star - 1;
 
   // Lose experience
+  plr_arm_data_t *arm = &player.arms[player.arm];
   if (player.equip & EQUIP_ARMS_BARRIER)
-    player.arms[player.arm].exp -= val;
+    arm->exp -= val;
   else
-    player.arms[player.arm].exp -= val * 2;
+    arm->exp -= val * 2;
 
-  while (player.arms[player.arm].exp < 0) {
-    if (player.arms[player.arm].level > 1) {
-      --player.arms[player.arm].level;
+  while (arm->exp < 0) {
+    if (arm->level > 1) {
+      --arm->level;
 
-      const int lv = player.arms[player.arm].level - 1;
-      player.arms[player.arm].exp = plr_arms_exptab[player.arm][lv] + player.arms[player.arm].exp;
+      const int lv = arm->level - 1;
+      arm->exp = plr_arms_exptab[arm->id][lv] + arm->exp;
 
-      if (player.life > 0 && player.arm != 13)
+      if (player.life > 0 && arm->id != 13)
         caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_RIGHT);
     } else {
-      player.arms[player.arm].exp = 0;
+      arm->exp = 0;
     }
   }
 
@@ -884,53 +877,23 @@ void plr_add_max_life(int val) {
   plr_add_life(val);
 }
 
-void plr_add_exp(int val) {
-  int lv = player.arms[player.arm].level - 1;
-
-  player.arms[player.arm].exp += val;
-
-  if (lv == 2) {
-    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][lv]) {
-      player.arms[player.arm].exp = plr_arms_exptab[player.arm][lv];
-      if (player.equip & EQUIP_WHIMSICAL_STAR) {
-        if (player.star < PLR_MAX_STAR)
-          ++player.star;
-      }
-    }
-  } else {
-    for (; lv < 2; ++lv) {
-      if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][lv]) {
-        ++player.arms[player.arm].level;
-        player.arms[player.arm].exp = 0;
-        if (player.arm != 13) {
-          snd_play_sound(PRIO_NORMAL, 27, FALSE);
-          caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
-        }
-      }
-    }
-  }
-
-  if (player.arm != 13) {
-    player.exp_count += val;
-    player.exp_wait = 30;
-  } else {
-    player.exp_wait = 10;
+void plr_add_ammo(int arm_id, int val) {
+  // find either missile launcher or super missile launcher and
+  // give ammo for it
+  plr_arm_data_t *arm = plr_arm_find_missile_launcher();
+  if (arm) {
+    arm->ammo += val;
+    if (arm->ammo > arm->max_ammo)
+      arm->ammo = arm->max_ammo;
   }
 }
 
-void plr_add_ammo(int arm, int val) {
-  // if player has missile launcher, give missile launcher ammo;
-  // otherwise give super missile launcher ammo (if player has one)
-  int a;
-  if (player.arms[5].owned)
-    a = 5;
-  else if (player.arms[10].owned)
-    a = 10;
-  else
-    return;
-  player.arms[a].ammo += val;
-  if (player.arms[a].ammo > player.arms[a].max_ammo)
-    player.arms[a].ammo = player.arms[a].max_ammo;
+int plr_item_find(const u32 item) {
+  for (int i = 0; i < player.num_items; ++i) {
+    if (player.items[i] == item)
+      return i;
+  }
+  return -1;
 }
 
 void plr_item_equip(const u32 item, const bool equip) {
@@ -941,11 +904,18 @@ void plr_item_equip(const u32 item, const bool equip) {
 }
 
 void plr_item_give(const u32 item) {
-  player.items[item] = TRUE;
+  if (plr_item_find(item) < 0)
+    player.items[player.num_items++] = item;
 }
 
 void plr_item_take(const u32 item) {
-  player.items[item] = FALSE;
+  const int idx = plr_item_find(item);
+  if (idx < 0) return;
+  // nuke it from the array
+  const int next = idx + 1;
+  const int count = player.num_items - next;
+  if (count) memcpy(&player.items[idx], &player.items[next], count * sizeof(*player.items));
+  --player.num_items;
 }
 
 void plr_star_reset(void) {

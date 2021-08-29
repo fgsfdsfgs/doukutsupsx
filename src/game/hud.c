@@ -165,11 +165,11 @@ static inline void hud_draw_ammo(void) {
   if (player.arms_x < 16)
     player.arms_x += 2;
 
-  const int arm_id = player.arm;
+  const int arm = player.arm;
 
-  if (player.arms[arm_id].max_ammo) {
-    hud_draw_number(player.arms[arm_id].ammo, player.arms_x + 32 + 24, 16);
-    hud_draw_number(player.arms[arm_id].max_ammo, player.arms_x + 32 + 24, 24);
+  if (player.arms[arm].max_ammo) {
+    hud_draw_number(player.arms[arm].ammo, player.arms_x + 32 + 24, 16);
+    hud_draw_number(player.arms[arm].max_ammo, player.arms_x + 32 + 24, 24);
   } else {
     gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, player.arms_x + 48, 16); // "--"
     gfx_draw_texrect(&hud_rc_ammo[2], GFX_LAYER_FRONT, player.arms_x + 48, 24); // "--"
@@ -178,15 +178,15 @@ static inline void hud_draw_ammo(void) {
   if (player.shock / 2 % 2)
     return;
 
-  int lv = player.arms[arm_id].level;
+  int lv = player.arms[arm].level;
   gfx_draw_texrect_8x8(&hud_rc_ammo[0], GFX_LAYER_FRONT, player.arms_x + 32, 24); // "/"
   gfx_draw_texrect(&hud_rc_ammo[1], GFX_LAYER_FRONT, player.arms_x, 32); // "Lv"
   hud_draw_number(lv, player.arms_x + 16, 32);
 
   if (lv) --lv;
 
-  const int exp_now = player.arms[arm_id].exp;
-  const int exp_max = plr_arms_exptab[arm_id][lv];
+  const int exp_now = player.arms[arm].exp;
+  const int exp_max = plr_arms_exptab[player.arms[arm].id][lv];
 
   gfx_draw_texrect(&hud_rc_ammo[3], GFX_LAYER_FRONT, player.arms_x + 24, 32);
 
@@ -222,31 +222,18 @@ static inline void hud_draw_air(void) {
 }
 
 static inline void hud_draw_arms(void) {
-  if (player.arm == 0)
+  if (player.num_arms == 0)
     return;
 
-  // this is one of the places where the original system wins
-  int owned[PLR_MAX_ARMS];
-  int numowned = 0;
-  int selidx = 0;
-  for (int i = 0; i < plr_arms_order_num; ++i) {
-    const int arm_id = plr_arms_order[i];
-    if (player.arms[arm_id].owned) {
-      if (player.arm == arm_id)
-        selidx = numowned;
-      owned[numowned++] = arm_id;
-    }
-  }
-
-  for (int i = 0; i < numowned; ++i) {
-    const int arm_id = owned[i];
-    int x = ((i - selidx) * 16) + player.arms_x;
+  for (int i = 0; i < player.num_arms; ++i) {
+    const int arm_id = player.arms[i].id;
+    int x = ((i - player.arm) * 16) + player.arms_x;
     if (x < 8)
-      x += 48 + (numowned * 16);
+      x += 48 + (player.num_arms * 16);
     else if (x >= 24)
       x += 48;
-    if (x >= 72 + ((numowned - 1) * 16))
-      x -= 48 + (numowned * 16);
+    if (x >= 72 + ((player.num_arms - 1) * 16))
+      x -= 48 + (player.num_arms * 16);
     if (x < 72 && x >= 24)
       x -= 48;
     gfx_draw_texrect_16x16(&hud_rc_arms[arm_id], GFX_LAYER_FRONT, x, 16);

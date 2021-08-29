@@ -27,17 +27,6 @@ const s16 plr_arms_exptab[PLR_MAX_ARMS][3] = {
   { 40, 60, 200 }
 };
 
-// snake, machinegun and spur are first, since they can be traded for;
-// weapons #6, #8 and #11 do not exist
-const s8 plr_arms_order[] = {
-  1, 4, 13, 2, 5, 3, 7, 9, 10, 12,
-};
-
-const int plr_arms_order_num = sizeof(plr_arms_order) / sizeof(*plr_arms_order);
-
-// reverse lookup (arm id -> arm order)
-s8 plr_arms_order_reverse[PLR_MAX_ARMS];
-
 // using statics for these counters is not good, but that's how the original does it
 // if I change this, this will probably fuck up some delicate timings or something
 static int empty_cooldown;
@@ -814,19 +803,38 @@ static const arm_func_t arm_functab[] = {
   arm_act_spur,
 };
 
+plr_arm_data_t *plr_arm_find(const u8 id) {
+  for (int i = 0; i < player.num_arms; ++i) {
+    if (player.arms[i].id == id)
+      return &player.arms[i];
+  }
+  return NULL;
+}
+
+plr_arm_data_t *plr_arm_find_missile_launcher(void) {
+  // the player can only own one of these at a time
+  for (int i = 0; i < player.num_arms; ++i) {
+    if (player.arms[i].id == 5 || player.arms[i].id == 10)
+      return &player.arms[i];
+  }
+  return NULL;
+}
+
 void plr_arm_reset_exp(void) {
   player.arms[player.arm].level = 1;
   player.arms[player.arm].exp = 0;
 }
 
 void plr_arm_add_exp(int val) {
-  int lv = player.arms[player.arm].level - 1;
+  plr_arm_data_t *arm = &player.arms[player.arm];
 
-  player.arms[player.arm].exp += val;
+  int lv = arm->level - 1;
+
+  arm->exp += val;
 
   if (lv == 2) {
-    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][2]) {
-      player.arms[player.arm].exp = plr_arms_exptab[player.arm][2];
+    if (arm->exp >= plr_arms_exptab[arm->id][2]) {
+      arm->exp = plr_arms_exptab[arm->id][2];
       if (player.equip & EQUIP_WHIMSICAL_STAR) {
         if (player.star < PLR_MAX_STAR)
           ++player.star;
@@ -834,10 +842,10 @@ void plr_arm_add_exp(int val) {
     }
   } else {
     for (; lv < 2; ++lv) {
-      if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][lv]) {
-        ++player.arms[player.arm].level;
-        player.arms[player.arm].exp = 0;
-        if (player.arm != 13) {
+      if (arm->exp >= plr_arms_exptab[arm->id][lv]) {
+        ++arm->level;
+        arm->exp = 0;
+        if (arm->id != 13) {
           snd_play_sound(PRIO_NORMAL, 27, FALSE);
           caret_spawn(player.x, player.y, CARET_LEVEL_UP, DIR_LEFT);
         }
@@ -845,7 +853,7 @@ void plr_arm_add_exp(int val) {
     }
   }
 
-  if (player.arm != 13) {
+  if (arm->id != 13) {
     player.exp_count += val;
     player.exp_wait = 30;
   } else {
@@ -855,7 +863,7 @@ void plr_arm_add_exp(int val) {
 
 bool plr_arm_at_max_exp(void) {
   if (player.arms[player.arm].level == 3) {
-    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arm][2])
+    if (player.arms[player.arm].exp >= plr_arms_exptab[player.arms[player.arm].id][2])
       return TRUE;
   }
   return FALSE;
@@ -863,7 +871,7 @@ bool plr_arm_at_max_exp(void) {
 
 void plr_arm_reset_spur_charge(void) {
   spur_charge = 0;
-  if (player.arm == 13)
+  if (player.arms[player.arm].id == 13)
     plr_arm_reset_exp();
 }
 
@@ -888,57 +896,35 @@ bool plr_arm_use_ammo(const int val) {
 }
 
 void plr_arm_swap_to_first(void) {
-  // swap to first available arm in the order
-  for (int i = 0; i < plr_arms_order_num; ++i) {
-    if (player.arms[plr_arms_order[i]].owned) {
-      player.arm = plr_arms_order[i];
-      player.arms_x = 32;
-      snd_play_sound(PRIO_NORMAL, 4, FALSE);
-      return;
-    }
-  }
-  // got no weapons, just swap to empty
   player.arm = 0;
+  if (player.num_arms) {
+    player.arms_x = 32;
+    snd_play_sound(PRIO_NORMAL, 4, FALSE);
+  }
 }
 
 int plr_arm_swap_to_next(void) {
-  const int start = plr_arms_order_reverse[player.arm];
-  if (start < 0) return 0;
+  if (player.num_arms == 0)
+    return 0;
 
   // original game always plays the change effects
   player.arms_x = 32;
+  player.arm = (player.arm + 1) % player.num_arms;
   snd_play_sound(PRIO_NORMAL, 4, FALSE);
 
-  for (int i = 1; i < plr_arms_order_num; ++i) {
-    const int arm = plr_arms_order[(start + i) % plr_arms_order_num];
-    if (player.arms[arm].owned) {
-      player.arm = arm;
-      return arm;
-    }
-  }
-
-  return 0;
+  return player.arm;
 }
 
 int plr_arm_swap_to_prev(void) {
-  const int start = plr_arms_order_reverse[player.arm];
-  if (start < 0) return 0;
+  if (player.num_arms == 0)
+    return 0;
 
   // original game always plays the change effects
-  player.arms_x = 32;
+  player.arms_x = 0;
+  player.arm = (player.arm + player.num_arms - 1) % player.num_arms;
   snd_play_sound(PRIO_NORMAL, 4, FALSE);
 
-  for (int i = 1; i < plr_arms_order_num - 1; ++i) {
-    const int arm = plr_arms_order[(start + plr_arms_order_num - i) % plr_arms_order_num];
-    if (player.arms[arm].owned) {
-      player.arm = arm;
-      player.arms_x = 0;
-      snd_play_sound(PRIO_NORMAL, 4, FALSE);
-      return arm;
-    }
-  }
-
-  return 0;
+  return player.arm;
 }
 
 void plr_arm_shoot(void) {
@@ -959,69 +945,64 @@ void plr_arm_shoot(void) {
 
   // Run functions
   if (!(player.cond & PLRCOND_INVISIBLE))
-    arm_functab[player.arm](player.arms[player.arm].level);
+    arm_functab[player.arms[player.arm].id](player.arms[player.arm].level);
 }
 
 bool plr_arm_give(const int id, const int max_ammo) {
-  if (player.arms[id].owned == FALSE) {
-    memset(&player.arms[id], 0, sizeof(player.arms[id]));
-    player.arms[id].level = 1;
-    player.arms[id].owned = TRUE;
-    if (player.arm == 0)
-      player.arm = id;
+  plr_arm_data_t *arm = plr_arm_find(id);
+  if (arm == NULL) {
+    // add new arm
+    const int idx = player.num_arms++;
+    arm = &player.arms[idx];
+    memset_word(arm, 0, sizeof(*arm));
+    arm->id = id;
+    arm->level = 1;
   }
 
-  player.arms[id].max_ammo += max_ammo;
-  player.arms[id].ammo += max_ammo;
-  if (player.arms[id].ammo > player.arms[id].max_ammo)
-    player.arms[id].ammo = player.arms[id].max_ammo;
+  arm->max_ammo += max_ammo;
+  arm->ammo += max_ammo;
+  if (arm->ammo > arm->max_ammo)
+    arm->ammo = arm->max_ammo;
 
   return TRUE;
 }
 
 bool plr_arm_take(const int id) {
-  if (!player.arms[id].owned)
-    return FALSE;
-  player.arms[id].owned = FALSE;
+  plr_arm_data_t *arm = plr_arm_find(id);
+  if (arm == NULL) return FALSE;
+  // nuke it from the array
+  const int idx = arm - player.arms + 1;
+  const int count = player.num_arms - idx;
+  if (count) memcpy_word(arm, &player.arms[idx], count * sizeof(*arm));
+  --player.num_arms;
+  // swap to first weapon in case it was selected
   plr_arm_swap_to_first();
   return TRUE;
 }
 
 bool plr_arm_trade(const int id, const int new_id, const int new_max_ammo) {
-  if (!player.arms[id].owned)
-    return TRUE;
+  plr_arm_data_t *arm = plr_arm_find(id);
+  if (arm == NULL) return FALSE;
 
-  player.arms[new_id].owned = TRUE;
-  player.arms[new_id].level = 1;
-  player.arms[new_id].exp = 0;
-  player.arms[new_id].max_ammo = player.arms[id].max_ammo + new_max_ammo;
-  player.arms[new_id].ammo = player.arms[id].ammo + new_max_ammo;
-
-  player.arms[id].owned = FALSE;
-  player.arms[id].ammo = 0;
-  player.arms[id].exp = 0;
-  player.arms[id].level = 1;
-
-  // make sure player isn't stuck on unowned weapon
-  if (id == player.arm)
-    player.arm = new_id;
+  // replace it with the new weapon in place
+  arm->id = new_id;
+  arm->level = 1;
+  arm->exp = 0;
+  arm->max_ammo += new_max_ammo;
+  arm->ammo += new_max_ammo;
 
   return TRUE;
 }
 
 void plr_arms_refill_all(void) {
-  for (int i = 0; i < PLR_MAX_ARMS; ++i) {
-    if (player.arms[i].owned)
-      player.arms[i].ammo = player.arms[i].max_ammo;
-  }
+  for (int i = 0; i < player.num_arms; ++i)
+    player.arms[i].ammo = player.arms[i].max_ammo;
 }
 
 void plr_arms_empty_all(void) {
-  for (int i = 0; i < PLR_MAX_ARMS; ++i) {
-    if (player.arms[i].owned) {
-      player.arms[i].ammo = 0;
-      player.arms[i].exp = 0;
-      player.arms[i].level = 1;
-    }
+  for (int i = 0; i < player.num_arms; ++i) {
+    player.arms[i].ammo = 0;
+    player.arms[i].exp = 0;
+    player.arms[i].level = 1;
   }
 }

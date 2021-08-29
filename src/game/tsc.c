@@ -406,7 +406,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
     case 0x0C: // SKJ
       return tsc_op_condjmp(game_get_skipflag(args[0]), args[1]);
     case 0x0D: // AMJ
-      return tsc_op_condjmp(player.arms[args[0]].owned, args[1]);
+      return tsc_op_condjmp((plr_arm_find(args[0]) != NULL), args[1]);
     /* common opcodes */
     case 0x0E: // FRE
       game_flags |= (GFLAG_INPUT_ENABLED | GFLAG_UPDATE_OBJECTS);
