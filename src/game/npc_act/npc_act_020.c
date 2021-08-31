@@ -849,7 +849,7 @@ void npc_act_035(npc_t *npc) {
   if (npc->act < 3 && npc->life < 90) {
     snd_play_sound(PRIO_NORMAL, 71, FALSE);
     npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 8, 0);
-    npc_spawn_exp(npc->x, npc->y, npc->info->exp);
+    npc_spawn_exp(npc->x, npc->y, npc->exp);
     npc->act = 3;
     npc->act_wait = 0;
     npc->anim = 2;

@@ -156,7 +156,7 @@ void npc_act_001(npc_t *npc) {
 
   // Size
   if (npc->act != 0) {
-    switch (npc->info->exp) {
+    switch (npc->exp) {
       case 5:
         npc->rect_delta.top = 16;
         npc->rect_delta.bottom = 16;
