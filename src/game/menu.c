@@ -236,6 +236,7 @@ static const char *str_pause[] = {
 };
 
 static void menu_pause_open(void) {
+  main_sel = 0;
   main_count = 3;
   main_choices = str_pause;
   main_tip_y = MAIN_TOOLTIP_OFSY;
