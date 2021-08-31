@@ -402,7 +402,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
     case 0x0A: // FLJ
       return tsc_op_condjmp(npc_get_flag(args[0]), args[1]);
     case 0x0B: // ITJ
-      return tsc_op_condjmp(player.items[args[0]], args[1]);
+      return tsc_op_condjmp((plr_item_find(args[0]) >= 0), args[1]);
     case 0x0C: // SKJ
       return tsc_op_condjmp(game_get_skipflag(args[0]), args[1]);
     case 0x0D: // AMJ
