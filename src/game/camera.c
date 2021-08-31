@@ -86,7 +86,7 @@ void cam_target_player(const int delay) {
 
 void cam_target_boss(const int boss_num, const int delay) {
   camera.tgt_x = &npc_boss[boss_num].x;
-  camera.tgt_x = &npc_boss[boss_num].y;
+  camera.tgt_y = &npc_boss[boss_num].y;
   camera.wait = delay;
 }
 
