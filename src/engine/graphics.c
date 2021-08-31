@@ -294,6 +294,18 @@ void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const
   plist_append(&primlist[layer], sizeof(*prim));
 }
 
+void gfx_draw_texrect_16x16_ofs(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int du, const int dv) {
+  // SPRTs have no tpage field, so we have to make do
+  gfx_update_tpage(layer, texrect->tpage);
+  SPRT_16 *prim = (SPRT_16 *)primptr;
+  setSprt16(prim);
+  setRGB0(prim, 0x80, 0x80, 0x80);
+  setXY0(prim, x, y);
+  setUV0(prim, texrect->u + du, texrect->v + dv);
+  prim->clut = gfx_surf[texrect->surf].clut;
+  plist_append(&primlist[layer], sizeof(*prim));
+}
+
 // for hud numbers
 void gfx_draw_texrect_8x8(const gfx_texrect_t *texrect, const int layer, const int x, const int y) {
   // SPRTs have no tpage field, so we have to make do

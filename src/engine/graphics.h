@@ -88,6 +88,7 @@ void gfx_draw_texrect_wide(const gfx_texrect_t *texrect, const int layer, const 
 void gfx_draw_texrect_ofs(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int du, const int dv);
 void gfx_draw_texrect_scaled(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int scale);
 void gfx_draw_texrect_16x16(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
+void gfx_draw_texrect_16x16_ofs(const gfx_texrect_t *texrect, const int layer, const int x, const int y, const int du, const int dv);
 void gfx_draw_texrect_8x8(const gfx_texrect_t *texrect, const int layer, const int x, const int y);
 void gfx_draw_tile(u8 tile_x, u8 tile_y, const int layer, const int x, const int y);
 void gfx_draw_string(const char *str, const int layer, int x, int y);

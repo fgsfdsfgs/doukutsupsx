@@ -237,10 +237,8 @@ static inline void plr_draw_arm(int plr_vx, int plr_vy, int cam_vx, int cam_vy) 
 }
 
 static inline void plr_draw_char(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
-  gfx_texrect_t rect = player.rect;
-  if (player.equip & EQUIP_MIMIGA_MASK)
-    rect.r.y += CHAR_FRAME_H * 2;
-  gfx_draw_texrect_16x16(&rect, GFX_LAYER_BACK, plr_vx - cam_vx, plr_vy - cam_vy);
+  const int dv = (player.equip & EQUIP_MIMIGA_MASK) ? (CHAR_FRAME_H * 2) : 0;
+  gfx_draw_texrect_16x16_ofs(&player.rect, GFX_LAYER_BACK, plr_vx - cam_vx, plr_vy - cam_vy, 0, dv);
 }
 
 static inline void plr_draw_bubble(int plr_vx, int plr_vy, int cam_vx, int cam_vy) {
