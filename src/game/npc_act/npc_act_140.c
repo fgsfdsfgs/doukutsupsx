@@ -554,7 +554,7 @@ void npc_act_144(npc_t *npc) {
     npc->rect = &rc_right[npc->anim];
 
   if (npc->act == 1) {
-    npc->rect_delta.bottom = npc->act_wait / 4;
+    npc->rect_delta.bottom = npc->rect->top + (npc->act_wait / 4) - npc->rect->bottom;
     npc->rect_prev = NULL; // force texrect update
     if (npc->act_wait / 2 % 2)
       npc->x = npc->tgt_x;
@@ -1075,14 +1075,14 @@ void npc_act_150(npc_t *npc) {
 
   if (npc->act == 21) {
     npc->rect_prev = NULL; // force texrect update
-    npc->rect_delta.bottom = (npc->act_wait / 4);
+    npc->rect_delta.bottom = npc->rect->top + npc->act_wait / 4 - npc->rect->bottom;
     if (npc->act_wait / 2 % 2) npc->rect_delta.left = 1;
   }
 
   // Use a different sprite if the player is wearing the Mimiga Mask
   if (player.equip & EQUIP_MIMIGA_MASK) {
-    npc->rect_delta.top = 32;
-    npc->rect_delta.bottom = 32;
+    npc->rect_delta.top += 32;
+    npc->rect_delta.bottom += 32;
     npc->rect_prev = NULL; // force texrect update
   }
 }

@@ -1216,7 +1216,7 @@ void npc_act_012(npc_t *npc) {
     npc->rect = &rc_right[npc->anim];
 
   if (npc->act == 71) {
-    npc->rect_delta.bottom = npc->rect_delta.top + npc->act_wait / 2 - npc->rect->bottom;
+    npc->rect_delta.bottom = npc->rect->top + npc->act_wait / 2 - npc->rect->bottom;
     if (npc->act_wait % 2)
       npc->rect_delta.left = 1;
     npc->rect_prev = NULL; // force texrect update

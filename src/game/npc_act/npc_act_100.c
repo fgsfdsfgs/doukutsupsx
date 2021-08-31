@@ -802,7 +802,7 @@ void npc_act_112(npc_t *npc) {
   }
 
   if (npc->act == 1) {
-    npc->rect_delta.bottom += npc->rect->top + (npc->act_wait / 4) - npc->rect->bottom;
+    npc->rect_delta.bottom = npc->rect->top + (npc->act_wait / 4) - npc->rect->bottom;
     if (npc->act_wait / 2 % 2) npc->rect_delta.left = 1;
   }
 
