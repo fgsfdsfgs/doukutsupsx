@@ -343,7 +343,7 @@ void npc_act_205(npc_t *npc) {
         npc->damage = 0;
         snd_play_sound(PRIO_NORMAL, 12, FALSE);
         npc_spawn_death_fx(npc->x, npc->y, npc->view.back, 4, 0);
-        // SetBullet(24, npc->x, npc->y, 0);
+        bullet_spawn(24, npc->x, npc->y, 0);
         return;
       }
 
