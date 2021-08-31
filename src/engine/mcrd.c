@@ -192,7 +192,6 @@ mcrd_result_t mcrd_card_open(const mcrd_id_t id) {
   mcrd_clear_events(MCRD_EV_SW);
   _card_load(chan);
   const u32 ev = mcrd_wait_event(MCRD_EV_SW);
-  printf("mcrd_card_open(%d, %d): event %08x\n", id.port, id.card, ev);
 
   switch (ev) {
     case EvSpTIMOUT: return MCRD_NO_CARD;

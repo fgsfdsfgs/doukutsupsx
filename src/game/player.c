@@ -933,3 +933,38 @@ void plr_star_reset(void) {
   star[2].xvel = 0x200;
   star[2].yvel = 0x200;
 }
+
+void plr_debug_cheat(void) {
+  // debug cheat
+  snd_play_sound(PRIO_HIGH, 1, FALSE);
+  // give weapons
+  plr_arm_give(3, 0);
+  plr_arm_give(5, 100);
+  plr_arm_give(7, 100);
+  plr_arm_give(12, 0);
+  plr_arm_give(13, 0);
+  npc_set_flag(201); // got missile launcher
+  player.arm = 0;
+  // heal
+  player.max_life = 999;
+  player.life = player.life_bar = player.max_life;
+  // give map
+  plr_item_give(2);
+  player.equip |= EQUIP_MAP;
+  // give booster 2.0
+  plr_item_give(23);
+  player.equip |= EQUIP_BOOSTER_2_0;
+  // give whimsical star
+  plr_item_give(38);
+  player.equip |= EQUIP_WHIMSICAL_STAR;
+  // give air tank
+  player.equip |= EQUIP_AIR_TANK;
+  // give nikumaru counter
+  plr_item_give(22);
+  // give arthur's key and set flags
+  plr_item_give(1);
+  npc_set_flag(390);
+  npc_set_flag(320);
+  npc_set_flag(321);
+  npc_set_flag(302);
+}

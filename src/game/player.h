@@ -138,3 +138,5 @@ void plr_arms_refill_all(void);
 void plr_arms_empty_all(void);
 
 void plr_star_reset(void);
+
+void plr_debug_cheat(void);

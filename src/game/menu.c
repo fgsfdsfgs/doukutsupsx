@@ -17,6 +17,8 @@
 #include "game/profile.h"
 #include "game/menu.h"
 
+#define MAIN_TOOLTIP_OFSY 40
+
 static int menu_id = MENU_NONE;
 
 // triangle, circle, cross, square
@@ -64,10 +66,12 @@ static gfx_texrect_t rc_island_sprite = {{ 0, 0, 40, 24 }};
 // common variables used by simple multiple-choice menus
 static int main_sel = 0;
 static int main_count = 0;
+static int main_tip_y = MAIN_TOOLTIP_OFSY;
 static u32 main_tick = 0;
 static const char **main_choices;
 static const u8 main_bg_rgb[] = { 32, 32, 32 };
 static const u8 main_title_rgb[] = { 243, 226, 152 };
+static const u8 main_tip_rgb[] = { 176, 176, 176 };
 static const u8 main_black_rgb[] = { 0, 0, 0 };
 static const u8 main_barbg_rgb[] = { 16, 16, 16 };
 
@@ -163,6 +167,17 @@ static inline void menu_generic_draw(int x, int y) {
     draw_string_shadow(main_choices[i], NULL, x, y + yofs);
 }
 
+static inline void menu_draw_tooltip(void) {
+  const int btn_cancel = menu_padbutton_index(input_binds[11]);
+  const int btn_ok = menu_padbutton_index(input_binds[10]);
+  const int y = VID_HEIGHT - GFX_FONT_HEIGHT - 16 + main_tip_y;
+  if (main_tip_y) main_tip_y -= 2;
+  gfx_draw_texrect(&rc_padbuttons[btn_cancel], GFX_LAYER_FRONT, VID_WIDTH / 2 - 10 * GFX_FONT_WIDTH - 2, y);
+  draw_string_shadow("Cancel", main_tip_rgb, VID_WIDTH / 2 - 8 * GFX_FONT_WIDTH, y);
+  gfx_draw_texrect(&rc_padbuttons[btn_ok], GFX_LAYER_FRONT, VID_WIDTH / 2 + 2 * GFX_FONT_WIDTH + 2, y);
+  draw_string_shadow("Select", main_tip_rgb, VID_WIDTH / 2 + 4 * GFX_FONT_WIDTH + 4, y);
+}
+
 /* default func */
 
 static void menu_null(void) {
@@ -179,6 +194,7 @@ static void menu_title_open(void) {
   main_count = 3;
   main_sel = 0;
   main_choices = submenu_text;
+  main_tip_y = MAIN_TOOLTIP_OFSY;
   // the title surface is only loaded in one specific map, so we can't do this in init
   gfx_set_texrect(&rc_main_title, SURFACE_ID_TITLE);
   // set title music (should be loaded with the "u" stagebank)
@@ -215,61 +231,42 @@ static void menu_title_draw(void) {
 
 /* pause */
 
+static const char *str_pause[] = {
+  "Resume", "Options", "Quit",
+};
+
+static void menu_pause_open(void) {
+  main_count = 3;
+  main_choices = str_pause;
+  main_tip_y = MAIN_TOOLTIP_OFSY;
+}
+
 static void menu_pause_act(void) {
-  if (input_trig & IN_OK) {
+  const u32 btn = menu_generic_control();
+  if (btn == IN_OK) {
+    snd_play_sound(PRIO_HIGH, 18, FALSE);
     menu_id = MENU_NONE;
-    game_reset();
-    game_start_intro();
+    switch (main_sel) {
+      case 1: // Options
+        menu_open(MENU_OPTIONS);
+        break;
+      case 2: // Quit
+        game_reset();
+        game_start_intro();
+        break;
+    }
   } else if (input_trig & (IN_CANCEL | IN_PAUSE)) {
     menu_id = MENU_NONE;
   } else if (input_trig & IN_DEBUG) {
-    // debug cheat
-    snd_play_sound(PRIO_HIGH, 1, FALSE);
-    // give weapons
-    plr_arm_give(3, 0);
-    plr_arm_give(5, 100);
-    plr_arm_give(7, 100);
-    plr_arm_give(12, 0);
-    plr_arm_give(13, 0);
-    npc_set_flag(201); // got missile launcher
-    player.arm = 0;
-    // heal
-    player.max_life = 999;
-    player.life = player.life_bar = player.max_life;
-    // give map
-    plr_item_give(2);
-    player.equip |= EQUIP_MAP;
-    // give booster 2.0
-    plr_item_give(23);
-    player.equip |= EQUIP_BOOSTER_2_0;
-    // give whimsical star
-    plr_item_give(38);
-    player.equip |= EQUIP_WHIMSICAL_STAR;
-    // give air tank
-    player.equip |= EQUIP_AIR_TANK;
-    // give nikumaru counter
-    plr_item_give(22);
-    // give arthur's key and set flags
-    plr_item_give(1);
-    npc_set_flag(390);
-    npc_set_flag(320);
-    npc_set_flag(321);
-    npc_set_flag(302);
+    plr_debug_cheat();
   }
 }
 
 static void menu_pause_draw(void) {
   // clear screen
   gfx_draw_clear(gfx_clear_rgb, GFX_LAYER_FRONT);
-  // draw the prompt
-  const int x = (VID_WIDTH - rc_pause.r.w) / 2;
-  const int y = (VID_HEIGHT - rc_pause.r.h) / 2;
-  gfx_draw_texrect(&rc_pause, GFX_LAYER_FRONT, x, y);
-  // TODO: draw the buttons bound to OK/CANCEL
-  const int btn_cancel = menu_padbutton_index(input_binds[11]);
-  const int btn_ok = menu_padbutton_index(input_binds[10]);
-  gfx_draw_texrect(&rc_padbuttons[btn_cancel], GFX_LAYER_FRONT, x, y - 1);
-  gfx_draw_texrect(&rc_padbuttons[btn_ok], GFX_LAYER_FRONT, x + 78, y - 1);
+  menu_generic_draw(MAIN_LEFT + 56, (VID_HEIGHT - 20 * 3) / 2);
+  menu_draw_tooltip();
 }
 
 /* inventory */
@@ -727,6 +724,8 @@ static void menu_saveload_open(void) {
   // this takes a while the first time
   mcrd_start();
 
+  main_tip_y = MAIN_TOOLTIP_OFSY;
+
   saveload.num_cards = mcrd_cards_available(saveload.cards);
 
   if (saveload.num_cards) {
@@ -992,6 +991,8 @@ static void menu_saveload_draw(void) {
       menu_generic_draw(VID_WIDTH / 2 - xofs, MAIN_TOP + 80 - 24);
       break;
   }
+
+  menu_draw_tooltip();
 }
 
 /* options menu */
@@ -1087,7 +1088,7 @@ static void menu_options_act(void) {
   if (input_trig & IN_CANCEL) {
     snd_play_sound(PRIO_HIGH, 18, FALSE);
     menu_id = 0;
-    menu_open(MENU_TITLE);
+    menu_open((stage_data && stage_data->id == STAGE_OPENING_ID) ? MENU_TITLE : MENU_PAUSE);
     return;
   }
 
@@ -1258,7 +1259,7 @@ static const struct menu_desc {
 } menu_desctab[] = {
   { menu_null,           menu_null,          menu_null,           FALSE }, // NONE
   { menu_title_open,     menu_title_act,     menu_title_draw,     FALSE }, // TITLE
-  { menu_null,           menu_pause_act,     menu_pause_draw,     FALSE }, // PAUSE
+  { menu_pause_open,     menu_pause_act,     menu_pause_draw,     FALSE }, // PAUSE
   { menu_inventory_open, menu_inventory_act, menu_inventory_draw, TRUE  }, // INVENTORY
   { menu_map_open,       menu_map_act,       menu_map_draw,       TRUE  }, // MAP
   { menu_stagesel_open,  menu_stagesel_act,  menu_stagesel_draw,  TRUE  }, // STAGESELECT
