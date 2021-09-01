@@ -1710,7 +1710,8 @@ static void bullet_act_sword3(bullet_t *bul) {
 }
 
 static void bullet_act_nemesis(bullet_t *bul) {
-  const int level = bul->class_num - 34 + 1;
+  int level = bul->class_num - 34 + 1;
+  if (level > 3) level = 1; // Curly's gun
 
   if (++bul->count1 > bul->life_count) {
     bul->cond = 0;
@@ -1802,10 +1803,11 @@ static void bullet_act_nemesis(bullet_t *bul) {
       break;
   }
 
-  bul->texrect.r.top += ((level - 1) / 2) * 32;
-  bul->texrect.r.bottom += ((level - 1) / 2) * 32;
-  bul->texrect.r.left += ((level - 1) % 2) * 128;
-  bul->texrect.r.right += ((level - 1) % 2) * 128;
+  --level;
+  bul->texrect.r.top += (level / 2) * 32;
+  bul->texrect.r.bottom += (level / 2) * 32;
+  bul->texrect.r.left += (level % 2) * 128;
+  bul->texrect.r.right += (level % 2) * 128;
 }
 
 static void bullet_act_spur(bullet_t *bul) {
