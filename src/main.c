@@ -11,10 +11,12 @@
 #include "engine/filesystem.h"
 #include "engine/input.h"
 #include "engine/mcrd.h"
+#include "engine/exception.h"
 #include "game/game.h"
 
 int main(int argc, char **argv) {
   gfx_init();
+  ex_install_handler();
   cd_init();
   mem_init(); // have to do this AFTER CdInit for some reason
   snd_init(SFX_MAIN_BANK);
