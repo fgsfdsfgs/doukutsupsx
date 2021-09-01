@@ -1,11 +1,13 @@
 TARGET		= doukutsu
 TYPE			= ps-exe
 
+LTOFLAGS	?= -flto
+
 CFLAGS		:= -Isrc -Inugget/psyq/include
 CFLAGS		+= -Wall -Wno-missing-braces -mno-check-zero-division
 
 LDFLAGS		:= -Lnugget/psyq/lib -Wl,--start-group -lcard -lapi -lc2 -lcd -letc -lgpu -lspu -Wl,--end-group
-LDFLAGS		+= -flto
+LDFLAGS		+= $(LTOFLAGS)
 
 SRCDIR		= src
 SRCSUB		= engine game game/npc_act game/boss_act
@@ -28,5 +30,5 @@ $(TARGET).iso: all
 
 include nugget/common.mk
 
-CPPFLAGS_Release	+= -O3 -flto
-LDFLAGS_Release		+= -O3 -flto
+CPPFLAGS_Release	+= -O3 $(LTOFLAGS)
+LDFLAGS_Release		+= -O3 $(LTOFLAGS)
