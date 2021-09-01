@@ -172,6 +172,8 @@ void gfx_swap_buffers(void) {
     ASSERT(primptr <= cur_fb->gpubuf_end);
     if (primlist[GFX_LAYER_BACK].last)
       catPrim(primlist[GFX_LAYER_BACK].last, &primlist[GFX_LAYER_FRONT].first);
+    else
+      catPrim(&primlist[GFX_LAYER_BACK].first, &primlist[GFX_LAYER_FRONT].first);
     if (primlist[GFX_LAYER_FRONT].last)
       termPrim(primlist[GFX_LAYER_FRONT].last);
     DrawOTag((u_long *)&primlist[GFX_LAYER_BACK].first);
