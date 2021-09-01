@@ -179,7 +179,7 @@ void gfx_swap_buffers(void) {
 
   // now we can switch the fb pointer
   cur_fb = &fb[cur_fb_num];
-  cur_tpage[GFX_LAYER_BACK] = cur_tpage[GFX_LAYER_FRONT] = cur_fb->draw.tpage;
+  cur_tpage[GFX_LAYER_BACK] = cur_tpage[GFX_LAYER_FRONT] = 0;
 
   primptr = cur_fb->gpubuf;
   primlist = cur_fb->primlist;
@@ -187,7 +187,7 @@ void gfx_swap_buffers(void) {
   plist_clear(&primlist[GFX_LAYER_FRONT]);
 }
 
-static inline void gfx_update_tpage(const int layer, const u16 tpage) {
+static void gfx_update_tpage(const int layer, const u16 tpage) {
   if (cur_tpage[layer] != tpage) {
     cur_tpage[layer] = tpage;
     DR_TPAGE *tp = (DR_TPAGE *)primptr;
