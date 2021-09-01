@@ -1237,6 +1237,8 @@ static void menu_fall_act(void) {
 }
 
 static void menu_fall_draw(void) {
+  // draw a clear on the background layer just in case there's nothing on the map
+  gfx_draw_clear(main_black_rgb, GFX_LAYER_BACK);
   gfx_draw_clear(main_black_rgb, GFX_LAYER_FRONT);
   gfx_push_cliprect(GFX_LAYER_FRONT, 0, VID_HEIGHT / 2 - 40, VID_WIDTH, 80);
   gfx_draw_texrect(&rc_island_sky, GFX_LAYER_FRONT, VID_WIDTH / 2 - 80, VID_HEIGHT / 2 - 40);
