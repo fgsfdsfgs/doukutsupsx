@@ -187,7 +187,7 @@ void gfx_swap_buffers(void) {
   plist_clear(&primlist[GFX_LAYER_FRONT]);
 }
 
-static void gfx_update_tpage(const int layer, const u16 tpage) {
+static inline void gfx_update_tpage(const int layer, const u16 tpage) {
   if (cur_tpage[layer] != tpage) {
     cur_tpage[layer] = tpage;
     DR_TPAGE *tp = (DR_TPAGE *)primptr;
