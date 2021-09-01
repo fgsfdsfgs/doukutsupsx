@@ -70,4 +70,4 @@ extern u32 profile_stopwatch;
 
 void profile_reset(void);
 void profile_save(void);
-bool profile_load(void);
+bool profile_load(const bool load_skipflags);

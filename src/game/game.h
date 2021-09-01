@@ -40,7 +40,7 @@ extern tele_dest_t tele_dest[GAME_MAX_TELEDEST];
 extern int tele_dest_num;
 
 void game_init(void);
-void game_reset(void);
+void game_reset(const bool reset_skipflags);
 void game_start_intro(void);
 void game_start_new(void);
 void game_frame(void);

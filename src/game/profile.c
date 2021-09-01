@@ -75,11 +75,12 @@ void profile_save(void) {
   printf("profile_save(): stage=%02x stage_bank=%02x\n", profile.save.stage_id, profile.save.stage_bank_id);
 }
 
-bool profile_load(void) {
+bool profile_load(const bool load_skipflags) {
   if (memcmp(profile.magic, PROFILE_MAGIC, 4))
     return FALSE;
 
-  game_reset();
+  // don't reset skip flags, they're either going to be overwritten or we need to keep them as is
+  game_reset(FALSE);
 
   // make sure camera is 100% faded out while we're loading shit
   cam_complete_fade();
@@ -92,11 +93,14 @@ bool profile_load(void) {
   // load globals
   game_tick = profile.save.game_tick;
   game_stopwatch = profile_stopwatch = profile.save.clock_tick;
+  tele_dest_num = profile.save.tele_dest_num;
   memcpy(npc_flags, profile.save.npc_flags, sizeof(npc_flags));
   memcpy(map_flags, profile.save.map_flags, sizeof(map_flags));
-  memcpy(skip_flags, profile.save.skip_flags, sizeof(skip_flags));
   memcpy(tele_dest, profile.save.tele_dest, sizeof(tele_dest));
-  tele_dest_num = profile.save.tele_dest_num;
+
+  // only overwrite skip_flags if loading from main menu
+  if (load_skipflags)
+    memcpy(skip_flags, profile.save.skip_flags, sizeof(skip_flags));
 
   // load stage bank
   gfx_draw_loading();

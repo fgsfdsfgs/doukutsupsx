@@ -74,7 +74,7 @@ void game_start_new(void) {
   stage_transition(13, 200, 10, 8);
 }
 
-void game_reset(void) {
+void game_reset(const bool reset_skipflags) {
   stage_reset();
   tsc_reset();
   npc_reset();
@@ -86,7 +86,10 @@ void game_reset(void) {
   bullet_init();
   org_free();
 
-  memset(skip_flags, 0, sizeof(skip_flags));
+  // only clear skip flags if this is a "true" reset
+  if (reset_skipflags)
+    memset(skip_flags, 0, sizeof(skip_flags));
+
   memset(map_flags, 0, sizeof(map_flags));
   memset(tele_dest, 0, sizeof(tele_dest));
   tele_dest_num = 0;

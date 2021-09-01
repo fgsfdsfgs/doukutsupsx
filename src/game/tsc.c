@@ -631,8 +631,8 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       menu_open(MENU_SAVE);
       return TRUE;
     case 0x50: // LDP
-      if (!profile_load()) {
-        game_reset();
+      if (!profile_load(FALSE)) {
+        game_reset(TRUE);
         game_start_new();
       }
       return TRUE;
@@ -658,12 +658,12 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     case 0x56: // ESC
       // can't exit, so we restart instead in both cases
-      game_reset();
+      game_reset(TRUE);
       game_start_intro();
       return TRUE;
     case 0x57: // INI
       // can't exit, so we restart instead in both cases
-      game_reset();
+      game_reset(TRUE);
       game_start_new();
       return TRUE;
     case 0x58: // PS+

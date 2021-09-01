@@ -22,8 +22,8 @@ static struct {
   s32 count;
   s32 dir;
   bool full;
-  s8 anim[FADE_HEIGHT][FADE_WIDTH];
-  s8 flag[FADE_HEIGHT][FADE_WIDTH];
+  u8 anim[FADE_HEIGHT][FADE_WIDTH];
+  u8 flag[FADE_HEIGHT][FADE_WIDTH];
 } fade;
 
 static struct {

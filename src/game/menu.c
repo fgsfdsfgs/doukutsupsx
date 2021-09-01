@@ -210,7 +210,7 @@ static void menu_title_act(void) {
     snd_play_sound(PRIO_HIGH, 18, FALSE);
     menu_id = 0;
     if (submenus[main_sel] == -1) {
-      game_reset();
+      game_reset(TRUE);
       game_start_new();
     } else {
       menu_open(submenus[main_sel]);
@@ -252,7 +252,7 @@ static void menu_pause_act(void) {
         menu_open(MENU_OPTIONS);
         break;
       case 2: // Quit
-        game_reset();
+        game_reset(TRUE);
         game_start_intro();
         break;
     }
@@ -747,7 +747,7 @@ static inline void menu_saveload_close(const bool success) {
   // if we're in the intro or ending stage, re-open the main menu
   if (!stage_data || stage_data->id == STAGE_OPENING_ID || stage_data->id == STAGE_CREDITS_ID) {
     if (stage_data->id == STAGE_CREDITS_ID) {
-      game_reset();
+      game_reset(TRUE);
       game_start_intro();
     } else {
       menu_open(MENU_TITLE);
@@ -846,7 +846,7 @@ static inline void menu_saveload_do_load(const int slot) {
     menu_saveload_set_state(SLSTATE_ERROR, "Could not write save file.", 1);
   } else {
     // try to actually load the game
-    if (!profile_load())
+    if (!profile_load(TRUE))
       menu_saveload_set_state(SLSTATE_ERROR, "Invalid save file.", 1);
     else
       menu_saveload_close(TRUE);
