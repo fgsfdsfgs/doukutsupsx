@@ -1,7 +1,10 @@
 This project is based on CSE2, a decompilation of the original freeware Cave Story executables.
 Original Cave Story code and assets belong to Daisuke "Pixel" Amaya.
 
-Any modifications and PSX platform specific code are licensed under the MIT License:
+Any modifications, custom tools and PSX platform specific code are licensed under the
+following license:
+
+MIT License
 
 Copyright (c) 2019 Regan "cuckydev" Green
 Copyright (c) 2019-2020 Clownacy
