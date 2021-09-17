@@ -35,12 +35,13 @@ Controls can be rebound in the Options menu.
 1. Obtain GNU Make and GCC for targets `mipsel-none-elf` or `mipsel-linux-gnu`:
     * on Windows: see [this section](https://github.com/ABelliqueux/nolibgs_hello_worlds#mips-toolchain-setup) or use WSL;
     * on Linux: see [this section](https://github.com/ABelliqueux/nolibgs_hello_worlds#install-your-distributions-mips-toolchain).
-2. Clone this repository: `git clone --recursive https://github.com/fgsfdsfgs/doukutsupsx && cd doukutsupsx`
-3. Obtain [converted PsyQ 4.7 libraries](http://psx.arthus.net/sdk/Psy-Q/psyq-4.7-converted-full.7z) and extract them into `nugget/psyq/`.
-4. (Optional) If you have the PsyQ license files (`LICENSEA.DAT`, `LICENSEE.DAT`, `LICENSEJ.DAT`), put them into this folder and uncomment
+2. Obtain [mkpsxiso](https://github.com/Lameguy64/mkpsxiso) and ensure it is in `PATH`.
+3. Clone this repository: `git clone --recursive https://github.com/fgsfdsfgs/doukutsupsx && cd doukutsupsx`
+4. Obtain [converted PsyQ 4.7 libraries](http://psx.arthus.net/sdk/Psy-Q/psyq-4.7-converted-full.7z) and extract them into `nugget/psyq/`.
+5. (Optional) If you have the PsyQ license files (`LICENSEA.DAT`, `LICENSEE.DAT`, `LICENSEJ.DAT`), put them into this folder and uncomment
 one of the `<license>` lines in `iso.xml` to inject it into the resulting ISO. This will give it a proper boot logo and might be required
 by some BIOS versions (?).
-5. Run `make iso`. This should produce an ISO file called `doukutsu.iso`.
+6. Run `make iso`. This should produce an ISO file called `doukutsu.iso`.
 
 ### Credits
 
@@ -48,7 +49,10 @@ by some BIOS versions (?).
 * CuckyDev, Clownacy, Gabriel Ravier and probably others for CSE2;
 * [PCSX-Redux authors](https://github.com/grumpycoders/pcsx-redux/blob/main/AUTHORS) for Nugget and PCSX-Redux itself;
 * Schnappy for [nolibgs_hello_worlds](https://github.com/ABelliqueux/nolibgs_hello_worlds) and the toolchain setup instructions;
-* Lameguy64 for PSn00bSDK, which was used for the earlier versions of this port;
+* Lameguy64 for PSn00bSDK, which was used for the earlier versions of this port, and for mkpsxiso;
+* Adrian "asie" Siekierka and Ben "GreaseMonkey" Russell for libpsxav;
+* Sean Barrett for stb_image;
+* David Reid for dr_wav;
 * axetion, CuckyDev, impiaaa, Infu, Nicolas Noble, peach, Schnappy, sickle, Stenzek and other nice people from the PSXDEV Discord server
 for help and testing;
 * probably more people I'm forgetting.
