@@ -45,7 +45,7 @@ by some BIOS versions (?).
 
 ### Credits
 
-* Daisuke "Pixel" Amaya for the original Cave Story;
+* Daisuke "Pixel" Amaya for the original Cave Story and Aeon Genesis for the English translation;
 * CuckyDev, Clownacy, Gabriel Ravier and probably others for CSE2;
 * [PCSX-Redux authors](https://github.com/grumpycoders/pcsx-redux/blob/main/AUTHORS) for Nugget and PCSX-Redux itself;
 * Schnappy for [nolibgs_hello_worlds](https://github.com/ABelliqueux/nolibgs_hello_worlds) and the toolchain setup instructions;
