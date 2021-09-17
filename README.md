@@ -27,6 +27,7 @@ Save Points when you die even if you don't have a memory card, though. Multitap 
 * `START`: pause menu;
 * `L2`: item menu;
 * `R2`: map screen.
+
 Controls can be rebound in the Options menu.
 
 ### How to build
