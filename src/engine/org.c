@@ -65,6 +65,7 @@ typedef struct {
   org_trackstate_t tracks[MAX_TRACKS];
   u32 id;
   s32 vol;
+  s32 mastervol;
   s32 pos;
   s32 paused;
   u8 fadeout;
@@ -126,6 +127,7 @@ void org_init(void) {
   org.def_pan = DEFPAN;
   org.def_vol = DEFVOLUME;
   org.id = ORG_INVALID;
+  org.mastervol = 0x60;
   // we'll keep the SPU addresses of the currently playing song until it gets reloaded
   inst_bank = mem_alloc(sizeof(*inst_bank) + 64 * sizeof(inst_bank->sfx_addr[0]));
 }
@@ -160,7 +162,7 @@ bool org_load(const u32 id, u8 *data, sfx_bank_t *bank) {
   printf("org_load: total notes: %u / %u\n", numnotes, ALLOCNOTE);
 
   org.id = id;
-  org.vol = 0x60;
+  org.vol = org.mastervol;
 
   // store SPU addresses of this song and upload sample data
   memcpy(inst_bank, bank, sizeof(*bank) + sizeof(u32) * bank->num_sfx);
@@ -382,14 +384,17 @@ u32 org_get_id(void) {
 }
 
 int org_get_master_volume(void) {
-  return org.vol;
+  return org.mastervol;
 }
 
 void org_set_master_volume(const int vol) {
   if (vol > ORG_MAX_VOLUME)
-    org.vol = ORG_MAX_VOLUME;
+    org.mastervol = ORG_MAX_VOLUME;
   else if (vol < 0)
-    org.vol = 0;
+    org.mastervol = 0;
   else
-    org.vol = vol;
+    org.mastervol = vol;
+  // let the fadeout finish in peace if it's in progress
+  if (!org.fadeout)
+    org.vol = org.mastervol;
 }
