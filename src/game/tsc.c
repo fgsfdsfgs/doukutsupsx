@@ -571,6 +571,9 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return FALSE;
     // map
     case 0x3E: // MLP
+      // disable ArmsItem tsc
+      if (menu_active() == MENU_INVENTORY)
+        menu_close();
       menu_open(MENU_MAP);
       return TRUE;
     case 0x3F: // MNA

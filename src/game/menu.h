@@ -22,5 +22,6 @@ int menu_active(void);
 void menu_act(void);
 void menu_draw(void);
 void menu_open(const int type);
+void menu_close(void);
 
 bool menu_uses_tsc(void);

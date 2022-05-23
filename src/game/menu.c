@@ -122,12 +122,6 @@ static inline int menu_padbutton_index(const u32 input) {
   }
 }
 
-static inline void menu_close(void) {
-  tsc_stop_event();
-  tsc_switch_script(TSC_SCRIPT_STAGE);
-  menu_id = MENU_NONE;
-}
-
 static inline void draw_string_shadow(const char *str, const u8 *rgb, const int x, const int y) {
   // draw shadow
   gfx_draw_string_rgb(str, main_black_rgb, GFX_LAYER_FRONT, x + 1, y + 1);
@@ -1292,4 +1286,10 @@ void menu_draw(void) {
 
 bool menu_uses_tsc(void) {
   return menu_desctab[menu_id].need_tsc;
+}
+
+void menu_close(void) {
+  tsc_stop_event();
+  tsc_switch_script(TSC_SCRIPT_STAGE);
+  menu_id = MENU_NONE;
 }
