@@ -666,7 +666,7 @@ static inline bool tsc_exec_opcode(const u8 opcode) {
       return TRUE;
     case 0x57: // INI
       // can't exit, so we restart instead in both cases
-      game_reset(TRUE);
+      game_reset(FALSE);
       game_start_new();
       return TRUE;
     case 0x58: // PS+
