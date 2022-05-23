@@ -717,9 +717,10 @@ void npc_act_066(npc_t *npc) {
     {56, 216, 80, 240},
   };
 
+  int a;
+
   switch (npc->act) {
     case 0:
-      int a;
       for (a = 0; a <= npc_list_max; ++a)
         if (npc_list[a].event_num == 1000) break;
 
