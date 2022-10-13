@@ -151,7 +151,8 @@ static void build_track_samples(const int idx, const int8_t *wavep, const bool p
   for (int j = 0; j < NUM_OCT; ++j) {
     // generate signed 16-bit PCM sample
     const uint32_t wave_size = oct_wave[j].wave_size;
-    const uint32_t num_samples = lcm(wave_size, 28);
+    // align to PCM block size and repeat 3 times
+    const uint32_t num_samples = lcm(wave_size, 28) * 3;
     int16_t *wp = calloc(1, num_samples * sizeof(int16_t));
     assert(wp);
     uint32_t wav_tp = 0;
@@ -255,16 +256,26 @@ int main(int argc, char **argv) {
     return -3;
   }
 
+  uint8_t *tmpbuf = calloc(1, SPURAM_SIZE);
+  assert(tmpbuf);
+
   for (int i = 0; i < MAX_MELODY_TRACKS; ++i) {
     for (int j = 0; j < NUM_OCT; ++j) {
-      // 16 NULL bytes of lead-in to avoid pops
-      const int adpcm_len = psx_audio_spu_encode_simple(inst[i][j].data, inst[i][j].len, spuram + spuram_ptr + 16, 0);
+      const int rep_samples = inst[i][j].len / 3; // set loop start flag at the start of the middle repeat
+      const int adpcm_len = psx_audio_spu_encode_simple(inst[i][j].data, inst[i][j].len, tmpbuf, rep_samples);
       if (adpcm_len <= 0) {
         fprintf(stderr, "error: could not encode instrument sample %d/%d\n", i, j);
         return -4;
       }
+      // sanity check (calculated ADPCM size should match returned size)
+      const int rep_size = adpcm_len / 3;
+      assert(rep_size == (rep_samples / 28) * 16);
+      // set loop end flag at the end of the middle repeat
+      tmpbuf[adpcm_len - rep_size - 16 + 1] = 1 + 2;
+      // copy out the middle repeat
+      memcpy(spuram + spuram_ptr, tmpbuf + rep_size, rep_size);
       inst[i][j].addr = spuram_ptr;
-      inst[i][j].len = adpcm_len + 16;
+      inst[i][j].len = rep_size + 16; // 16 NULL bytes of lead-in/out to avoid pops
       spuram_ptr += ALIGN(inst[i][j].len, 8);
       if (spuram_ptr >= SPURAM_SIZE) {
         fprintf(stderr, "error: ran out of SPU RAM packing instrument sample %d/%d\n", i, j);
@@ -276,6 +287,8 @@ int main(int argc, char **argv) {
       // printf(" * instrument [%d][%d]: addr=%05x pcmlen=%06u adpcmlen=%06d\n", i, j, inst[i][j].addr, inst[i][j].len, adpcm_len);
     }
   }
+
+  free(tmpbuf);
 
 #ifdef SAVE_WAVS
   save_spuram("orgwave/spuram.vag");
