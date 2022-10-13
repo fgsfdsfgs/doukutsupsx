@@ -1,3 +1,4 @@
 [submodule "nugget"]
 	path = nugget
 	url = https://github.com/pcsx-redux/nugget
+	ignore = untracked
