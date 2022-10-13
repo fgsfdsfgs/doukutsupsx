@@ -255,7 +255,9 @@ static inline void hud_draw_life(void) {
   }
 
   hud_rc_life.r.w = ((player.life * 40) / player.max_life) - 1;
+  if (hud_rc_life.r.w < 0) hud_rc_life.r.w = 0;
   hud_rc_life_flash.r.w = ((player.life_bar * 40) / player.max_life) - 1;
+  if (hud_rc_life_flash.r.w < 0) hud_rc_life_flash.r.w = 0;
 
   gfx_draw_texrect(&hud_rc_life_label, GFX_LAYER_FRONT, 16, 40);
   gfx_draw_texrect(&hud_rc_life_flash, GFX_LAYER_FRONT, 40, 40);
