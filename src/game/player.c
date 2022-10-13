@@ -933,6 +933,7 @@ void plr_star_reset(void) {
 }
 
 void plr_debug_cheat(void) {
+#ifdef DEBUG
   // debug cheat
   snd_play_sound(PRIO_HIGH, 1, FALSE);
   // give weapons
@@ -965,4 +966,5 @@ void plr_debug_cheat(void) {
   npc_set_flag(320);
   npc_set_flag(321);
   npc_set_flag(302);
+#endif
 }
