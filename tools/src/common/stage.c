@@ -631,7 +631,7 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
     hdr->songs[i].bank_ofs = ftell(f);
     // read bank
     snprintf(path, sizeof(path), "%s/sfxbnk/%s.sfx", datapath, music_names[song_list[i]]);
-    strlwr(path + strlen(datapath) + 1 + 4);
+    str_tolower(path + strlen(datapath) + 1 + 4);
     fdata = read_file(path, &fsize);
     if (!fdata) {
       fprintf(stderr, "error: could not read '%s'\n", path);
@@ -642,7 +642,7 @@ uint32_t stage_write_bank(const stage_list_t *root, const stage_list_t *stlist, 
     free(fdata);
     // read org
     snprintf(path, sizeof(path), "%s/org/%s.org", datapath, music_names[song_list[i]]);
-    strlwr(path + strlen(datapath) + 1 + 4);
+    str_tolower(path + strlen(datapath) + 1 + 4);
     fdata = read_file(path, &fsize);
     if (!fdata) {
       fprintf(stderr, "error: could not read '%s'\n", path);

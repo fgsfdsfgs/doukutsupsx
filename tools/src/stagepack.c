@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
   fclose(f);
 
-  char path[2048];
+  char path[2148];
   char tpath[2048];
 
   // load head.tsc

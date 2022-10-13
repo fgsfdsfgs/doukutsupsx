@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #define BMP_MAX_PALETTE 256
 
@@ -65,6 +66,11 @@ static inline char *trim_whitespace(char *p) {
   for (unsigned i = len; i >= 0 && p[i] && isspace(p[i]); --i)
     p[i] = '\0';
   return p;
+}
+
+static inline char *str_tolower(char *p) {
+  for (; *p; ++p)
+    *p = tolower((int)*p);
 }
 
 static inline uint8_t *read_file(const char *fname, uint32_t *out_size) {
